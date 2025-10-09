@@ -1,7 +1,12 @@
 -- Unified Completion Configuration
-local cmp = require("cmp")
-local luasnip = require("luasnip")
-local lspkind = require("lspkind")
+local ok_cmp, cmp = pcall(require, "cmp")
+local ok_luasnip, luasnip = pcall(require, "luasnip")
+local ok_lspkind, lspkind = pcall(require, "lspkind")
+
+if not ok_cmp or not ok_luasnip or not ok_lspkind then
+	vim.notify("Completion dependencies not available", vim.log.levels.WARN)
+	return
+end
 
 -- Context-aware filtering for different stacks
 local function stack_filter(entry, ctx)

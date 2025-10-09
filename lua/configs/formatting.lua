@@ -1,5 +1,10 @@
--- Unified Formatting Configuration
-require("conform").setup({
+-- God-Level Unified Formatting Configuration
+local ok, conform = pcall(require, "conform")
+if not ok then
+	return
+end
+
+conform.setup({
 	formatters_by_ft = {
 		-- Web Development Stack
 		javascript = { "biome" },
@@ -7,24 +12,29 @@ require("conform").setup({
 		javascriptreact = { "biome" },
 		typescriptreact = { "biome" },
 		json = { "biome" },
-		html = { "prettierd" },
-		css = { "prettierd" },
-		scss = { "prettierd" },
+		jsonc = { "biome" },
+		html = { "prettier" },
+		css = { "prettier" },
+		scss = { "prettier" },
+		less = { "prettier" },
 
 		-- Database Stack
-		sql = { "sqlfmt" },
+		sql = { "sqlfluff" },
+		postgresql = { "pg_format" },
 		prisma = { "prisma-fmt" },
 
 		-- Multi-Language SE Stack
 		lua = { "stylua" },
-		python = { "ruff_format" },
+		python = { "ruff_format", "ruff_organize_imports" },
 		rust = { "rustfmt" },
 		go = { "goimports", "gofmt" },
-		c = { "clang-format" },
-		cpp = { "clang-format" },
+		c = { "clang_format" },
+		cpp = { "clang_format" },
 		java = { "google-java-format" },
+		kotlin = { "ktlint" },
 		dart = { "dart_format" },
 		zig = { "zigfmt" },
+		php = { "php_cs_fixer" },
 
 		-- Assembly
 		asm = { "asmfmt" },
@@ -32,11 +42,15 @@ require("conform").setup({
 		-- Shell and Config
 		sh = { "shfmt" },
 		bash = { "shfmt" },
-		yaml = { "yamlfmt" },
+		zsh = { "shfmt" },
+		yaml = { "prettier" },
 		toml = { "taplo" },
-		markdown = { "prettierd" },
+		markdown = { "prettier" },
+		xml = { "xmlformat" },
+		proto = { "buf" },
 	},
 
+	-- Enhanced formatters configuration
 	formatters = {
 		-- Biome for fast JS/TS formatting
 		biome = {
@@ -47,8 +61,13 @@ require("conform").setup({
 		},
 
 		-- SQL formatting with PostgreSQL dialect
-		sqlfmt = {
-			args = { "--dialect", "postgresql", "--tab-width", "2", "-" },
+		sqlfluff = {
+			args = { "format", "--dialect=postgres", "--stdin-filename", "$FILENAME", "-" },
+		},
+
+		-- PostgreSQL specific
+		pg_format = {
+			args = { "--spaces", "2", "--no-rcfile" },
 		},
 
 		-- Rust formatting with edition
@@ -66,14 +85,31 @@ require("conform").setup({
 			args = { "format", "--stdin-filename", "$FILENAME", "-" },
 		},
 
-		-- Shell formatting with tabs
+		ruff_organize_imports = {
+			command = "ruff",
+			args = { "check", "--select", "I", "--fix", "--stdin-filename", "$FILENAME", "-" },
+			stdin = true,
+		},
+
+		-- Shell formatting with 2-space indentation
 		shfmt = {
-			args = { "-i", "0", "-ci", "-sr", "-" },
+			args = { "-i", "2", "-ci", "-sr", "-" },
 		},
 
 		-- Java with Google style
 		["google-java-format"] = {
 			args = { "--aosp", "-" },
+		},
+
+		-- Kotlin formatting
+		ktlint = {
+			args = { "--format", "--stdin" },
+		},
+
+		-- PHP formatting
+		php_cs_fixer = {
+			args = { "fix", "--rules=@PSR12", "$FILENAME" },
+			stdin = false,
 		},
 
 		-- Dart formatting
@@ -90,20 +126,31 @@ require("conform").setup({
 			stdin = true,
 		},
 
-		-- C/C++ formatting with 4-character tab indenting
-		["clang-format"] = {
-			args = {
-				"--style={IndentWidth: 4, UseTab: ForIndentation, TabWidth: 4, ColumnLimit: 100}",
-			},
+		-- C/C++ formatting with Google style
+		clang_format = {
+			args = { "--style=Google" },
 		},
 
 		-- Assembly formatting
 		asmfmt = {
-			args = { "-w", "4" }, -- 4-space indentation
+			args = { "-w", "4" },
+		},
+
+		-- XML formatting
+		xmlformat = {
+			command = "xmllint",
+			args = { "--format", "-" },
+			stdin = true,
+		},
+
+		-- Protocol Buffers
+		buf = {
+			args = { "format", "$FILENAME" },
+			stdin = false,
 		},
 	},
 
-	-- Git-aware format on save with safety checks
+	-- Enhanced format on save with error prevention
 	format_on_save = function(bufnr)
 		-- Validate buffer
 		if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
@@ -112,7 +159,10 @@ require("conform").setup({
 
 		-- Skip formatting for certain file types
 		local filetype = vim.bo[bufnr].filetype
-		local skip_filetypes = { "sql", "gitcommit", "gitrebase" } -- Skip problematic types
+		local skip_filetypes = { 
+			"oil", "neo-tree", "trouble", "qf", "help", "man", "lspinfo", 
+			"checkhealth", "gitcommit", "gitrebase", "fugitive"
+		}
 
 		if vim.tbl_contains(skip_filetypes, filetype) then
 			return nil
@@ -123,7 +173,6 @@ require("conform").setup({
 		if file_path ~= "" and vim.fn.executable("git") == 1 then
 			local ok, git_check = pcall(vim.fn.system, "git check-ignore " .. vim.fn.shellescape(file_path))
 			if ok and vim.v.shell_error == 0 then
-				-- File is git-ignored, skip formatting
 				return nil
 			end
 		end
@@ -136,25 +185,41 @@ require("conform").setup({
 
 		-- Format with timeout and LSP fallback
 		return {
-			timeout_ms = 2000,
+			timeout_ms = 1000,
 			lsp_fallback = true,
 			quiet = true,
 		}
 	end,
+
+	format_after_save = {
+		lsp_fallback = true,
+	},
+
+	notify_on_error = true,
 })
 
--- Stack-specific format commands
+-- Enhanced format commands with range support
+vim.keymap.set({ "n", "v" }, "<leader>f", function()
+	conform.format({ async = true, lsp_fallback = true })
+end, { desc = "Format file or range" })
+
+-- Language-specific format commands
 vim.keymap.set("n", "<leader>fb", function()
-	require("conform").format({
-		formatters = { "biome" },
-		timeout_ms = 2000,
-	})
+	conform.format({ formatters = { "biome" }, async = true })
 end, { desc = "Format with Biome" })
 
 vim.keymap.set("n", "<leader>fs", function()
-	require("conform").format({
-		formatters = { "sqlfmt" },
-		timeout_ms = 2000,
-	})
+	conform.format({ formatters = { "sqlfluff" }, async = true })
 end, { desc = "Format SQL" })
+
+vim.keymap.set("n", "<leader>fp", function()
+	conform.format({ formatters = { "prettier" }, async = true })
+end, { desc = "Format with Prettier" })
+
+vim.keymap.set("n", "<leader>fr", function()
+	conform.format({ formatters = { "ruff_format" }, async = true })
+end, { desc = "Format Python with Ruff" })
+
+-- Format info command
+vim.keymap.set("n", "<leader>fi", "<cmd>ConformInfo<cr>", { desc = "Conform Info" })
 

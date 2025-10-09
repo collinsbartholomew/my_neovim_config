@@ -1,30 +1,36 @@
-local ok, neotree = pcall(require, "neo-tree")
-if not ok then
-	vim.notify("neo-tree not available", vim.log.levels.WARN)
-	return
-end
-
-neotree.setup({
+require("neo-tree").setup({
 	close_if_last_window = true,
 	popup_border_style = "rounded",
 	enable_git_status = true,
 	enable_diagnostics = true,
-	log_level = "info",
+
 	window = {
 		position = "left",
 		width = 30,
 		mappings = {
-			["<cr>"] = {
-				"open",
-				nowait = false,
-			},
-			["o"] = {
-				"open",
-				nowait = false,
-			},
+			["<cr>"] = "open",
+			["o"] = "open",
+		},
+	},
+	default_component_configs = {
+		name = {
+			use_git_status_colors = true,
+			highlight = "NeoTreeFileName",
 		},
 	},
 	filesystem = {
+		components = {
+			name = function(config, node, state)
+				if node.type == "directory" and node:get_depth() == 1 then
+					return {
+						text = vim.fn.fnamemodify(node.path, ":t"),
+						highlight = config.highlight or "NeoTreeDirectoryName",
+					}
+				else
+					return require("neo-tree.sources.common.components").name(config, node, state)
+				end
+			end,
+		},
 		filtered_items = {
 			visible = true,
 			hide_dotfiles = false,

@@ -42,54 +42,20 @@ rose_pine.setup({
 	-- Change specific vim highlight groups
 	-- https://github.com/rose-pine/neovim/wiki/Recipes
 	highlight_groups = {
-		-- Examples
-		-- Comment = { fg = "love" },
-		-- VertSplit = { fg = "love", style = "italic" },
-		-- Visual = { bg = "love", style = "italic" },
-		--
-		-- Italicize comments and keywords
-		Comment = { fg = "muted", style = {} },
-		["@comment"] = { fg = "muted", style = {} },
-		["@keyword"] = { style = {} },
-		["@keyword.function"] = { style = {} },
-		["@keyword.operator"] = { style = {} },
-		["@keyword.return"] = { style = {} },
-		["@type"] = { style = {} },
-		["@type.builtin"] = { style = {} },
-		["@type.qualifier"] = { style = {} },
-		["@constant"] = { style = {} },
-		["@constant.builtin"] = { style = {} },
-		["@constant.macro"] = { style = {} },
-		["@structure"] = { style = {} },
-		["@include"] = { style = {} },
-		["@module"] = { style = {} },
-		["@module.builtin"] = { style = {} },
-		["@property"] = { style = {} },
-		["@field"] = { style = {} },
-		["@variable"] = { style = {} },
-		["@variable.builtin"] = { style = {} },
+		Comment = { fg = "muted" },
 		["@string"] = { fg = "gold" },
 		["@string.escape"] = { fg = "pine" },
 		["@string.special"] = { fg = "foam" },
-		["@string.special.symbol"] = { fg = "foam" },
-		["@string.regexp"] = { fg = "pine" },
 		["@punctuation.special"] = { fg = "iris" },
-		["@punctuation.delimiter"] = { fg = "subtle" },
-		["@constructor"] = { fg = "foam" },
-		["@operator"] = { fg = "subtle" },
-		["@label"] = { fg = "iris" },
-		["@tag"] = { fg = "foam" },
-		["@tag.attribute"] = { fg = "iris" },
-		["@tag.delimiter"] = { fg = "subtle" },
 		["@function"] = { fg = "rose" },
 		["@function.builtin"] = { fg = "rose" },
 		["@function.call"] = { fg = "rose" },
-		["@function.macro"] = { fg = "rose" },
-		["@method"] = { fg = "rose" },
-		["@method.call"] = { fg = "rose" },
 	},
 })
 
 -- Apply the colorscheme explicitly
 vim.cmd([[colorscheme rose-pine]])
+
+-- Global theme state
+_G.current_theme = "rose-pine"
 

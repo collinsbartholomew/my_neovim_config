@@ -1,120 +1,138 @@
 return {
-	-- Colorscheme
+	-- Colorschemes
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			require("rose-pine").setup({
-				disable_background = true,
-				disable_float_background = true,
-				disable_italics = true,
+			require("configs.rose-pine")
+		end,
+	},
+	{
+		"folke/tokyonight.nvim",
+		lazy = true,
+		priority = 1000,
+		config = function()
+			require("tokyonight").setup({
+				style = "night",
+				transparent = true,
+				terminal_colors = true,
+				styles = {
+					comments = { italic = false },
+					keywords = { italic = false },
+					functions = {},
+					variables = {},
+					sidebars = "transparent",
+					floats = "transparent",
+				},
+				sidebars = { "qf", "help" },
+				day_brightness = 0.3,
+				hide_inactive_statusline = false,
+				dim_inactive = false,
+				lualine_bold = false,
 			})
-			vim.cmd("colorscheme rose-pine")
 		end,
 	},
 
 	-- LSP and Mason
 	{
 		"williamboman/mason.nvim",
-		event = "VeryLazy",
+		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate" },
 		config = function()
 			require("configs.mason")
 		end,
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
-		event = "VeryLazy",
+		lazy = false,
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
-			vim.defer_fn(function()
-				local ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-				if not ok then
-					vim.notify("mason-lspconfig not available", vim.log.levels.WARN)
-					return
-				end
+			local ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+			if not ok then return end
 
-				mason_lspconfig.setup({
-					ensure_installed = {
-						"lua_ls",
-						"biome",
-						"html",
-						"cssls",
-						"tailwindcss",
-						"jsonls",
-						"yamlls",
-						"emmet_ls",
-						"bashls",
-						"cmake",
-						"gopls",
-						"rust_analyzer",
-						"clangd",
-						"jdtls",
-						"kotlin_language_server",
-						"intelephense",
-						"sqls",
-						"vimls",
-						"prismals",
-						"pyright",
-						"zls",
-					},
-					automatic_installation = true,
-				})
-				-- Install tools in background with error handling
-				vim.schedule(function()
-					pcall(vim.cmd, "MasonInstall lua_ls html cssls tailwindcss jsonls yamlls emmet_ls")
-				end)
-			end, 1000)
+			mason_lspconfig.setup({
+				ensure_installed = {
+					"lua_ls",
+					"biome",
+					"tsserver",
+					"html",
+					"cssls",
+					"tailwindcss",
+					"jsonls",
+					"yamlls",
+					"emmet_ls",
+					"bashls",
+					"cmake",
+					"gopls",
+					"rust_analyzer",
+					"clangd",
+					"jdtls",
+					"kotlin_language_server",
+					"intelephense",
+					"sqls",
+					"vimls",
+					"prismals",
+					"pyright",
+					"zls",
+				},
+				automatic_installation = true,
+			})
 		end,
 	},
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		event = "VeryLazy",
+		cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
-			vim.defer_fn(function()
-				local ok, mason_tool_installer = pcall(require, "mason-tool-installer")
-				if not ok then
-					vim.notify("mason-tool-installer not available", vim.log.levels.WARN)
-					return
-				end
+			local ok, mason_tool_installer = pcall(require, "mason-tool-installer")
+			if not ok then return end
 
-				mason_tool_installer.setup({
-					ensure_installed = {
-						-- Core formatters and tools (verified names)
-						"stylua",
-						"biome",
-						"shfmt",
-						"shellcheck",
-						"asm-lsp",
-						"asmfmt",
-						"clang-format",
-						"cmakelang",
-						"goimports",
-						"rustfmt",
-						"google-java-format",
-						"php-cs-fixer",
-						"sqlfmt",
-					},
-					auto_update = false,
-					run_on_start = false,
-				})
-				-- Install tools in background after delay with error handling
-				vim.schedule(function()
-					pcall(mason_tool_installer.run_on_start)
-				end)
-			end, 3000)
+			mason_tool_installer.setup({
+				ensure_installed = {
+					-- Formatters
+					"stylua",
+					"biome",
+					"prettier",
+					"shfmt",
+					"shellcheck",
+					"asm-lsp",
+					"asmfmt",
+					"clang-format",
+					"cmake-format",
+					"goimports",
+					"rustfmt",
+					"google-java-format",
+					"ktlint",
+					"php-cs-fixer",
+					"sqlfluff",
+					"pg_format",
+					"ruff",
+					"taplo",
+					"xmlformatter",
+					"buf",
+					-- DAP Adapters
+					"js-debug-adapter",
+					"codelldb",
+					"debugpy",
+					"bash-debug-adapter",
+					"delve",
+
+				},
+				auto_update = false,
+				run_on_start = true,
+			})
 		end,
 	},
 	{
 		"neovim/nvim-lspconfig",
 		lazy = false,
-		priority = 70,
+		priority = 50,
 		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
 		config = function()
 			require("configs.lsp-progress")
-			require("configs.lsp-unified")
+			require("configs.lsp-modern")
+			require("configs.react").setup()
 		end,
 	},
 
@@ -130,14 +148,7 @@ return {
 			require("gopher").setup()
 		end,
 	},
-	{
-		"simrat39/symbols-outline.nvim",
-		cmd = "SymbolsOutline",
-		keys = { { "<leader>so", "<cmd>SymbolsOutline<cr>", desc = "Symbols Outline" } },
-		config = function()
-			require("symbols-outline").setup()
-		end,
-	},
+
 	{
 		"j-hui/fidget.nvim",
 		event = "LspAttach",
@@ -163,12 +174,16 @@ return {
 				build = "make install_jsregexp",
 				dependencies = { "rafamadriz/friendly-snippets" },
 				config = function()
-					require("luasnip.loaders.from_vscode").lazy_load()
+					local ok, luasnip_vscode = pcall(require, "luasnip.loaders.from_vscode")
+					if ok then luasnip_vscode.lazy_load() end
 				end,
 			},
 		},
 		config = function()
-			require("configs.completion")
+			local ok = pcall(require, "configs.completion")
+			if not ok then
+				vim.notify("Failed to load completion config", vim.log.levels.WARN)
+			end
 		end,
 	},
 
@@ -246,37 +261,17 @@ return {
 		end,
 	},
 
-	-- Formatting and linting
+	-- Formatting (nvim-lint removed - LSP provides better diagnostics)
 	{
 		"stevearc/conform.nvim",
-		event = { "BufWritePre" },
+		lazy = false,
 		cmd = { "ConformInfo" },
 		config = function()
 			require("configs.formatting")
 		end,
 	},
-	{
-		"mfussenegger/nvim-lint",
-		event = { "BufReadPre", "BufNewFile" },
-		config = function()
-			require("lint").linters_by_ft = {
-				-- JS/TS: Removed (Biome handles this better)
-				-- Python: Use Ruff (faster than flake8)
-				python = { "ruff" },
-				-- Shell: Keep shellcheck (best for shell)
-				sh = { "shellcheck" },
-				bash = { "shellcheck" },
-				-- Removed: htmlhint, stylelint, markdownlint (handled by LSP/formatters)
-			}
-			vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-				callback = function()
-					require("lint").try_lint()
-				end,
-			})
-		end,
-	},
 
-	-- Database tools (consolidated - sqls LSP provides better functionality)
+	-- Database tools (enhanced)
 	{
 		"tpope/vim-dadbod",
 		cmd = "DB",
@@ -285,8 +280,15 @@ return {
 		"kristijanhusak/vim-dadbod-ui",
 		dependencies = { "vim-dadbod" },
 		cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" },
+		keys = {
+			{ "<leader>D", "<cmd>DBUIToggle<cr>", desc = "Toggle Database UI" },
+			{ "<leader>Df", "<cmd>DBUIFindBuffer<cr>", desc = "Find DB Buffer" },
+		},
+		config = function()
+			require("configs.database").setup()
+		end,
 	},
-	-- Removed: vim-dadbod-completion (sqls LSP provides better completions)
+
 
 	-- Prisma support
 	{
@@ -313,38 +315,15 @@ return {
 		lazy = true,
 	},
 
-	-- Assembly Language Support (Modern)
-	{
-		"ARM9/arm-syntax-vim",
-		ft = { "asm", "s", "S", "arm" },
-	},
-	{
-		"Shirk/vim-gas",
-		ft = { "asm", "s", "S" },
-	},
+	-- Assembly Language Support (consolidated)
 	{
 		"philj56/vim-asm-indent",
-		ft = { "asm", "nasm", "masm", "gas" },
+		ft = { "asm", "nasm", "masm", "gas", "s", "S", "arm" },
 		config = function()
 			require("configs.assembly")
 		end,
 	},
-	{
-		"mhinz/vim-startify",
-		event = "VimEnter",
-		config = function()
-			vim.g.startify_custom_header = {
-				"   ╔═══════════════════════════════════════════════════════════╗",
-				"   ║                    Assembly IDE Ready                     ║",
-				"   ║              Professional Development Environment         ║",
-				"   ╚═══════════════════════════════════════════════════════════╝",
-			}
-			vim.g.startify_lists = {
-				{ type = "files", header = { "   Recent Files" } },
-				{ type = "sessions", header = { "   Sessions" } },
-			}
-		end,
-	},
+
 
 	-- Essential additions
 	{
@@ -385,6 +364,7 @@ return {
 			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
 			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
 			{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols" },
+			{ "<leader>so", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols Outline" },
 		},
 		config = function()
 			require("configs.trouble")
@@ -423,16 +403,7 @@ return {
 		end,
 	},
 
-	-- Git integration
-	{
-		"tpope/vim-fugitive",
-		cmd = { "Git", "G" },
-		keys = {
-			{ "<leader>gs", "<cmd>Git<cr>", desc = "Git status" },
-			{ "<leader>gc", "<cmd>Git commit<cr>", desc = "Git commit" },
-			{ "<leader>gp", "<cmd>Git push<cr>", desc = "Git push" },
-		},
-	},
+	-- Git integration (keeping only Neogit + Diffview - more powerful than Fugitive)
 	{
 		"sindrets/diffview.nvim",
 		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
@@ -449,6 +420,8 @@ return {
 		cmd = "Neogit",
 		keys = {
 			{ "<leader>gg", "<cmd>Neogit<cr>", desc = "Neogit" },
+			{ "<leader>gs", "<cmd>Neogit<cr>", desc = "Git status" },
+			{ "<leader>gc", "<cmd>Neogit commit<cr>", desc = "Git commit" },
 		},
 		dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
 		config = function()
@@ -468,6 +441,7 @@ return {
 				"rcarriga/nvim-notify",
 				config = function()
 					require("notify").setup({
+						background_colour = "#000000",
 						fps = 30,
 						icons = {
 							DEBUG = "",
@@ -713,15 +687,7 @@ return {
 		end,
 	},
 
-	-- TypeScript enhanced tools
-	{
-		"pmizio/typescript-tools.nvim",
-		ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
-		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-		config = function()
-			require("configs.typescript-tools")
-		end,
-	},
+
 
 	-- Text manipulation
 	{
@@ -741,17 +707,149 @@ return {
 		end,
 	},
 
-	-- Enhanced LSP UI
+
+
+	-- Debugging (DAP)
 	{
-		"ray-x/lsp_signature.nvim",
-		event = "LspAttach",
+		"mfussenegger/nvim-dap",
+		lazy = true,
+		keys = {
+			{ "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
+			{ "<leader>dc", function() require("dap").continue() end, desc = "Continue" },
+			{ "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },
+			{ "<leader>do", function() require("dap").step_over() end, desc = "Step Over" },
+			{ "<leader>dO", function() require("dap").step_out() end, desc = "Step Out" },
+			{ "<leader>dr", function() require("dap").repl.open() end, desc = "Open REPL" },
+			{ "<leader>dl", function() require("dap").run_last() end, desc = "Run Last" },
+			{ "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+		},
 		config = function()
-			require("lsp_signature").setup({
-				bind = true,
-				handler_opts = { border = "rounded" },
-				hint_enable = false,
-				floating_window = false,
+			require("configs.dap")
+		end,
+	},
+	{
+		"rcarriga/nvim-dap-ui",
+		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+		lazy = true,
+		keys = {
+			{ "<leader>du", function() require("dapui").toggle() end, desc = "Toggle DAP UI" },
+			{ "<leader>de", function() require("dapui").eval() end, desc = "Evaluate Expression", mode = { "n", "v" } },
+		},
+		config = function()
+			local dap, dapui = require("dap"), require("dapui")
+			dapui.setup()
+			dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+			dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+			dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+		end,
+	},
+	{
+		"theHamsta/nvim-dap-virtual-text",
+		dependencies = { "mfussenegger/nvim-dap" },
+		lazy = true,
+		config = function()
+			require("nvim-dap-virtual-text").setup()
+		end,
+	},
+
+	-- Build/Task Runner
+	{
+		"stevearc/overseer.nvim",
+		cmd = { "OverseerRun", "OverseerToggle", "OverseerInfo" },
+		keys = {
+			{ "<leader>or", "<cmd>OverseerRun<cr>", desc = "Run Task" },
+			{ "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Toggle Tasks" },
+			{ "<leader>oi", "<cmd>OverseerInfo<cr>", desc = "Task Info" },
+		},
+		config = function()
+			require("overseer").setup({
+				templates = { "builtin", "user.cpp_build", "user.rust_build", "user.go_build" },
 			})
 		end,
+	},
+
+	-- Testing
+	{
+		"nvim-neotest/neotest",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"antoinemadec/FixCursorHold.nvim",
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-neotest/neotest-go",
+			"rouge8/neotest-rust",
+			"nvim-neotest/neotest-python",
+			"haydenmeade/neotest-jest",
+		},
+		keys = {
+			{ "<leader>tn", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
+			{ "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File Tests" },
+			{ "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Toggle Test Summary" },
+			{ "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Show Test Output" },
+		},
+		config = function()
+			require("neotest").setup({
+				adapters = {
+					require("neotest-go"),
+					require("neotest-rust"),
+					require("neotest-python"),
+					require("neotest-jest"),
+				},
+			})
+		end,
+	},
+
+	-- Refactoring
+	{
+		"ThePrimeagen/refactoring.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+		keys = {
+			{ "<leader>rr", function() require("refactoring").select_refactor() end, desc = "Refactor Menu", mode = { "n", "x" } },
+			{ "<leader>re", function() require("refactoring").refactor("Extract Function") end, desc = "Extract Function", mode = "x" },
+			{ "<leader>rf", function() require("refactoring").refactor("Extract Function To File") end, desc = "Extract Function To File", mode = "x" },
+			{ "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, desc = "Extract Variable", mode = "x" },
+			{ "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, desc = "Inline Variable", mode = { "n", "x" } },
+		},
+		config = function()
+			require("refactoring").setup()
+		end,
+	},
+
+	-- Incremental Rename
+	{
+		"smjonas/inc-rename.nvim",
+		keys = {
+			{ "<leader>rn", function() return ":IncRename " .. vim.fn.expand("<cword>") end, desc = "Incremental Rename", expr = true },
+		},
+		config = function()
+			require("inc-rename").setup()
+		end,
+	},
+
+
+
+	-- Illuminate (highlight references)
+	{
+		"RRethy/vim-illuminate",
+		event = { "BufReadPost", "BufNewFile" },
+		config = function()
+			require("illuminate").configure({
+				providers = { "lsp", "treesitter", "regex" },
+				delay = 100,
+				filetypes_denylist = { "dirvish", "fugitive", "neo-tree" },
+			})
+		end,
+	},
+
+	-- Scratch files
+	{
+		"mtth/scratch.vim",
+		cmd = { "Scratch", "ScratchPreview" },
+		keys = {
+			{ "<leader>sc", "<cmd>Scratch<cr>", desc = "New Scratch Buffer" },
+			{ "<leader>sp", "<cmd>ScratchPreview<cr>", desc = "Preview Scratch" },
+		},
 	},
 }
