@@ -49,7 +49,9 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			local ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-			if not ok then return end
+			if not ok then
+				return
+			end
 
 			mason_lspconfig.setup({
 				ensure_installed = {
@@ -86,7 +88,9 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			local ok, mason_tool_installer = pcall(require, "mason-tool-installer")
-			if not ok then return end
+			if not ok then
+				return
+			end
 
 			mason_tool_installer.setup({
 				ensure_installed = {
@@ -117,7 +121,6 @@ return {
 					"debugpy",
 					"bash-debug-adapter",
 					"delve",
-
 				},
 				auto_update = false,
 				run_on_start = true,
@@ -175,7 +178,9 @@ return {
 				dependencies = { "rafamadriz/friendly-snippets" },
 				config = function()
 					local ok, luasnip_vscode = pcall(require, "luasnip.loaders.from_vscode")
-					if ok then luasnip_vscode.lazy_load() end
+					if ok then
+						luasnip_vscode.lazy_load()
+					end
 				end,
 			},
 		},
@@ -289,7 +294,6 @@ return {
 		end,
 	},
 
-
 	-- Prisma support
 	{
 		"prisma/vim-prisma",
@@ -323,7 +327,6 @@ return {
 			require("configs.assembly")
 		end,
 	},
-
 
 	-- Essential additions
 	{
@@ -687,8 +690,6 @@ return {
 		end,
 	},
 
-
-
 	-- Text manipulation
 	{
 		"kylechui/nvim-surround",
@@ -707,21 +708,67 @@ return {
 		end,
 	},
 
-
-
 	-- Debugging (DAP)
 	{
 		"mfussenegger/nvim-dap",
 		lazy = true,
 		keys = {
-			{ "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
-			{ "<leader>dc", function() require("dap").continue() end, desc = "Continue" },
-			{ "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },
-			{ "<leader>do", function() require("dap").step_over() end, desc = "Step Over" },
-			{ "<leader>dO", function() require("dap").step_out() end, desc = "Step Out" },
-			{ "<leader>dr", function() require("dap").repl.open() end, desc = "Open REPL" },
-			{ "<leader>dl", function() require("dap").run_last() end, desc = "Run Last" },
-			{ "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+			{
+				"<leader>db",
+				function()
+					require("dap").toggle_breakpoint()
+				end,
+				desc = "Toggle Breakpoint",
+			},
+			{
+				"<leader>dc",
+				function()
+					require("dap").continue()
+				end,
+				desc = "Continue",
+			},
+			{
+				"<leader>di",
+				function()
+					require("dap").step_into()
+				end,
+				desc = "Step Into",
+			},
+			{
+				"<leader>do",
+				function()
+					require("dap").step_over()
+				end,
+				desc = "Step Over",
+			},
+			{
+				"<leader>dO",
+				function()
+					require("dap").step_out()
+				end,
+				desc = "Step Out",
+			},
+			{
+				"<leader>dr",
+				function()
+					require("dap").repl.open()
+				end,
+				desc = "Open REPL",
+			},
+			{
+				"<leader>dl",
+				function()
+					require("dap").run_last()
+				end,
+				desc = "Run Last",
+			},
+			{
+				"<leader>dt",
+				function()
+					require("dap").terminate()
+				end,
+				desc = "Terminate",
+			},
 		},
 		config = function()
 			require("configs.dap")
@@ -732,15 +779,34 @@ return {
 		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
 		lazy = true,
 		keys = {
-			{ "<leader>du", function() require("dapui").toggle() end, desc = "Toggle DAP UI" },
-			{ "<leader>de", function() require("dapui").eval() end, desc = "Evaluate Expression", mode = { "n", "v" } },
+			{
+				"<leader>du",
+				function()
+					require("dapui").toggle()
+				end,
+				desc = "Toggle DAP UI",
+			},
+			{
+				"<leader>de",
+				function()
+					require("dapui").eval()
+				end,
+				desc = "Evaluate Expression",
+				mode = { "n", "v" },
+			},
 		},
 		config = function()
 			local dap, dapui = require("dap"), require("dapui")
 			dapui.setup()
-			dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-			dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-			dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+			dap.listeners.after.event_initialized["dapui_config"] = function()
+				dapui.open()
+			end
+			dap.listeners.before.event_terminated["dapui_config"] = function()
+				dapui.close()
+			end
+			dap.listeners.before.event_exited["dapui_config"] = function()
+				dapui.close()
+			end
 		end,
 	},
 	{
@@ -781,10 +847,34 @@ return {
 			"haydenmeade/neotest-jest",
 		},
 		keys = {
-			{ "<leader>tn", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
-			{ "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File Tests" },
-			{ "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Toggle Test Summary" },
-			{ "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Show Test Output" },
+			{
+				"<leader>tn",
+				function()
+					require("neotest").run.run()
+				end,
+				desc = "Run Nearest Test",
+			},
+			{
+				"<leader>tf",
+				function()
+					require("neotest").run.run(vim.fn.expand("%"))
+				end,
+				desc = "Run File Tests",
+			},
+			{
+				"<leader>ts",
+				function()
+					require("neotest").summary.toggle()
+				end,
+				desc = "Toggle Test Summary",
+			},
+			{
+				"<leader>to",
+				function()
+					require("neotest").output.open({ enter = true })
+				end,
+				desc = "Show Test Output",
+			},
 		},
 		config = function()
 			require("neotest").setup({
@@ -806,11 +896,46 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		keys = {
-			{ "<leader>rr", function() require("refactoring").select_refactor() end, desc = "Refactor Menu", mode = { "n", "x" } },
-			{ "<leader>re", function() require("refactoring").refactor("Extract Function") end, desc = "Extract Function", mode = "x" },
-			{ "<leader>rf", function() require("refactoring").refactor("Extract Function To File") end, desc = "Extract Function To File", mode = "x" },
-			{ "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, desc = "Extract Variable", mode = "x" },
-			{ "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, desc = "Inline Variable", mode = { "n", "x" } },
+			{
+				"<leader>rr",
+				function()
+					require("refactoring").select_refactor()
+				end,
+				desc = "Refactor Menu",
+				mode = { "n", "x" },
+			},
+			{
+				"<leader>re",
+				function()
+					require("refactoring").refactor("Extract Function")
+				end,
+				desc = "Extract Function",
+				mode = "x",
+			},
+			{
+				"<leader>rf",
+				function()
+					require("refactoring").refactor("Extract Function To File")
+				end,
+				desc = "Extract Function To File",
+				mode = "x",
+			},
+			{
+				"<leader>rv",
+				function()
+					require("refactoring").refactor("Extract Variable")
+				end,
+				desc = "Extract Variable",
+				mode = "x",
+			},
+			{
+				"<leader>ri",
+				function()
+					require("refactoring").refactor("Inline Variable")
+				end,
+				desc = "Inline Variable",
+				mode = { "n", "x" },
+			},
 		},
 		config = function()
 			require("refactoring").setup()
@@ -821,14 +946,19 @@ return {
 	{
 		"smjonas/inc-rename.nvim",
 		keys = {
-			{ "<leader>rn", function() return ":IncRename " .. vim.fn.expand("<cword>") end, desc = "Incremental Rename", expr = true },
+			{
+				"<leader>rn",
+				function()
+					return ":IncRename " .. vim.fn.expand("<cword>")
+				end,
+				desc = "Incremental Rename",
+				expr = true,
+			},
 		},
 		config = function()
 			require("inc-rename").setup()
 		end,
 	},
-
-
 
 	-- Illuminate (highlight references)
 	{
