@@ -1,0 +1,32 @@
+{
+	"ApplicationWindow": {
+		"prefix": "appwin",
+		"body": [
+			"import QtQuick 2.15",
+			"import QtQuick.Controls 2.15",
+			"\nApplicationWindow {",
+			"    id: ${1:window}",
+			"    width: ${2:800}",
+			"    height: ${3:600}",
+			"    visible: true",
+			"\n    ${0}",
+			"}"
+		],
+		"description": "QML ApplicationWindow template"
+	},
+	"Rectangle": {
+		"prefix": "rect",
+		"body": [
+			"Rectangle {",
+			"    id: ${1:rect}",
+			"    width: ${2:100}",
+			"    height: ${3:100}",
+			"    color: \"${4:lightgray}\"",
+			"    anchors.centerIn: parent",
+			"\n    ${0}",
+			"}"
+		],
+		"description": "QML Rectangle stub"
+	}
+}
+
