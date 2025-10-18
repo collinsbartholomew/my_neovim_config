@@ -1,10 +1,9 @@
-# Neovim Supercharged — Your Ultimate, Zero-Fuss Dev Environment
+#Neovim Supercharged — Your Ultimate, Zero-Fuss Dev Environment
 
 Welcome to a fast, modern, and highly-configurable Neovim setup designed for everyday development across languages — from Zig to TypeScript, Rust to Python, and everything in between.
 
 This configuration focuses on:
-- Speedy startup and lazy-loading of plugins
-- Great defaults for editing, navigation, git, and debugging
+- Speedy startup and lazy-loading of plugins- Great defaults for editing, navigation, git, and debugging
 - A carefully tuned LSP & tooling experience (mason/mason-lspconfig, lspconfig, autopairs, treesitter, dap)
 - A single, maintainable place for small feature configs (consolidated helpers in `lua/configs/merged.lua`)
 - Pragmatic keymaps that are discoverable, consistent, and extensible
@@ -12,7 +11,7 @@ This configuration focuses on:
 Why this config?
 - Works out-of-the-box for modern JS/TS/React + backend languages
 - Includes Zig language support (`zls`) and sensible Zig keymaps
-- Lazy proxy shims keep backward compatibility for old module names while staying fast
+- Lazy proxy shims keep backward compatibilityfor old module names while staying fast
 - Centralized small-configs reduce cognitive overhead when making edits
 
 Quick Preview
@@ -33,7 +32,7 @@ Getting started (recommended)
 ```vim
 :Mason
 # or
-:MasonInstall zls pyright rust-analyzer clangd biome vtsls tailwindcss-language-server
+:MasonInstall zls pyright rust-analyzerclangd biome ts_ls tailwindcss-language-server
 ```
 
 4. Verify health and LSP status:
@@ -52,16 +51,16 @@ Key files to know (quick guide)
 
 Tweaks & Preferences
 - Leader key is set to `<Space>` early in `init.lua`.
-- Color scheme: `rose-pine` by default (toggle with `<Space>tt`).
+- Color scheme:`rose-pine` by default (toggle with `<Space>tt`).
 - Formatting: `conform.nvim` is integrated, but falls back to LSP or formatters installed via Mason. Use `<Space>f` to format.
 
 Zig support
-- LSP server: `zls` — included in the Mason ensure list.
+- LSP server: `zls` — included inthe Mason ensure list.
 - Keymaps: `<Space>zb` (build), `<Space>zr` (run current file), `<Space>zf` (format using `zig fmt` or Conform).
 
 Customizing keymaps
 - Primary keymaps live in `lua/core/keymaps.lua`.
-- Per-language keymaps are added via filetype autocmds (also in `core/keymaps.lua` and `configs.merged.lua`).
+- Per-languagekeymaps are added via filetype autocmds (also in `core/keymaps.lua` and `configs.merged.lua`).
 - To change a keymap, edit `lua/core/keymaps.lua` or override via your personal layer.
 
 Plugin management
@@ -97,7 +96,7 @@ FAQ
 Q: How do I add a formatter or linter?
 A: Add it to Mason (or install via your system), then configure `configs.tools.formatting` or add a Conform formatter mapping. See `lua/configs/tools/formatting.lua`.
 
-Q: How do I enable a plugin only for a project?
+Q: How do I enable a pluginonly for a project?
 A: Use `lazy.nvim`'s `ft`, `cmd`, or `event` options in `lua/plugins/*.lua`, or use per-project `local.lua` conditional requires.
 
 Q: How do I fully remove compatibility shims?

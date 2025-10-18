@@ -13,14 +13,14 @@ function M.check_linters()
 		print("nvim-lint not available: " .. tostring(lint))
 		return
 	end
-	
+
 	local filetype = vim.bo.filetype
 	local linters = lint.linters_by_ft[filetype] or {}
-	
+
 	print("=== LINTER DIAGNOSTICS ===")
 	print("Current filetype: ".. filetype)
 	print("Configured linters: " .. (#linters > 0 and table.concat(linters, ", ") or "None"))
-	
+
 	if #linters > 0 then
 		print("\nLinter availability:")
 		for _, linter in ipairs(linters) do
@@ -29,7 +29,7 @@ function M.check_linters()
 			local mason_available = vim.fn.executable(mason_path) == 1
 			local status = (available or mason_available) and "✓ Available" or "✗ Missing"
 			print("  " .. linter .. ": " .. status)
-			
+
 			if not (available or mason_available) then
 				print("    Install with: :Mason or npm install -g " .. linter)
 			end
@@ -38,15 +38,15 @@ function M.check_linters()
 		print("\nNo linters configured for filetype: " .. filetype)
 		print("Check if this filetype should have linters configured")
 	end
-	
+
 	-- Check Mason installation
 	local mason_ok, mason_registry = pcall(require, "mason-registry")
 	if mason_ok then
 		print("\nMason packages:")
 		local essential = {"eslint_d", "htmlhint", "stylelint", "prettier", "stylua", "ruff", "luacheck"}
 		for _, tool in ipairs(essential) do
-			local ok, package = pcall(mason_registry.get_package, tool)
-			if ok and package then
+			local ok_pkg, package = pcall(mason_registry.get_package, tool)
+			if ok_pkg and package then
 				local status = package:is_installed() and "✓ Installed" or "✗ Not installed"
 				print("  " .. tool .. ": " .. status)
 			end
@@ -58,17 +58,17 @@ end
 function M.check_lsp()
 	print("=== LSP DIAGNOSTICS ===")
 	local clients = vim.lsp.get_active_clients({ bufnr = 0 })
-	
+
 	if #clients == 0 then
 		print("No LSP clients attached to current buffer")
 		return
 	end
-	
+
 	for _, client in ipairs(clients) do
 		print("Client: " .. client.name)
 		print("  Status: " .. (client.is_stopped() and "Stopped" or "Running"))
 		print("  Root dir: " .. (client.config.root_dir or "None"))
-		
+
 		-- Check capabilities
 		local caps = client.server_capabilities
 		if caps then
@@ -86,7 +86,7 @@ function M.check_buffer()
 	print("=== BUFFER DIAGNOSTICS ===")
 	local bufnr = vim.api.nvim_get_current_buf()
 	local file_path = vim.api.nvim_buf_get_name(bufnr)
-	
+
 	print("Buffer number: " .. bufnr)
 	print("File path: " .. (file_path ~= "" and file_path or "No file"))
 	print("File exists: " .. (vim.fn.filereadable(file_path) == 1 and "✓" or "✗"))
@@ -94,7 +94,7 @@ function M.check_buffer()
 	print("Filetype: " .. vim.bo[bufnr].filetype)
 	print("Modifiable: " .. (vim.bo[bufnr].modifiable and "✓" or "✗"))
 	print("Modified: " .. (vim.bo[bufnr].modified and "✓" or "✗"))
-	
+
 	if file_path ~= "" then
 		local file_size = vim.fn.getfsize(file_path)
 		print("File size: "..(file_size >= 0 and file_size .. " bytes" or "Unknown"))
@@ -161,3 +161,4 @@ vim.api.nvim_create_user_command("LspStatus", M.check_lsp, { desc = "Show LSP cl
 vim.api.nvim_create_user_command("LinterStatus", M.check_linters, { desc = "Show linter availability" })
 
 return M
+

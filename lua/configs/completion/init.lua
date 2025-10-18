@@ -139,6 +139,16 @@ function M.setup()
 							return false
 						end
 					end
+					-- For JSX/TSX, ensure LSP suggestions don't override text from buffer
+					if (filetype == 'typescriptreact' or filetype == 'javascriptreact') then
+						-- Lower priority for LSP text suggestions in JSX/TSX
+						if src1 == 'nvim_lsp' and entry1.completion_item.kind == 1 and src2 == 'buffer' then
+							return false
+						end
+						if src2 == 'nvim_lsp' and entry2.completion_item.kind == 1 and src1 == 'buffer' then
+							return true
+						end
+					end
 					return nil
 				end,
 				cmp.config.compare.kind,
@@ -154,6 +164,15 @@ function M.setup()
 		cmp.setup.filetype('gitcommit', { sources = cmp.config.sources({ { name = 'buffer' } }) })
 		cmp.setup.filetype('sql', { sources = cmp.config.sources({ { name = 'nvim_lsp', priority = 1000 }, { name = 'buffer', priority = 500 } }) })
 		cmp.setup.filetype('prisma', { sources = cmp.config.sources({ { name = 'nvim_lsp', priority = 1000 }, { name = 'buffer', priority = 500 } }) })
+		-- JSX/TSX specific configuration to ensure proper ordering
+		cmp.setup.filetype({'javascriptreact', 'typescriptreact'}, {
+			sources = cmp.config.sources({
+				{ name = 'buffer', priority = 1200, max_item_count = 8 },
+				{ name = 'luasnip', priority = 1000, max_item_count = 6 },
+				{ name = 'nvim_lsp', priority = 750, max_item_count = 15, entry_filter = filters.stack_filter },
+				{ name = 'path', priority = 250, max_item_count = 5 },
+			})
+		})
 	end)
 end
 
@@ -161,4 +180,3 @@ end
 M.setup()
 
 return M
-

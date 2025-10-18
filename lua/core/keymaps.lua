@@ -1,10 +1,7 @@
---============================================================================
 -- ULTIMATE KEYMAP CONFIGURATION
--- ============================================================================
 -- Structure: <leader>(package_initial)(functionality_initial)
 -- Per-filetype keymaps for language-specific functionality
 -- Comprehensive coverage of all plugins, debuggers, linters, and LSPs
--- ============================================================================
 
 local keymap = vim.keymap.set
 
@@ -305,7 +302,7 @@ end, { desc = "Dismiss notifications" })
 
 -- Toggle UI elements
 keymap("n", "<leader>uC", function()
-	local ok, colorizer = pcall(require, "colorizer")
+	local ok = pcall(require, "colorizer")
 	if ok then
 		vim.cmd("ColorizerToggle")
 	else
@@ -520,3 +517,4 @@ vim.api.nvim_create_user_command("KeymapInfo", function()
 end, {})
 
 return {}
+

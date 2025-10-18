@@ -1,4 +1,4 @@
-return {
+return{
 	-- Core dependencies for completion and snippets
 	{
 		"hrsh7th/nvim-cmp",
@@ -6,12 +6,12 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-cmdline",
+"hrsh7th/cmp-cmdline",
 			"saadparwaiz1/cmp_luasnip",
 			"L3MON4D3/LuaSnip",
 			"rafamadriz/friendly-snippets",
 			"onsails/lspkind.nvim",
-		},
+},
 		config = function()
 			require("configs.completion")
 		end,
@@ -23,13 +23,13 @@ return {
 		build = ":TSUpdate",
 		config = function()
 			require("configs.treesitter")
-		end,
+end,
 	},
 	{ -- Auto close/rename HTML/JSX tags
 		"windwp/nvim-ts-autotag",
 		ft = { "html", "javascriptreact", "typescriptreact", "svelte", "vue", "xml" },
 		config = function()
-			local ok, autotag = pcall(require, "nvim-ts-autotag")
+			local ok,autotag = pcall(require, "nvim-ts-autotag")
 			if ok then autotag.setup() end
 		end,
 	},
@@ -38,7 +38,7 @@ return {
 	{
 		"NvChad/nvim-colorizer.lua",
 		config = function()
-			require("configs.ui.colorizer")
+			require("ui.colorizer")
 		end,
 	},
 	-- Colorschemes
@@ -48,7 +48,7 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			require("configs.ui.rose-pine")
+			require("ui.rose_pine")
 		end,
 	},
 	{
@@ -69,7 +69,7 @@ return {
 					floats = "transparent",
 				},
 				sidebars = { "qf", "help" },
-				day_brightness = 0.3,
+day_brightness = 0.3,
 				hide_inactive_statusline = false,
 				dim_inactive = false,
 				lualine_bold = false,
@@ -121,7 +121,7 @@ return {
 	-- Rust tooling: rust-tools + cargo integration
 	{
 		"simrat39/rust-tools.nvim",
-		ft = { "rust" },
+		ft= { "rust" },
 		dependencies = { "neovim/nvim-lspconfig", "nvim-lua/plenary.nvim" },
 		config = function()
 			pcall(function() require('configs.lang.rust').setup() end)
@@ -138,7 +138,7 @@ return {
 	-- Go tooling
 	{
 		"ray-x/go.nvim",
-		ft = { "go" },
+		ft = { "go"},
 		dependencies = { "neovim/nvim-lspconfig", "nvim-lua/plenary.nvim" },
 		config = function()
 			pcall(function() require('configs.lang.go').setup() end)
@@ -154,18 +154,18 @@ return {
 	},
 	{
 		"jose-elias-alvarez/typescript.nvim",
-		ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 		dependencies = { "neovim/nvim-lspconfig" },
 		config = function()
 			pcall(function()
 				require('typescript').setup({
 					-- Recommended settings for auto-imports and refactors
-					disable_commands = false,
+				disable_commands = false,
 					-- automatically update imports when moving files
 					update_imports_on_move = true,
 					-- enable import-on-completion where supported
 					import_on_completion = true,
-					-- use Volar (vtsls) if available
+					-- use ts_ls if available
 					-- fallback to tsserver only if necessary
 				})
 			end)

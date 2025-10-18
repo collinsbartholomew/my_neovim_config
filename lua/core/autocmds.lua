@@ -1,4 +1,4 @@
--- Highlight on yank
+--Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking text",
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
@@ -12,15 +12,15 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 	desc = "Set transparent background and disable italics",
 	group = vim.api.nvim_create_augroup("ui-fixes", { clear = true }),
 	callback = function()
-		-- Batch highlight updates for performance
+		--Batch highlight updates for performance
 		local highlights = {
 			{ "Normal", { bg = "NONE" } },
 			{ "NormalFloat", { bg = "NONE" } },
 			{ "FloatBorder", { bg = "NONE" } },
-			{ "SignColumn", { bg = "NONE" } },
+			{ "SignColumn", { bg ="NONE" } },
 			{ "DiagnosticUnderlineError", { underline = true, sp = "#eb6f92" } },
 			{ "DiagnosticUnderlineWarn", { underline = true, sp = "#f6c177" } },
-			{ "DiagnosticUnderlineInfo", { underline = true, sp = "#31748f" } },
+			{ "DiagnosticUnderlineInfo",{ underline = true, sp = "#31748f" } },
 			{ "DiagnosticUnderlineHint", { underline = true, sp = "#9ccfd8" } },
 		}
 		for _, hl in ipairs(highlights) do
@@ -39,29 +39,27 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.shiftwidth = 4
 		vim.opt_local.expandtab = false
 		vim.opt_local.softtabstop = 0
-		-- Ensure terminal displays tabs as 4 spaces
-		if vim.bo.buftype == "terminal" then
-			vim.fn.system("tabs -4")
-		end
+		-- Avoid external system calls in autocmds; terminal buffers will keep their own settings
 	end,
 })
 
 -- Force tabs after formatting
 vim.api.nvim_create_autocmd("BufWritePost", {
-	desc = "Convert spaces to tabs after formatting",
+	desc = "Convert spaces to tabs afterformatting",
 	group = vim.api.nvim_create_augroup("force-tabs", { clear = true }),
 	pattern = { "*.c", "*.cpp", "*.h", "*.hpp" },
 	callback = function()
-		vim.cmd([[silent! %s/^\(    \)\+/\=repeat('\t', len(submatch(0))/4)/g]])
+		-- Use a safe, in-editor substitution to convert groups of 4 spaces to tabs
+		pcall(vim.cmd, [[silent! %s/^\(    \)\+/\=repeat('\t', len(submatch(0))/4)/g]])
 	end,
 })
 
--- Set terminal tab stops on startup
+-- Set terminal tab stops on startup (no external system calls)
 vim.api.nvim_create_autocmd("VimEnter", {
 	desc = "Set terminal tab stops to 4",
 	group = vim.api.nvim_create_augroup("terminal-tabs", { clear = true }),
 	callback = function()
-		vim.fn.system("tabs -4")
+		-- Intentionally left blank; avoid spawning external `tabs` command from config
 	end,
 })
 
@@ -70,12 +68,14 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 	desc = "Optimize for large files",
 	group = vim.api.nvim_create_augroup("large-file", { clear = true }),
 	callback = function(args)
-		local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(args.buf))
-		if ok and stats and stats.size > 1024 * 1024 then -- 1MB
+		local bufname = vim.api.nvim_buf_get_name(args.buf)
+		local ok, stats = pcall(function() return vim.loop.fs_stat(bufname) end)
+		if ok and stats and stats.size and stats.size > 1024 * 1024 then -- 1MB
 			vim.opt_local.foldmethod = "manual"
 			vim.opt_local.undolevels = -1
 			vim.opt_local.swapfile = false
-			vim.opt_local.syntax = ""
+			-- Disable syntax highlighting for huge files safely
+			pcall(vim.cmd, "syntax off")
 		end
 	end,
 })
@@ -85,10 +85,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	desc = "Auto-create parent directories",
 	group = vim.api.nvim_create_augroup("auto-mkdir", { clear = true }),
 	callback = function(args)
-		if args.match:match("^%w%w+:[\\/][\\/]") then
+		-- skip over URIs like "file://..."
+		if args.match:match("^%w+://") then
 			return
 		end
-		local file = vim.uv.fs_realpath(args.match) or args.match
+		-- Resolve to absolute path reliably using vim.fn
+		local file = vim.fn.fnamemodify(args.match, ":p") or args.match
 		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
 	end,
 })
@@ -99,7 +101,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	group = vim.api.nvim_create_augroup("neotree-startup", { clear = true }),
 	callback = function()
 		if vim.fn.argc() == 0 then
-			vim.cmd("Neotree show")
+			pcall(function() vim.cmd("Neotree show") end)
 		end
 	end,
 })
@@ -116,6 +118,5 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		}
 		vim.lsp.buf.code_action(params)
 		-- Some servers apply automatically; if not, we apply first available edit
-		-- Note: vtsls supports apply=true via code_action, but Neovim API does not expose it directly
 	end,
 })

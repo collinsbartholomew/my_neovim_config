@@ -76,9 +76,22 @@ function M.setup_database()
     callback = function()
       if vim.fn.search('db\.', 'nw') > 0 or vim.fn.search('collection\.', 'nw') > 0 then
         vim.keymap.set('n', '<leader>me', function()
+          -- Run mongosh only if available; avoid running arbitrary shell commands during startup
+          local mongosh = vim.fn.exepath('mongosh')
+          if mongosh == '' then
+            vim.notify('mongosh not available in PATH; cannot execute query', vim.log.levels.WARN)
+            return
+          end
           local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
           local query = table.concat(lines, '\n')
-          vim.fn.system('mongosh --eval "' .. query .. '"')
+          -- Use pcall to avoid runtime errors from system call failures
+          local ok, out = pcall(vim.fn.system, { mongosh, '--eval', query })
+          if not ok then
+            vim.notify('Failed to execute mongosh: ' .. tostring(out), vim.log.levels.ERROR)
+          else
+            -- Show a brief notification that the query ran; output can be inspected in command history
+            vim.notify('mongosh executed (output in command history).', vim.log.levels.INFO)
+          end
         end, { desc = 'Execute MongoDB Query', buffer = true })
       end
     end,
@@ -121,16 +134,50 @@ function M.setup_linting()
     local linters = lint.linters_by_ft[filetype] or {}
     if #linters == 0 then vim.notify('No linters available for ' .. filetype, vim.log.levels.INFO) else vim.notify('Linters for ' .. filetype .. ': ' .. table.concat(linters, ', '), vim.log.levels.INFO) end
   end, { desc = 'Lint info' })
+
+  -- Configure linters for JavaScript/TypeScript/JSX/TSX files
+  local ok, lint = pcall(require, 'lint')
+  if ok then
+    -- Set up proper linters for JS/TS/JSX/TSX files
+    lint.linters_by_ft = {
+      javascript = { "eslint" },
+      javascriptreact = { "eslint" },
+      typescript = { "eslint" },
+      typescriptreact = { "eslint" },
+    }
+  end
 end
 
 -- Treesitter (ensure parsers and basic setup hooks)
 function M.setup_treesitter()
-  local ok, ts = pcall(require, 'nvim-treesitter.configs')
-  if not ok then
+  local parsers_ok = pcall(require, 'nvim-treesitter.parsers')
+  local configs_ok, configs = pcall(require, 'nvim-treesitter.configs')
+
+  if not parsers_ok or not configs_ok then
     vim.notify('nvim-treesitter not available', vim.log.levels.WARN)
     return
   end
-  ts.setup({ ensure_installed = { 'lua','python','javascript','typescript','c','cpp','rust','go','zig' }, highlight = { enable = true }, indent = { enable = true } })
+
+  configs.setup({
+    ensure_installed = { 'lua', 'python', 'javascript', 'typescript', 'c', 'cpp', 'rust', 'go', 'zig', 'tsx', 'jsx' },
+    sync_install = false,
+    auto_install = true,
+    highlight = {
+      enable = true,
+      additional_vim_regex_highlighting = false,
+    },
+    indent = { enable = true },
+    autotag = { enable = true },
+    incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection = "<CR>",
+        node_incremental = "<CR>",
+        scope_incremental = "<S-CR>",
+        node_decremental = "<BS>",
+      },
+    },
+  })
 end
 
 -- DAP (lightweight setup and keymaps)
@@ -177,4 +224,3 @@ function M.setup()
 end
 
 return M
-

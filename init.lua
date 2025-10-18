@@ -1,11 +1,16 @@
--- Performance optimizations
-vim.loader.enable()
+-- /home/collins/.config/nvim/init.lua
+-- Performance optimizations (guarded for older Neovim versions)
+pcall(function() vim.loader.enable() end)
 
 -- Disable unused providers early
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
-vim.g.python3_host_prog = "/usr/bin/python3"
+-- Set python3 host only if it exists to avoid hard failing on systems without python3
+local py3 = vim.fn.exepath("python3")
+if py3 ~= "" then
+    vim.g.python3_host_prog = py3
+end
 
 -- Set leader keys early
 vim.g.mapleader = " "
@@ -16,7 +21,9 @@ _G.current_theme = "rose-pine"
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
+-- Use vim.loop.fs_stat for robust stat check
+local stat_ok, stat = pcall(function() return vim.loop.fs_stat(lazypath) end)
+if not (stat_ok and stat) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({
 		"git",
@@ -27,21 +34,13 @@ if not vim.uv.fs_stat(lazypath) then
 		lazypath,
 	})
 	if vim.v.shell_error ~= 0 then
-		vim.api.nvim_echo({
-			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
-			{ "\nPress any key to exit..." },
-		}, true, {})
-		vim.fn.getchar()
-		os.exit(1)
+		vim.api.nvim_err_writeln("Failed to clone lazy.nvim: " .. out)
+		return
 	end
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Load core configuration
-require("core")
-
--- Setup lazy.nvim
+-- Setup lazy.nvim BEFORE loading core so plugins are available to core modules
 require("lazy").setup("plugins", {
 	defaults = { lazy = true },
 	install = { colorscheme = { "rose-pine" } },
@@ -65,3 +64,6 @@ require("lazy").setup("plugins", {
 		},
 	},
 })
+
+-- Load core configuration (after plugins are set up)
+require("core")

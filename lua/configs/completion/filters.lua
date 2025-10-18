@@ -109,6 +109,11 @@ local function stack_filter(entry)
         if in_class_attr() and label:match("^[%w%-:/%[%].]+$") then
             entry.score = (entry.score or 0) + 50
         end
+        
+        -- Reduce priority of text completions in JSX/TSX files
+        if entry.source and entry.source.name == "nvim_lsp" and kind == 1 then
+            entry.score = (entry.score or 0) - 50
+        end
     end
 
     if filetype == "sql" or filetype == "prisma" then
@@ -131,4 +136,3 @@ M.allow_element_snippets_here = allow_element_snippets_here
 M.is_jsx_attribute_context = is_jsx_attribute_context
 
 return M
-

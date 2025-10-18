@@ -1,10 +1,11 @@
-return{
+return {
 	{ import = "plugins.core" },
 
 	-- LSP and Mason
 	{
 		"williamboman/mason.nvim",
-		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate" },
+		lazy = false,
+		priority = 200,
 		config = function()
 			require("configs.tools.mason")
 		end,
@@ -23,10 +24,10 @@ return{
 				ensure_installed = {
 					"lua_ls",
 					"biome",
-					"vtsls",
+					"ts_ls",
 					"eslint",
 					"html",
-				"cssls",
+					"cssls",
 					"tailwindcss",
 					"jsonls",
 					"yamlls",
@@ -36,7 +37,7 @@ return{
 					"gopls",
 					"rust_analyzer",
 					"clangd",
-				"jdtls",
+					"jdtls",
 					"kotlin_language_server",
 					"intelephense",
 					"sqls",
@@ -55,7 +56,7 @@ return{
 	},
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
+		lazy = false,
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			local ok, mason_tool_installer = pcall(require, "mason-tool-installer")
@@ -65,26 +66,22 @@ return{
 
 			mason_tool_installer.setup({
 				ensure_installed = {
-					--Formatters
+					-- Formatters and linters that don't require local Go/Rust toolchains
 					"stylua",
 					"biome",
 					"prettier",
 					"prettierd",
 					"shfmt",
 					"shellcheck",
-					"asm-lsp",
 					"asmfmt",
-"clang-format",
-					"goimports",
-					"gofmt",
-					"rustfmt",
+					"clang-format",
 					"google-java-format",
 					"ktlint",
 					"php-cs-fixer",
 					"sqlfluff",
 					"pg_format",
 					"ruff",
-				"black",
+					"black",
 					"isort",
 					"taplo",
 					"xmlformatter",
@@ -95,9 +92,8 @@ return{
 					"htmlbeautifier",
 					-- Zig tooling
 					"zig",
-				"zigfmt",
-					--ProfessionalLinters
-					"eslint_d",
+					"zigfmt",
+					-- Linters & utilities
 					"jsonlint",
 					"htmlhint",
 					"stylelint",
@@ -115,19 +111,23 @@ return{
 					"yamllint",
 					"hadolint",
 					"lintr",
-					--Professional DAP Adapters
+					-- Debug adapters and language-independent tools
 					"js-debug-adapter",
 					"codelldb",
 					"cpptools",
 					"debugpy",
 					"bash-debug-adapter",
-					"delve",
 					"java-debug-adapter",
 					"dart-debug-adapter",
-				"netcoredbg",
+					"netcoredbg",
+					-- Added Go/Rust tools
+					"goimports",
+					"gofumpt",
+					"delve",
+					"rustfmt",
 				},
 				auto_update = false,
-				run_on_start = true,
+				run_on_start = false, -- disabled to avoid startup install race/errors
 			})
 		end,
 	},
@@ -137,8 +137,10 @@ return{
 		priority = 50,
 		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
 		config = function()
-			-- Use canonical LSP config (configs.lsp) instead of legacy shim
-			pcall(function() require('configs.lsp').setup() end)
+			-- Use canonical LSP config (configs.lsp) insteadof legacy shim
+			pcall(function()
+				require('configs.lsp').setup()
+			end)
 		end,
 	},
 
@@ -160,7 +162,7 @@ return{
 		event = "LspAttach",
 		config = function()
 			require("fidget").setup({
-				notification = { window = { winblend= 0 } },
+				notification = { window = { winblend = 0 } },
 			})
 		end,
 	},
@@ -183,7 +185,7 @@ return{
 				config = function()
 					local ok, luasnip_vscode = pcall(require, "luasnip.loaders.from_vscode")
 					if ok then
-					luasnip_vscode.lazy_load()
+						luasnip_vscode.lazy_load()
 					end
 				end,
 			},
@@ -192,11 +194,11 @@ return{
 			local ok_result = pcall(require, "configs.completion")
 			if not ok_result then
 				vim.notify("Failed to load completion config", vim.log.levels.WARN)
-		end
+			end
 		end,
 	},
 
-	-- Removed: emmet-vim (emmet_ls LSP provides better functionality)
+	--Removed: emmet-vim (emmet_ls LSP provides better functionality)
 
 	-- Treesitter
 	{
@@ -204,39 +206,50 @@ return{
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		config = function()
-			-- Use merged treesitter setup (avoid shim)
-			pcall(function() require('configs.merged').setup_treesitter() end)
+			-- Use merged treesitter setup (avoidshim)
+			pcall(function()
+				require('configs.merged').setup_treesitter()
+			end)
 		end,
 	},
+
 
 	--Fileexplorer
 	{
 		"nvim-neo-tree/neo-tree.nvim",
-	branch = "v3.x",
+		branch = "v3.x",
 		dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
 		event = { "VimEnter", "BufWinEnter" },
-		keys = {{ "<leader>e", function()
-			require("neo-tree.command").execute({ action = "toggle", source = "filesystem" })
-		end, desc = "Toggle file explorer" } },
+		keys = { {
+			"<leader>e",
+			function()
+				require("neo-tree.command").execute({ action = "toggle", source = "filesystem" })
+			end,
+			desc = "Togglefile explorer"
+		} },
 		config = function()
 			-- Use canonical UI neotree module
-			pcall(function() require('configs.ui.neotree').setup() end)
+			pcall(function()
+				require('ui.neotree').setup()
+			end)
 		end,
 	},
 
 	--Telescope
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.8", --Use specific stable tag insteadof branchcmd = "Telescope",
+		tag = "0.1.8", --Use specific stable tag insteadof branch
+		cmd = "Telescope",
 		keys = {
-			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
-			{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
-			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc ="Buffers" },
-			{ "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
-			{ "<leader>lr", "<cmd>Telescope lsp_references<cr>", desc = "LSP References" },
-			{ "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
+			{ "<leader>ff", "<cmd>Telescope find_files<cr>",            desc = "Find files" },
+			{ "<leader>fg", "<cmd>Telescope live_grep<cr>",             desc = "Livegrep" },
+			{ "<leader>fb", "<cmd>Telescope buffers<cr>",               desc = "Buffers" },
+			{ "<leader>fh", "<cmd>Telescope help_tags<cr>",             desc = "Help tags" },
+			{ "<leader>lr", "<cmd>Telescope lsp_references<cr>",        desc = "LSP References" },
+			{ "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>",  desc = "Document Symbols" },
 			{ "<leader>lw", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "Workspace Symbols" },
-			{ "<leader>ld", "<cmd>Telescopediagnostics<cr>", desc = "Diagnostics" },
+			-- fixed: call the builtin 'diagnostics' picker properly
+			{ "<leader>ld", "<cmd>Telescope diagnostics<cr>",           desc = "Diagnostics" },
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -245,31 +258,38 @@ return{
 				"nvim-telescope/telescope-fzf-native.nvim",
 				build = "make",
 				cond = function()
-return vim.fn.executable("make") == 1
+					return vim.fn.executable("make") == 1
 				end,
 			},
 		},
 		config = function()
-			-- Use canonical telescope UI config
-			pcall(function() require('configs.ui.telescope').setup() end)
+			-- Use canonicaltelescope UI config
+			pcall(function()
+				require('ui.telescope').setup()
+			end)
 		end,
 	},
 
 	--Statusline
 	{
-	"nvim-lualine/lualine.nvim",
+		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
-			pcall(function() require('configs.ui.statusline').setup() end)
+			pcall(function()
+				require('ui.statusline').setup()
+			end)
 		end,
 	},
 
-	--Git{
+	--Git
+	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
-			pcall(function() require('configs.ui.gitsigns').setup() end)
+			pcall(function()
+				require('ui.gitsigns').setup()
+			end)
 		end,
 	},
 
@@ -284,11 +304,13 @@ return vim.fn.executable("make") == 1
 	},
 	{
 		"mfussenegger/nvim-lint",
-		lazy = false, -- Change to false to ensure linting is always available
+		lazy = false, -- Changeto false to ensure linting is always available
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			-- Use merged linting helper
-			pcall(function() require('configs.merged').setup_linting() end)
+			pcall(function()
+				require('configs.merged').setup_linting()
+			end)
 		end,
 	},
 
@@ -299,15 +321,17 @@ return vim.fn.executable("make") == 1
 	},
 	{
 		"kristijanhusak/vim-dadbod-ui",
-		dependencies = { "vim-dadbod"},
+		dependencies = { "vim-dadbod" },
 		cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" },
 		keys = {
-			{ "<leader>D", "<cmd>DBUIToggle<cr>", desc = "Toggle Database UI" },
+			{ "<leader>D",  "<cmd>DBUIToggle<cr>",     desc = "Toggle DatabaseUI" },
 			{ "<leader>Df", "<cmd>DBUIFindBuffer<cr>", desc = "Find DBBuffer" },
 		},
 		config = function()
 			-- Use merged database helpers
-			pcall(function() require('configs.merged').setup_database() end)
+			pcall(function()
+				require('configs.merged').setup_database()
+			end)
 		end,
 	},
 
@@ -317,13 +341,15 @@ return vim.fn.executable("make") == 1
 		ft = "prisma",
 	},
 
-	-- Fluttertools (lazy loaded)
+	-- Fluttertools (lazyloaded)
 	{
 		"akinsho/flutter-tools.nvim",
 		ft = "dart",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
-			pcall(function() require('configs.lang.flutter-tools').setup() end)
+			pcall(function()
+				require('configs.lang.flutter-tools').setup()
+			end)
 		end,
 	},
 
@@ -340,9 +366,11 @@ return vim.fn.executable("make") == 1
 	{
 		"philj56/vim-asm-indent",
 		ft = { "asm", "nasm", "masm", "gas", "s", "S", "arm" },
-		config= function()
+		config = function()
 			-- Use canonical assembly config
-			pcall(function() require('configs.lang.assembly').setup() end)
+			pcall(function()
+				require('configs.lang.assembly').setup()
+			end)
 		end,
 	},
 
@@ -352,7 +380,9 @@ return vim.fn.executable("make") == 1
 		ft = "hyprlang",
 		config = function()
 			-- Use canonical hyprland config
-			pcall(function() require('configs.lang.hyprland').setup() end)
+			pcall(function()
+				require('configs.lang.hyprland').setup()
+			end)
 		end,
 	},
 
@@ -381,7 +411,7 @@ return vim.fn.executable("make") == 1
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
-		event = {"BufReadPost", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile" },
 		config = function()
 			require("ibl").setup({ indent = { char = "│" } })
 		end,
@@ -391,17 +421,19 @@ return vim.fn.executable("make") == 1
 	{
 		"folke/trouble.nvim",
 		cmd = "Trouble",
-keys = {
-			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
-			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
-			{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols" },
-			{ "<leader>so", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols Outline" },
+		keys = {
+			{ "<leader>xx", "<cmd>TroubleToggle<cr>",                      desc = "Diagnostics" },
+			{ "<leader>xX", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Buffer Diagnostics" },
+			{ "<leader>cs", "<cmd>TroubleToggle lsp_references<cr>",       desc = "Symbols References" },
+			{ "<leader>so", "<cmd>TroubleToggle lsp_definitions<cr>",      desc = "Symbols Outline" },
 		},
 		config = function()
-			pcall(function() require('configs.ui.trouble').setup() end)
+			pcall(function()
+				require('ui.trouble').setup()
+			end)
 		end,
 	},
-	--[[ Removed bufferline plugin to eliminate the top bar showing opened files
+	--[[ Removed bufferlineplugin to eliminate the top bar showing opened files
 	{
 		"akinsho/bufferline.nvim",
 		version = "*",
@@ -411,21 +443,25 @@ keys = {
 			pcall(function() require('configs.ui.bufferline') end)
 		end,
 	},
-	]]--
+	]] --
 	{
 		"akinsho/toggleterm.nvim",
-		keys = { "<C-\\" },
+		version = "*",
+		lazy = false,
+		keys = { "<C-\\>" },
 		config = function()
-			pcall(function() require('configs.ui.toggleterm').setup() end)
+			pcall(function()
+				require('ui.toggleterm').setup()
+			end)
 		end,
 	},
 
-	--Gitintegration(keeping only Neogit + Diffview - more powerfulthan Fugitive)
+	--Gitintegration(keeping only Neogit + Diffview -more powerfulthan Fugitive)
 	{
 		"sindrets/diffview.nvim",
 		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
 		keys = {
-			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git diff" },
+			{ "<leader>gd", "<cmd>DiffviewOpen<cr>",        desc = "Gitdiff" },
 			{ "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "Git history" },
 		},
 		config = function()
@@ -435,16 +471,17 @@ keys = {
 	{
 		"NeogitOrg/neogit",
 		cmd = "Neogit",
-		keys ={
+		keys = {
 			{ "<leader>gg", "<cmd>Neogit<cr>", desc = "Neogit" },
 			{ "<leader>gs", "<cmd>Neogit<cr>", desc = "Git status" },
-			{ "<leader>gc", "<cmd>Neogit commit<cr>", desc = "Git commit" },
+			-- simplified: open Neogit (commit handled inside UI)
+			{ "<leader>gc", "<cmd>Neogit<cr>", desc = "Git commit" },
 		},
 		dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
 		config = function()
 			require("neogit").setup({
 				integrations = { diffview = true },
-		})
+			})
 		end,
 	},
 
@@ -456,7 +493,7 @@ keys = {
 			"MunifTanjim/nui.nvim",
 			{
 				"rcarriga/nvim-notify",
-			config = function()
+				config = function()
 					require("notify").setup({
 						background_colour = "#000000",
 						fps = 30,
@@ -467,13 +504,13 @@ keys = {
 							TRACE = "✎",
 							WARN = "",
 						},
-						level= 2,
+						level = 2,
 						minimum_width = 24,
 						max_width = function()
-							returnmath.floor(vim.o.columns * 0.32)
+							return math.floor(vim.o.columns * 0.32)
 						end,
 						max_height = function()
-							returnmath.floor(vim.o.lines * 0.32)
+							return math.floor(vim.o.lines * 0.32)
 						end,
 						render = "compact",
 						stages = "fade_in_slide_out",
@@ -487,14 +524,14 @@ keys = {
 			require("noice").setup({
 				lsp = {
 					progress = { enabled = false },
-override = {
+					override = {
 						["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 						["vim.lsp.util.stylize_markdown"] = true,
 						["cmp.entry.get_documentation"] = true,
 					},
 				},
 				presets = {
-					bottom_search= true,
+					bottom_search = true,
 					command_palette = true,
 					long_message_to_split = true,
 				},
@@ -527,7 +564,7 @@ override = {
 					popupmenu = {
 						relative = "editor",
 						position = {
-							row= 8,
+							row = 8,
 							col = "50%",
 						},
 						size = {
@@ -549,9 +586,9 @@ override = {
 			vim.opt.showcmd = true
 			vim.opt.showmode = true
 
-			--Globalfunction for lualinetoshow commands
+			--Globalfunction for lualinetoshow
 			_G.show_cmd_info = function()
-				localcmd = vim.fn.getcmdline()
+				local cmd = vim.fn.getcmdline()
 				if cmd ~= ""
 				then
 					return " " .. cmd
@@ -572,7 +609,7 @@ override = {
 		config = function()
 			require("dressing").setup({
 				input = {
-					enabled= true,
+					enabled = true,
 					default_prompt = "Input:",
 					trim_prompt = true,
 					title_pos = "left",
@@ -582,7 +619,7 @@ override = {
 					relative = "cursor",
 					prefer_width = 40,
 					width = nil,
-				max_width = { 140, 0.9 },
+					max_width = { 140, 0.9 },
 					min_width = { 20, 0.2 },
 					win_options = {
 						winblend = 10,
@@ -598,7 +635,7 @@ override = {
 						},
 						i = {
 							["<C-c>"] = "Close",
-["<CR>"] = "Confirm",
+							["<CR>"] = "Confirm",
 							["<Up>"] = "HistoryPrev",
 							["<Down>"] = "HistoryNext",
 						},
@@ -614,7 +651,7 @@ override = {
 						},
 					}),
 					nui = {
-						position ="50%",
+						position = "50%",
 						size = nil,
 						relative = "editor",
 						border = {
@@ -637,7 +674,7 @@ override = {
 						win_options = {
 							winblend = 10,
 						},
-width= nil,
+						width = nil,
 						max_width = { 140, 0.8 },
 						min_width = { 40, 0.2 },
 						height = nil,
@@ -659,7 +696,7 @@ width= nil,
 				function()
 					require("persistence").load()
 				end,
-				desc ="RestoreSession",
+				desc = "RestoreSession",
 			},
 			{
 				"<leader>ql",
@@ -692,10 +729,10 @@ width= nil,
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		cmd = { "TodoTrouble", "TodoTelescope" },
-		event ={ "BufReadPost", "BufNewFile" },
+		event = { "BufReadPost", "BufNewFile" },
 		keys = {
 			{ "<leader>td", "<cmd>TodoTelescope<cr>", desc = "Search TODOs" },
-			{ "<leader>tq", "<cmd>TodoTrouble<cr>", desc = "TODOs Trouble"},
+			{ "<leader>tq", "<cmd>TodoTrouble<cr>",   desc = "TODOs Trouble" },
 		},
 		config = true,
 	},
@@ -718,7 +755,7 @@ width= nil,
 				function()
 					require("harpoon").ui:toggle_quick_menu(require("harpoon"):list())
 				end,
-				desc= "Harpoon quick menu",
+				desc = "Harpoon quickmenu",
 			},
 			{
 				"<C-1>",
@@ -740,7 +777,7 @@ width= nil,
 					require("harpoon"):list():select(3)
 				end,
 				desc = "Harpoon file 3",
-		},
+			},
 			{
 				"<C-4>",
 				function()
@@ -769,7 +806,9 @@ width= nil,
 		event = { "BufReadPost", "BufNewFile" },
 		config = function()
 			-- Use canonical colorizer config
-			pcall(function() require('configs.colorizer').setup() end)
+			pcall(function()
+				require('ui.colorizer').setup()
+			end)
 		end,
 	},
 
@@ -801,7 +840,7 @@ width= nil,
 			},
 			{
 				"<leader>do",
-			function()
+				function()
 					require("dap").step_over()
 				end,
 				desc = "Step Over",
@@ -828,7 +867,7 @@ width= nil,
 				desc = "Run Last",
 			},
 			{
-"<leader>dt",
+				"<leader>dt",
 				function()
 					require("dap").terminate()
 				end,
@@ -849,7 +888,7 @@ width= nil,
 				function()
 					require("dapui").toggle()
 				end,
-				desc = "Toggle DAP UI",
+				desc = "Toggle DAPUI",
 			},
 			{
 				"<leader>de",
@@ -861,7 +900,7 @@ width= nil,
 			},
 		},
 		config = function()
-			local dap, dapui= require("dap"), require("dapui")
+			local dap, dapui = require("dap"), require("dapui")
 			dapui.setup()
 			dap.listeners.after.event_initialized["dapui_config"] = function()
 				dapui.open()
@@ -869,7 +908,7 @@ width= nil,
 			dap.listeners.before.event_terminated["dapui_config"] = function()
 				dapui.close()
 			end
-dap.listeners.before.event_exited["dapui_config"] = function()
+			dap.listeners.before.event_exited["dapui_config"] = function()
 				dapui.close()
 			end
 		end,
@@ -877,7 +916,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 	{
 		"theHamsta/nvim-dap-virtual-text",
 		dependencies = { "mfussenegger/nvim-dap" },
-		lazy= false,
+		lazy = false,
 		config = function()
 			require("nvim-dap-virtual-text").setup()
 		end,
@@ -888,14 +927,16 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 		"stevearc/overseer.nvim",
 		cmd = { "OverseerRun", "OverseerToggle", "OverseerInfo" },
 		keys = {
-			{ "<leader>or", "<cmd>OverseerRun<cr>", desc = "Run Task" },
+			{ "<leader>or", "<cmd>OverseerRun<cr>",    desc = "Run Task" },
 			{ "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Toggle Tasks" },
-			{ "<leader>oi", "<cmd>OverseerInfo<cr>", desc = "Task Info" },
+			{ "<leader>oi", "<cmd>OverseerInfo<cr>",   desc = "Task Info" },
 			{
 				"<leader>dm",
 				function()
 					local ok, overseer = pcall(require, "overseer")
-					if ok then overseer.run_template({ name = "valgrind memorycheck" }) end
+					if ok then
+						overseer.run_template({ name = "valgrind memorycheck" })
+					end
 				end,
 				desc = "Memory check (Valgrind)",
 			},
@@ -903,7 +944,9 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 				"<leader>da",
 				function()
 					local ok, overseer = pcall(require, "overseer")
-					if ok then overseer.run_template({ name = "address sanitizercheck" }) end
+					if ok then
+						overseer.run_template({ name = "addresssanitizercheck" })
+					end
 				end,
 				desc = "ASan check",
 			},
@@ -911,7 +954,9 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 				"<leader>ds",
 				function()
 					local ok, overseer = pcall(require, "overseer")
-					if ok then overseer.run_template({ name = "security scan with trivy" }) end
+					if ok then
+						overseer.run_template({ name = "securityscan with trivy" })
+					end
 				end,
 				desc = "Security scan (Trivy)",
 			},
@@ -919,7 +964,9 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 				"<leader>dt",
 				function()
 					local ok, overseer = pcall(require, "overseer")
-					if ok then overseer.run_template({ name = "threat scan with semgrep" }) end
+					if ok then
+						overseer.run_template({ name = "threatscan with semgrep" })
+					end
 				end,
 				desc = "Threat scan (Semgrep)",
 			},
@@ -970,7 +1017,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 				desc = "Run File Tests",
 			},
 			{
-"<leader>ts",
+				"<leader>ts",
 				function()
 					require("neotest").summary.toggle()
 				end,
@@ -981,7 +1028,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 				function()
 					require("neotest").output.open({ enter = true })
 				end,
-			desc = "Show Test Output",
+				desc = "Show Test Output",
 			},
 		},
 		config = function()
@@ -1003,7 +1050,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 		},
-		keys= {
+		keys = {
 			{
 				"<leader>rr",
 				function()
@@ -1050,13 +1097,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 		end,
 	},
 
-	-- Python support{
-		"python-mode/python-mode",
-		ft = { "python" },
-		config = function()
-			require("configs.tensorflow")
-		end,
-	},
+	-- Python support
 
 	--Node.js support
 	{
@@ -1076,17 +1117,20 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 		end,
 	},
 
-	-- Terminal integration
+	-- Terminal integration (canonical)
 	{
 		"akinsho/toggleterm.nvim",
 		version = "*",
 		lazy = false,
+		keys = { "<C-\\>" },
 		config = function()
-			pcall(function() require('configs.ui.toggleterm').setup() end)
+			pcall(function()
+				require('ui.toggleterm').setup()
+			end)
 		end,
 	},
 
-	-- Memory-safety configuration is initialized from `core/init.lua` (configs.memsafe)
+	--Memory-safety configuration is initialized from `core/init.lua` (configs.memsafe)
 
 	{
 		"smjonas/inc-rename.nvim",
@@ -1100,12 +1144,48 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 		"mfussenegger/nvim-dap",
 		lazy = true,
 		keys = {
-			{ "<leader>dd", function() require('dap').continue() end, desc = "DAP Continue" },
-			{ "<leader>db", function() require('dap').toggle_breakpoint() end, desc = "DAP Toggle Breakpoint" },
-			{ "<leader>do", function() require('dap').step_over() end, desc = "DAP Step Over" },
-			{ "<leader>di", function() require('dap').step_into() end, desc = "DAP Step Into" },
-			{ "<leader>dO", function() require('dap').step_out() end, desc = "DAP Step Out" },
-			{ "<leader>dr", function() require('dap').repl.open() end, desc = "DAP REPL" },
+			{
+				"<leader>dd",
+				function()
+					require('dap').continue()
+				end,
+				desc = "DAP Continue"
+			},
+			{
+				"<leader>db",
+				function()
+					require('dap').toggle_breakpoint()
+				end,
+				desc = "DAP Toggle Breakpoint"
+			},
+			{
+				"<leader>do",
+				function()
+					require('dap').step_over()
+				end,
+				desc = "DAP Step Over"
+			},
+			{
+				"<leader>di",
+				function()
+					require('dap').step_into()
+				end,
+				desc = "DAP Step Into"
+			},
+			{
+				"<leader>dO",
+				function()
+					require('dap').step_out()
+				end,
+				desc = "DAP Step Out"
+			},
+			{
+				"<leader>dr",
+				function()
+					require('dap').repl.open()
+				end,
+				desc = "DAP REPL"
+			},
 		},
 		config = function()
 			require("configs.dap")
@@ -1116,12 +1196,21 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 		dependencies = { "mfussenegger/nvim-dap" },
 		config = function()
 			local ok, dapui = pcall(require, "dapui")
-			ifnot ok then return end
+			if not
+				ok then
+				return
+			end
 			dapui.setup()
 			local dap = require("dap")
-			dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-			dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-			dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+			dap.listeners.after.event_initialized["dapui_config"] = function()
+				dapui.open()
+			end
+			dap.listeners.before.event_terminated["dapui_config"] = function()
+				dapui.close()
+			end
+			dap.listeners.before.event_exited["dapui_config"] = function()
+				dapui.close()
+			end
 		end,
 	},
 

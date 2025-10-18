@@ -10,15 +10,15 @@ local M = {}
 -- Map of legacy short names -> actual module path
 local map = {
   -- UI
-  telescope = "configs.ui.telescope",
-  statusline = "configs.ui.statusline",
-  trouble = "configs.ui.trouble",
-  toggleterm = "configs.ui.toggleterm",
-  neotree = "configs.ui.neotree",
-  gitsigns = "configs.ui.gitsigns",
-  ["rose-pine"] = "configs.ui.rose-pine",
-  colorizer = "configs.ui.colorizer",
-  flash = "configs.ui.flash",
+  telescope = "ui.telescope",
+  statusline = "ui.statusline",
+  trouble = "ui.trouble",
+  toggleterm = "ui.toggleterm",
+  neotree = "ui.neotree",
+  gitsigns = "ui.gitsigns",
+  ["rose-pine"] = "ui.rose_pine",
+  colorizer = "ui.colorizer",
+  flash = "ui.flash",
 
   -- Tools
   mason = "configs.tools.mason",
@@ -147,6 +147,11 @@ for name, target in pairs(map) do
   if not package.loaded[fullname] then
     package.loaded[fullname] = make_lazy_proxy(fullname, target)
   end
+  -- Do not auto-register legacy `configs.ui.*` entries here; they caused
+  -- circular requires where `configs.init` created proxies that attempted to
+  -- require `ui.*` while `ui.*` in turn required `ui` etc. Keeping only
+  -- `configs.NAME` proxies prevents that loop and still preserves backward
+  -- compatibility for `require('configs.NAME')`.
 end
 
 -- Expose legacy API compatibility entries
@@ -158,5 +163,29 @@ package.loaded['configs.legacy'] = {
     return M.load(name, call_setup)
   end,
 }
+
+-- Add neotest configuration for JavaScript/TypeScript
+local ok_neotest, neotest = pcall(require, 'neotest')
+if ok_neotest and neotest then
+  local ok_jest, neotest_jest = pcall(require, 'neotest-jest')
+  if ok_jest and neotest_jest then
+    neotest.setup({
+      adapters = { neotest_jest({
+        jestCommand = 'npm test --',
+        env = { CI = true },
+        cwd = function()
+          return vim.fn.getcwd()
+        end,
+      }) },
+    })
+
+    -- Keymaps for running tests
+    pcall(vim.keymap.set, 'n', '<leader>tt', function() neotest.run.run() end, { desc = 'Run nearest test' })
+    pcall(vim.keymap.set, 'n', '<leader>tf', function() neotest.run.run(vim.fn.expand('%')) end, { desc = 'Run tests in file' })
+    pcall(vim.keymap.set, 'n', '<leader>ts', function() neotest.summary.toggle() end, { desc = 'Toggle test summary' })
+  else
+    -- neotest-jest not available; no-op
+  end
+end
 
 return M

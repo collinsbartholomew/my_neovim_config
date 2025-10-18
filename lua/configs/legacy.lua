@@ -4,15 +4,15 @@ local M = {}
 
 local map = {
   -- UI
-  telescope = "configs.ui.telescope",
-  statusline = "configs.ui.statusline",
-  trouble = "configs.ui.trouble",
-  toggleterm = "configs.ui.toggleterm",
-  neotree = "configs.ui.neotree",
-  gitsigns = "configs.ui.gitsigns",
-  ["rose-pine"] = "configs.ui.rose-pine",
-  colorizer = "configs.ui.colorizer",
-  flash = "configs.ui.flash",
+  telescope = "ui.telescope",
+  statusline = "ui.statusline",
+  trouble = "ui.trouble",
+  toggleterm = "ui.toggleterm",
+  neotree = "ui.neotree",
+  gitsigns = "ui.gitsigns",
+  ["rose-pine"] = "ui.rose_pine",
+  colorizer = "ui.colorizer",
+  flash = "ui.flash",
 
   -- Tools
   mason = "configs.tools.mason",
@@ -59,4 +59,3 @@ function M.load(name, call_setup)
 end
 
 return M
-
