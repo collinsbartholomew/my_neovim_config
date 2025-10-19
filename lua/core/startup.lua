@@ -3,30 +3,30 @@ local M = {}
 
 function M.setup()
 	-- Check and install required components
-	local function ensure_installed()
-		-- Check for treesitter
-		local ts_ok, ts = pcall(require, "nvim-treesitter.parsers")
-		if ts_ok then
-			local parsers = { "jsx", "typescript", "tsx", "javascript", "lua" }
-			for _, parser in ipairs(parsers) do
-				if not ts.has_parser(parser) then
-					vim.cmd("TSInstall " .. parser)
-				end
-			end
-		end
-
-		-- Check for mason packages
-		local mason_ok, registry = pcall(require, "mason-registry")
-		if mason_ok then
-			local packages = { "ts-ls", "lua-language-server", "typescript-language-server" }
-			for _, pkg_name in ipairs(packages) do
-				local pkg = registry.get_package(pkg_name)
-				if not pkg:is_installed() then
-					pkg:install()
-				end
-			end
-		end
-	end
+	--	local function ensure_installed()
+	--		-- Check for treesitter
+	--		local ts_ok, ts = pcall(require, "nvim-treesitter.parsers")
+	--		if ts_ok then
+	--			local parsers = { "jsx", "typescript", "tsx", "javascript", "lua" }
+	--			for _, parser in ipairs(parsers) do
+	--				if not ts.has_parser(parser) then
+	--					vim.cmd("TSInstall " .. parser)
+	--				end
+	--			end
+	--		end
+	--
+	-- Check for mason packages
+	--		local mason_ok, registry = pcall(require, "mason-registry")
+	--		if mason_ok then
+	--			local packages = { "ts-ls", "lua-language-server", "typescript-language-server" }
+	--			for _, pkg_name in ipairs(packages) do
+	--				local pkg = registry.get_package(pkg_name)
+	--				if not pkg:is_installed() then
+	--					pkg:install()
+	--				end
+	--			end
+	--		end
+	--	end
 
 	-- Schedule the installation check to run after startup
 	vim.schedule(function()
@@ -47,7 +47,7 @@ function M.setup()
 	vim.g.loaded_matchit = 1 -- Disable built-in matchit
 	vim.g.loaded_remote_plugins = 1 -- Disable remote plugins
 	vim.g.loaded_python_provider = 0 -- Disable Python 2 provider
-	vim.g.python3_host_prog = '' -- Don't set Python path unless needed
+	vim.g.python3_host_prog = "" -- Don't set Python path unless needed
 
 	-- Performance tweaks
 	vim.opt.shadafile = "NONE" -- Disable shada file during startup

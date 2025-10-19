@@ -7,4 +7,6 @@ return {
 	{ import = "plugins.rust" },
 	{ import = "plugins.cpp" },
 	{ import = "plugins.go" },
+	{ import = "plugins.lsp" },
+	{ import = "plugins.mason" },
 }

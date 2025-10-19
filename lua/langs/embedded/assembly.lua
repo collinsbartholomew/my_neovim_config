@@ -25,4 +25,3 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.keymap.set("n", "<F8>", "<cmd>!objdump -d %:r<cr>", opts)
 	end,
 })
-

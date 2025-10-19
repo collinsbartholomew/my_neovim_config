@@ -134,12 +134,8 @@ function M.setup()
     -- Theme cycling
     map("n", "<leader>tt", function()
         local themes = {
-            "tokyonight-night",
-            "tokyonight-storm",
-            "tokyonight-moon",
+            "tokyonight",
             "rose-pine",
-            "rose-pine-moon",
-            "rose-pine-dawn"
         }
         local current = vim.g.colors_name
         local next_index = 1
