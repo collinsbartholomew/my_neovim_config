@@ -1,70 +1,58 @@
--- UI facade: central entry point for UI modules
--- Provides `require('ui').setup()` and exposes submodules under `ui.*`.
 local M = {}
-M._modules = {}
 
--- safe require helper
-local function safe_require(path)
-  local ok, mod = pcall(require, path)
-  if not ok then
-    return nil
-  end
-  return mod
-end
+local function setup_ui_components()
+    -- Load UI components in order of dependency
+    local components = {
+        { name = "ui.notify", order = 1 },      -- Load notifications first
+        { name = "ui.noice", order = 2 },       -- Then load noice which depends on notify
+        { name = "ui.rose_pine", order = 3 },   -- Load theme
+        { name = "ui.lualine", order = 4 },     -- Status line
+        { name = "ui.bufferline", order = 5 },  -- Buffer line
+        { name = "ui.gitsigns", order = 6 },    -- Git decorations
+        { name = "ui.neotree", order = 7 },     -- File explorer
+        { name = "ui.trouble", order = 8 },     -- Diagnostics
+        { name = "ui.telescope", order = 9 },   -- Fuzzy finder
+        { name = "ui.which-key", order = 10 },  -- Keybinding helper (module file: which-key.lua)
+        { name = "ui.statusline", order = 11 }, -- Overall statusline setup (module file: statusline.lua)
+    }
 
--- Register a module reference (used internally by shims)
-function M._register(name, mod)
-  M._modules[name] = mod or {}
-end
+    -- Sort by order to ensure proper initialization sequence
+    table.sort(components, function(a, b) return a.order < b.order end)
 
--- Setup multiple UI modules by name (or all known modules when none provided)
--- Accepts an optional table of { name = opts } to pass to each module's setup.
-function M.setup(mods)
-  mods = mods or {}
-  -- list of known UI modules
-  local known = {
-    "bufferline",
-    "colorizer",
-    "flash",
-    "gitsigns",
-    "neotree",
-    "rose_pine",
-    "statusline",
-    "telescope",
-    "toggleterm",
-    "trouble",
-  }
-
-  for _, name in ipairs(known) do
-    local full = "ui." .. name
-    -- If the module is currently being loaded by another require(), skip it to
-    -- avoid Lua's 'loop or previous error loading module' which happens when
-    -- require is re-entered for the same module name.
-    if package.loaded[full] == true then
-      -- module is in-load; skip and continue
-    else
-      local mod = safe_require(full)
-      if mod then
-        M._register(name, mod)
-        local ok, _ = pcall(function()
-          if type(mod.setup) == 'function' then
-            local opts = mods[name] or {}
-            mod.setup(opts)
-          end
-        end)
+    for _, component in ipairs(components) do
+        local ok, mod = pcall(require, component.name)
         if not ok then
-          vim.schedule(function()
-            vim.notify(('ui.setup: failed to setup module %s'):format(name), vim.log.levels.WARN)
-          end)
+            vim.notify(string.format("Failed to require %s: %s", component.name, mod), vim.log.levels.WARN)
+        else
+            -- Support modules that export either a table with setup() or a function directly
+            local setup_fn = nil
+            if type(mod) == "table" and type(mod.setup) == "function" then
+                setup_fn = mod.setup
+            elseif type(mod) == "function" then
+                setup_fn = mod
+            end
+
+            if setup_fn then
+                local success, err = pcall(setup_fn)
+                if not success then
+                    vim.notify(string.format("Failed to setup %s: %s", component.name, err), vim.log.levels.WARN)
+                end
+            end
         end
-      end
     end
-  end
 end
 
--- Accessor to retrieve a loaded module
-function M.get(name)
-  return M._modules[name]
+function M.setup()
+    -- First try to load and apply the colorscheme
+    local theme_ok = pcall(function()
+        vim.cmd.colorscheme("rose-pine")
+    end)
+    if not theme_ok then
+        vim.notify("Failed to load colorscheme", vim.log.levels.WARN)
+    end
+
+    -- Then set up all UI components
+    setup_ui_components()
 end
 
 return M

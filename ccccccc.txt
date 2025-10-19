@@ -1,0 +1,112 @@
+remove any off the hooks unneccessary config that causes issues
+ensure that all required package for the config to run well and avalable
+fix all the errors and inconsistencies in the config and all deprecated methods and configs use
+cleanup the config and eliminate duplicate configs and ensure that all modules are loaded successfully
+then perform a general code review ad fix all issues
+run neovim diagnostic commands on all the plugins and modules and confis to ensure that everything work out of the box well
+1
+ Failed to setup core.lsp_setup
+/home/collins/.config/nvim/lua/core/lsp_setup.lua:127: attempt to call field '
+setup' (a nil value)
+Error detected while processing /home/collins/.config/nvim/init.lua:
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>,
+  <metatable> = {
+    __index = <function 2>
+  }
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  cycle_theme = <function 1>,
+  setup = <function 2>,
+  toggle_transparency = <function 3>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+  setup = <function 1>
+}
+Invalid plugin spec {
+-- More --
+E5108: Error executing lua: ...y/neo-tree.nvim/lua/neo-tree/sources/common/commands.lua:791: attempt to index local 'tree' (a nil value)
+stack traceback:
+        ...y/neo-tree.nvim/lua/neo-tree/sources/common/commands.lua:791: in function 'open_with_cmd'
+        ...y/neo-tree.nvim/lua/neo-tree/sources/common/commands.lua:837: in function 'open'
+        ...o-tree.nvim/lua/neo-tree/sources/filesystem/commands.lua:206: in function <...o-tree.nvim/lua/neo-tree/sources/filesystem/commands.lua:205>
+Press ENTER or type command to continue
+The `require('lspconfig')` "framework" is deprecated, use vim.lsp.config (see   │
+~                             │~                                            │ :help lspconfig-nvim-0.11) instead.                                             │
+~                             │~                                            │ Feature will be removed in nvim-lspconfig
+v3.0.0
+The `require('lspconfig')` "framework" is deprecated, use vim.lsp.config (see   │
+~                             │~                                            │ :help lspconfig-nvim-0.11) instead.                                             │
+~                             │~                                            │ Feature will be removed in nvim-lspconfig v3.0.0
+~/@Omega@Projects/macbook-web│                                              ╭────────────────────────────────────────────────────────────────────────────────╮
+   .git                       │~                                             │  mason-lspconfig.nvim                                                          │
+   node_modules               │~                                             │ mason.nvim has not been set up. Make sure to set up mason.nvim before mason-ls │
+   public                     │~                                             │ pconfig.nvim. See :h mason-lspconfig-quickstart                                │
+   src                        │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+   .gitignore                │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+  󰂺 README.md                 │~                                             │  mason-lspconfig.nvim                                                          │
+   eslint.config.js          │~                                             │ [mason-lspconfig.nvim] Server "html" is not a valid entry in ensure_installed. │
+   index.html                │~                                             │ Make sure to only provide lspconfig server names.                              │
+   package.json              │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+   pnpm-lock.yaml            │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+   pnpm-workspace.yaml       │~                                             │  mason-lspconfig.nvim                                                          │
+   vite.config.js            │~                                             │ [mason-lspconfig.nvim] Server "cssls" is not a valid entry in ensure_installed │
+~                             │~                                             │ . Make sure to only provide lspconfig server names.                            │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+~                             │~                                             │  mason-lspconfig.nvim                                                          │
+~                             │~                                             │ [mason-lspconfig.nvim] Server "tsserver" is not a valid entry in ensure_instal │
+~                             │~                                             │ led. Make sure to only provide lspconfig server names.                         │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+~                             │~                                             │  mason-lspconfig.nvim                                                          │
+~                             │~                                             │ [mason-lspconfig.nvim] Server "eslint" is not a valid entry in ensure_installe │
+~                             │~                                             │ d. Make sure to only provide lspconfig server names.                           │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+~                             │~                                             │  mason-lspconfig.nvim                                                          │
+~                             │~                                             │ [mason-lspconfig.nvim] Server "tailwindcss" is not a valid entry in ensure_ins │
+~                             │~                                             │ talled. Make sure to only provide lspconfig server names.                      │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+~                             │~                                             │  mason-lspconfig.nvim                                                          │
+~                             │~                                             │ [mason-lspconfig.nvim] Server "yamlls" is not a valid entry in ensure_installe │
+~                             │~                                             │ d. Make sure to only provide lspconfig server names.                           │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~                                             ╭────────────────────────────────────────────────────────────────────────────────╮
+~                             │~                                             │  mason-lspconfig.nvim                                                          │
+~                             │~                                             │ [mason-lspconfig.nvim] Server "bashls" is not a valid entry in ensure_installe │
+~                             │~                                             │ d. Make sure to only provide lspconfig server names.                           │
+~                             │~                                             ╰────────────────────────────────────────────────────────────────────────────────╯
+~                             │~
+~                             │~
+~                             │~
+ NORMAL   main  
+                    Bot   3:16   20:23

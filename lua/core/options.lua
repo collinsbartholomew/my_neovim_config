@@ -1,86 +1,228 @@
-local o = vim.opt
+local M = {}
 
--- Performance optimizations
-o.lazyredraw = false -- Don't redraw during macros
-o.synmaxcol = 300 -- Limit syntax highlighting for long lines
-o.updatetime = 50 -- Faster completion and diagnostics
-o.timeoutlen = 300 -- Faster key sequence timeout
-o.ttimeoutlen = 0 -- No delay for key codes
-o.redrawtime = 1500 -- More time for syntax highlighting
+function M.setup()
+	-- Get vim options reference
+	local opt = vim.opt
+	local g = vim.g
 
--- UI settings
-o.termguicolors = true
-o.number = true
-o.relativenumber = true
-o.signcolumn = "yes:1"
-o.cursorline = true
-o.wrap = false
-o.scrolloff = 8
-o.sidescrolloff = 8
-o.scrolljump = 1
-o.cmdheight = 0 -- Set to 0 since we'll use noice for command line
-o.laststatus = 3
-o.showcmd = true
-o.showmode = false
-o.pumheight = 15 -- Limit popup menu height
+	-- Editor UI basics
+	opt.termguicolors = true
+	opt.showmode = false
+	opt.number = true
+	opt.relativenumber = true
+	opt.signcolumn = "yes:1"
+	opt.cursorline = true
+	opt.cmdheight = 1
+	opt.pumheight = 10
+	opt.laststatus = 3
+	opt.showtabline = 0 -- Hide the tab line completely
+	opt.title = true
+	opt.titlestring = "%<%F%=%l/%L - nvim"
 
--- Font settings
-vim.o.guifont = "JetBrains Mono Nerd Font:h12"
-vim.g.neovide_font_family = "JetBrains Mono Nerd Font"
-vim.g.neovide_font_size = 12
+	-- Window and UI transparency settings
+	opt.winblend = 0
+	opt.pumblend = 0
+	opt.conceallevel = 2
+	opt.list = true
+	opt.listchars:append({
+		tab = "→ ",
+		trail = "·",
+		extends = "⟩",
+		precedes = "⟨",
+		nbsp = "␣",
+	})
 
--- Indentation (pure tabs with 4-space width)
-o.tabstop = 4
-o.shiftwidth = 4
-o.expandtab = false
-o.smartindent = true
-o.breakindent = true
-o.softtabstop = 0
-o.listchars = "tab:│ ,trail:·,extends:>,precedes:<"
-o.list = true
+	-- Fix fillchars with proper string lengths
+	opt.fillchars:append({
+		eob = " ",
+		fold = " ",
+		foldopen = "󰅀",
+		foldclose = "󰅂",
+		foldsep = "│",
+		diff = "╱",
+		msgsep = "‾",
+		horiz = "━",
+		horizup = "┻",
+		horizdown = "┳",
+		vert = "┃",
+		vertleft = "┫",
+		vertright = "┣",
+		verthoriz = "╋",
+	})
 
--- File handling
-o.swapfile = false
-o.backup = false
-o.undofile = true
-o.undodir = vim.fn.stdpath("state") .. "/undo"
-o.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,winpos,terminal"
+	-- Behavior
+	opt.hidden = true
+	opt.splitbelow = true
+	opt.splitright = true
+	opt.wrap = false
+	opt.scrolloff = 8
+	opt.sidescrolloff = 8
+	opt.mouse = "a"
+	opt.mousemoveevent = true
+	opt.clipboard = "unnamedplus"
+	opt.virtualedit = "block"
+	opt.formatoptions = "jcroqlnt"
 
--- Search and completion
-o.ignorecase = true
-o.smartcase = true
-o.incsearch = true
-o.hlsearch = false
-o.completeopt = "menu,menuone,noselect"
+	-- Indentation
+	opt.expandtab = false -- Use tabs instead of spaces
+	opt.shiftwidth = 4 -- Number of spaces for autoindent
+	opt.tabstop = 4 -- Width of tab character
+	opt.softtabstop = 4 -- Number of spaces for a tab in insert mode
+	opt.smartindent = true
+	opt.autoindent = true
+	opt.breakindent = true
+	opt.showbreak = "↳ "
 
--- Clipboard
-o.clipboard = "unnamedplus"
-
--- Cursor and visual
-o.guicursor = "n-v-c-sm:block,i-ci-ve:block,r-cr-o:hor20"
-o.mouse = "a"
-o.splitright = true
-o.splitbelow = true
-
--- Folding (updated syntax)
-o.foldmethod = "expr"
-o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-o.foldenable = false
-o.foldlevel = 99
-o.foldlevelstart = 99
-
--- Wayland clipboard optimization
-if vim.fn.executable("wl-copy") == 1 then
-	vim.g.clipboard = {
-		name = "wl-clipboard",
-		copy = {
-			["+"] = { "wl-copy", "--foreground", "--type", "text/plain" },
-			["*"] = { "wl-copy", "--foreground", "--type", "text/plain" },
+	-- Enhanced filetype detection
+	vim.filetype.add({
+		extension = {
+			jsx = "javascriptreact",
+			tsx = "typescriptreact",
+			ejs = "html",
 		},
-		paste = {
-			["+"] = { "wl-paste", "--no-newline" },
-			["*"] = { "wl-paste", "--no-newline" },
+	})
+
+	-- Set up filetype-specific indentation
+	vim.api.nvim_create_autocmd("FileType", {
+		pattern = {
+			"javascript", "typescript",
+			"javascriptreact", "typescriptreact",
+			"jsx", "tsx", "ejs",
+			"html", "xhtml", "xml", "svg",
+			"css", "scss", "sass", "less",
+			"vue", "svelte",
 		},
-		cache_enabled = true,
+		callback = function()
+			local bo = vim.bo
+			bo.expandtab = false -- Use tabs
+			bo.shiftwidth = 4 -- Indent width
+			bo.tabstop = 4 -- Tab width
+			bo.softtabstop = 4 -- Soft tab width
+			bo.autoindent = true
+			bo.smartindent = true
+
+			-- Ensure proper indentation for JSX/TSX
+			if bo.filetype:match("jsx$") or bo.filetype:match("tsx$") then
+				vim.cmd[[setlocal indentkeys+=0]]
+			end
+		end,
+	})
+
+	-- Set up format-on-save for these filetypes
+	vim.api.nvim_create_autocmd("BufWritePre", {
+		pattern = {
+			"*.js", "*.jsx", "*.ts", "*.tsx",
+			"*.html", "*.xml", "*.css", "*.scss",
+			"*.vue", "*.svelte",
+		},
+		callback = function()
+			vim.lsp.buf.format({ async = false })
+		end,
+	})
+
+	-- Search
+	opt.ignorecase = true
+	opt.smartcase = true
+	opt.incsearch = true
+	opt.hlsearch = true
+
+	-- Better completion experience
+	opt.completeopt = { "menuone", "noselect", "noinsert" }
+	opt.shortmess:append({
+		W = true,
+		I = true,
+		c = true,
+		C = true,
+	})
+
+	-- Performance
+	opt.redrawtime = 1500
+	opt.timeoutlen = 250
+	opt.updatetime = 250
+	opt.backup = false
+	opt.writebackup = false
+	opt.undofile = true
+	opt.swapfile = false
+	opt.history = 100
+
+	-- Better buffer splitting
+	opt.splitkeep = "screen"
+
+	-- Folding
+	opt.foldlevel = 99
+	opt.foldlevelstart = 99
+	opt.foldenable = true
+	opt.foldcolumn = "1"
+	opt.foldmethod = "expr"
+	opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+	-- File encoding
+	opt.fileencoding = "utf-8"
+	opt.fileformats = "unix,dos,mac"
+
+	-- Wild menu and completion
+	opt.wildmode = "longest:full,full"
+	opt.wildoptions = "pum"
+	opt.wildignore:append({
+		"*.pyc",
+		"*.o",
+		"*.obj",
+		"*.svn",
+		"*.swp",
+		"*.class",
+		"*.hg",
+		"*.DS_Store",
+		"*.min.*",
+		"node_modules",
+		".git",
+	})
+
+	-- Diagnostics signs
+	local signs = {
+		Error = " ",
+		Warn = " ",
+		Hint = " ",
+		Info = " ",
 	}
+	for type, icon in pairs(signs) do
+		local hl = "DiagnosticSign" .. type
+		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+	end
+
+	-- Global variables
+	g.loaded_perl_provider = 0
+	g.loaded_ruby_provider = 0
+	g.loaded_node_provider = 0
+	g.loaded_python_provider = 0
+	g.loaded_python3_provider = 0
+
+	-- Disable builtin plugins
+	local disabled_built_ins = {
+		"netrw",
+		"netrwPlugin",
+		"netrwSettings",
+		"netrwFileHandlers",
+		"gzip",
+		"zip",
+		"zipPlugin",
+		"tar",
+		"tarPlugin",
+		"getscript",
+		"getscriptPlugin",
+		"vimball",
+		"vimballPlugin",
+		"2html_plugin",
+		"logipat",
+		"rrhelper",
+		"spellfile_plugin",
+	}
+
+	for _, plugin in pairs(disabled_built_ins) do
+		g["loaded_" .. plugin] = 1
+	end
+
+	-- Return success
+	return true
 end
+
+return M

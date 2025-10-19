@@ -1,90 +1,161 @@
--- Centralized LSP setup: integrates lsp-zero (preferred), mason, mason-lspconfig, and configs.lsp.*
 local M = {}
 
-local function safe_require(name)
-  local ok, mod = pcall(require, name)
-  if not ok then return nil end
-  return mod
+-- Default LSP config that applies to all servers
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+if ok_cmp then
+	capabilities = cmp_nvim_lsp.default_capabilities()
 end
 
+local default_config = {
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		-- Enable completion triggered by <c-x><c-o>
+		vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+
+		-- Mappings
+		local bufopts = { noremap = true, silent = true, buffer = bufnr }
+		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+		vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+		vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+		vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+		vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+		vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+		vim.keymap.set("n", "<space>wl", function()
+			print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+		end, bufopts)
+		vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
+		vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+		vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+		vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+	end,
+}
+
 function M.setup()
-  local lsp_cfg = safe_require('configs.lsp') or {}
-  local cap_mod = lsp_cfg.capabilities
-  local capabilities = (cap_mod and type(cap_mod) == 'table' and cap_mod.setup and cap_mod.setup()) or (type(cap_mod) == 'function' and cap_mod()) or vim.lsp.protocol.make_client_capabilities()
-  local on_attach_mod = lsp_cfg.on_attach or safe_require('configs.lsp.on_attach')
-  local servers_mod = lsp_cfg.servers or safe_require('configs.lsp.servers') or {}
+	-- Configure diagnostic signs
+	local signs = {
+		{ name = "DiagnosticSignError", text = "󰅙", texthl = "DiagnosticSignError" },
+		{ name = "DiagnosticSignWarn", text = "󰀦", texthl = "DiagnosticSignWarn" },
+		{ name = "DiagnosticSignInfo", text = "", texthl = "DiagnosticSignInfo" },
+		{ name = "DiagnosticSignHint", text = "󰌵", texthl = "DiagnosticSignHint" },
+	}
 
-  -- Attempt to use lsp-zero if it's installed. Use it in a best-effort way and
-  -- always wrap calls in pcall so missing methods won't break startup.
-  local lsp_zero = safe_require('lsp-zero') or safe_require('lsp_zero')
-  local mason = safe_require('mason')
-  local mlsp = safe_require('mason-lspconfig')
+	for _, sign in ipairs(signs) do
+		vim.fn.sign_define(sign.name, {
+			texthl = sign.texthl,
+			text = sign.text,
+			numhl = sign.numhl or "",
+		})
+	end
 
-  if lsp_zero then
-    -- If a small adapter exists, use it to configure lsp-zero in a consistent way
-    local adapter = safe_require('configs.lsp.lsp_zero')
-    if adapter and type(adapter.setup) == 'function' then
-      pcall(adapter.setup, servers_mod, on_attach_mod)
-      return
-    end
+	-- Configure diagnostics display
+	vim.diagnostic.config({
+		virtual_text = true,
+		signs = true,
+		underline = true,
+		update_in_insert = false,
+		severity_sort = true,
+		float = {
+			focusable = false,
+			style = "minimal",
+			border = "rounded",
+			source = "always",
+			header = "",
+			prefix = "",
+		},
+	})
 
-    -- If mason-lspconfig is available, ask it to ensure servers are installed
-    if mlsp and type(mlsp.ensure_installed) == 'function' and type(servers_mod.servers) == 'table' then
-      local server_names = {}
-      for name, _ in pairs(servers_mod.servers) do table.insert(server_names, name) end
-      if #server_names > 0 then
-        pcall(function() mlsp.setup({ ensure_installed = server_names }) end)
-      end
-    end
+	-- Set up handlers
+	vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+		border = "rounded",
+	})
 
-    -- Try to configure lsp-zero directly as a fallback
-    pcall(function()
-      if type(lsp_zero.preset) == 'function' then
-        local ok, preset = pcall(lsp_zero.preset, { name = 'recommended' })
-        if ok and preset then
-          if type(preset.on_attach) == 'function' and on_attach_mod and on_attach_mod.on_attach then
-            pcall(preset.on_attach, on_attach_mod.on_attach)
-          elseif type(preset.on_attach) == 'function' and on_attach_mod then
-            pcall(preset.on_attach, on_attach_mod)
-          end
-          if type(preset.setup) == 'function' then pcall(preset.setup) end
-        end
-      end
+	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+		border = "rounded",
+	})
 
-      if type(lsp_zero.setup) == 'function' then
-        pcall(lsp_zero.setup, {})
-      end
+	-- Ensure mason is set up first
+	local mason_ok, mason = pcall(require, "mason")
+	if not mason_ok then
+		vim.notify("mason.nvim not found", vim.log.levels.ERROR)
+		return
+	end
+	mason.setup()
 
-      if type(lsp_zero.ensure_installed) == 'function' and type(servers_mod.servers) == 'table' then
-        local server_names = {}
-        for name, _ in pairs(servers_mod.servers) do table.insert(server_names, name) end
-        if #server_names > 0 then pcall(lsp_zero.ensure_installed, server_names) end
-      end
-    end)
+	-- Set up mason-lspconfig
+	--    local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+	--    if not mason_lspconfig_ok then
+	--        vim.notify("mason-lspconfig.nvim not found", vim.log.levels.ERROR)
+	--        return
+	--    end
+	--
+	--    mason_lspconfig.setup({
+	--        ensure_installed = {
+	--            "lua_ls",
+	--            "clangd",
+	--            "pyright",
+	--            "tsserver",
+	--            "rust_analyzer",
+	--        },
+	--        automatic_installation = true,
+	--    })
+	--
+	--    -- Set up servers
+	--    mason_lspconfig.setup_handlers({
+	--        function(server_name)
+	--            local config = vim.tbl_deep_extend("force", default_config, {})
+	--            require("lspconfig")[server_name].setup(config)
+	--        end,
+	--
+	--        -- Custom server configurations
+	--        ["clangd"] = function()
+	--            require("lspconfig").clangd.setup(vim.tbl_deep_extend("force", default_config, {
+	--                cmd = {
+	--                    "clangd",
+	--                    "--background-index",
+	--                    "--suggest-missing-includes",
+	--                    "--clang-tidy",
+	--                    "--header-insertion=iwyu",
+	--                },
+	--            }))
+	--        end,
+	--    })
 
-    return
-  end
+	-- Set up file type detection
+	vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+		pattern = {
+			-- Web development
+			"*.js",
+			"*.jsx",
+			"*.ts",
+			"*.tsx",
+			"*.html",
+			"*.css",
+			"*.scss",
+			"*.sass",
+			-- Configuration files
+			"*.json",
+			"*.yaml",
+			"*.yml",
+			-- Lua
+			"*.lua",
+			-- Other common formats
+			"*.md",
+			"*.toml",
+		},
+		callback = function()
+			-- Ensure LSP is started immediately
+			vim.cmd([[LspStart]])
+		end,
+	})
 
-  -- No lsp-zero: fall back to mason + autostart wiring
-  if mason and mlsp then
-    local server_names = {}
-    if type(servers_mod.servers) == 'table' then
-      for name, _ in pairs(servers_mod.servers) do table.insert(server_names, name) end
-    end
-    if #server_names > 0 and mlsp.ensure_installed then
-      pcall(function() mlsp.setup({ ensure_installed = server_names }) end)
-    end
-  end
-
-  -- Defer to configs.lsp.autostart to wire autostart behavior
-  local autostart = safe_require('configs.lsp.autostart')
-  if autostart and autostart.setup then
-    pcall(autostart.setup, lsp_cfg.capabilities or capabilities, on_attach_mod, servers_mod)
-  else
-    if lsp_cfg and type(lsp_cfg.setup) == 'function' then
-      pcall(lsp_cfg.setup)
-    end
-  end
+	-- Enable format on save
+	vim.api.nvim_create_autocmd("BufWritePre", {
+		callback = function()
+			vim.lsp.buf.format({ async = false })
+		end,
+	})
 end
 
 return M

@@ -1,69 +1,110 @@
--- /home/collins/.config/nvim/init.lua
--- Performance optimizations (guarded for older Neovim versions)
-pcall(function() vim.loader.enable() end)
+-- Profile startup time
+local startup_time = vim.fn.reltime()
 
--- Disable unused providers early
-vim.g.loaded_perl_provider = 0
-vim.g.loaded_ruby_provider = 0
-vim.g.loaded_node_provider = 0
--- Set python3 host only if it exists to avoid hard failing on systems without python3
-local py3 = vim.fn.exepath("python3")
-if py3 ~= "" then
-    vim.g.python3_host_prog = py3
-end
-
--- Set leader keys early
+-- Essential options that must be set before plugins load
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.g.loaded_python3_provider = 0  -- Disable Python provider if not needed
+vim.g.loaded_ruby_provider = 0     -- Disable Ruby provider if not needed
+vim.g.loaded_node_provider = 0     -- Disable Node provider if not needed
+vim.g.loaded_perl_provider = 0     -- Disable Perl provider if not needed
 
--- Initialize theme variable
-_G.current_theme = "rose-pine"
+-- Ensure modules table exists early
+_G.modules = {
+    loaded = {},
+    failed = {},
+    startup_errors = {},
+}
 
--- Bootstrap lazy.nvim
+-- Create early utility functions
+local function log_error(msg, level)
+    level = level or vim.log.levels.ERROR
+    table.insert(_G.modules.startup_errors, { msg = msg, level = level })
+    vim.schedule(function()
+        vim.notify(msg, level)
+    end)
+end
+
+-- Early compatibility checks
+local has_min_version = vim.fn.has("nvim-0.8.0") == 1
+
+if not has_min_version then
+    log_error("Neovim >= 0.8.0 is required")
+    return
+end
+
+-- Set performance-related options early
+vim.opt.shadafile = "NONE"            -- Disable shada file during startup
+vim.opt.lazyredraw = true             -- Don't redraw screen during macros
+vim.opt.ruler = false                 -- Disable ruler during startup
+vim.opt.showcmd = false               -- Disable showcmd during startup
+
+-- Bootstrap lazy.nvim with error handling
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
--- Use vim.loop.fs_stat for robust stat check
-local stat_ok, stat = pcall(function() return vim.loop.fs_stat(lazypath) end)
-if not (stat_ok and stat) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"--branch=stable",
-		lazyrepo,
-		lazypath,
-	})
-	if vim.v.shell_error ~= 0 then
-		vim.api.nvim_err_writeln("Failed to clone lazy.nvim: " .. out)
-		return
-	end
+if not vim.loop.fs_stat(lazypath) then
+    vim.notify("Installing lazy.nvim...", vim.log.levels.INFO)
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Setup lazy.nvim BEFORE loading core so plugins are available to core modules
-require("lazy").setup("plugins", {
-	defaults = { lazy = true },
-	install = { colorscheme = { "rose-pine" } },
-	checker = { enabled = false },
-	change_detection = { notify = false },
-	performance = {
-		cache = { enabled = true },
-		reset_packpath = true,
-		rtp = {
-			reset = true,
-			disabled_plugins = {
-				"gzip",
-				"matchit",
-				"matchparen",
-				"netrwPlugin",
-				"tarPlugin",
-				"tohtml",
-				"tutor",
-				"zipPlugin",
-			},
-		},
-	},
+-- Configure and load plugins
+require("lazy").setup({
+    spec = {
+        { import = "plugins" },
+        { import = "langs" },
+    },
+    defaults = {
+        lazy = true,
+        version = false,
+    },
+    install = {
+        colorscheme = { "rose-pine" },
+    },
+    checker = {
+        enabled = true,
+        notify = false,
+    },
+    change_detection = {
+        notify = false,
+    },
+    performance = {
+        rtp = {
+            disabled_plugins = {
+                "gzip",
+                "netrwPlugin",
+                "tarPlugin",
+                "tohtml",
+                "tutor",
+                "zipPlugin",
+            },
+        },
+    },
+    ui = {
+        border = "rounded",
+    },
 })
 
--- Load core configuration (after plugins are set up)
-require("core")
+-- Load core configuration
+require("core").setup()
+
+-- Restore startup options
+vim.opt.shadafile = ""            -- Restore shada file
+vim.opt.lazyredraw = false        -- Restore normal redraw
+vim.opt.ruler = true              -- Restore ruler
+vim.opt.showcmd = true           -- Restore showcmd
+
+-- Report startup time
+vim.schedule(function()
+    local elapsed = vim.fn.reltimefloat(vim.fn.reltime(startup_time))
+    vim.notify(string.format("Startup completed in %.2f seconds", elapsed), vim.log.levels.INFO)
+end)
+
+-- Set colorscheme after everything is loaded
+vim.cmd.colorscheme("rose-pine")

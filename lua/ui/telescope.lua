@@ -1,51 +1,112 @@
--- Telescope UI configuration (moved from configs.ui.telescope)
 local M = {}
-local _setup_done = false
 
 function M.setup()
-  if _setup_done then return end
-  _setup_done = true
+    local telescope = require("telescope")
+    local actions = require("telescope.actions")
 
-  local telescope_ok, telescope = pcall(require, "telescope")
-  local actions_ok, actions = pcall(require, "telescope.actions")
-  if not telescope_ok or not actions_ok then
-    vim.notify("telescope not available", vim.log.levels.WARN)
-    return {}
-  end
+    telescope.setup({
+        defaults = {
+            prompt_prefix = " ",
+            selection_caret = " ",
+            path_display = { "smart" },
+            layout_strategy = "center",
+            layout_config = {
+                center = {
+                    width = 0.7,
+                    height = 0.4,
+                    preview_cutoff = 0,
+                },
+                cursor = {
+                    width = 0.7,
+                    height = 0.4,
+                    preview_cutoff = 0,
+                },
+            },
+            borderchars = {
+                prompt = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+                results = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+                preview = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+            },
+            file_ignore_patterns = {
+                "node_modules",
+                ".git/",
+                "target/",
+                "dist/",
+                "build/",
+            },
+            mappings = {
+                i = {
+                    ["<C-n>"] = actions.cycle_history_next,
+                    ["<C-p>"] = actions.cycle_history_prev,
+                    ["<C-j>"] = actions.move_selection_next,
+                    ["<C-k>"] = actions.move_selection_previous,
+                    ["<C-c>"] = actions.close,
+                    ["<CR>"] = actions.select_default,
+                    ["<C-x>"] = actions.select_horizontal,
+                    ["<C-v>"] = actions.select_vertical,
+                    ["<C-t>"] = actions.select_tab,
+                    ["<C-u>"] = actions.preview_scrolling_up,
+                    ["<C-d>"] = actions.preview_scrolling_down,
+                },
+                n = {
+                    ["<esc>"] = actions.close,
+                    ["<CR>"] = actions.select_default,
+                    ["<C-x>"] = actions.select_horizontal,
+                    ["<C-v>"] = actions.select_vertical,
+                    ["<C-t>"] = actions.select_tab,
+                    ["j"] = actions.move_selection_next,
+                    ["k"] = actions.move_selection_previous,
+                    ["gg"] = actions.move_to_top,
+                    ["G"] = actions.move_to_bottom,
+                },
+            },
+        },
+        pickers = {
+            find_files = {
+                hidden = true,
+                no_ignore = false,
+                theme = "dropdown",
+            },
+            live_grep = {
+                theme = "dropdown",
+            },
+            buffers = {
+                theme = "dropdown",
+                previewer = false,
+                mappings = {
+                    i = {
+                        ["<c-d>"] = actions.delete_buffer,
+                    },
+                    n = {
+                        ["dd"] = actions.delete_buffer,
+                    },
+                },
+            },
+        },
+        extensions = {
+            fzf = {
+                fuzzy = true,
+                override_generic_sorter = true,
+                override_file_sorter = true,
+                case_mode = "smart_case",
+            },
+        },
+    })
 
-  telescope.setup({
-    defaults = {
-      prompt_prefix = "   ",
-      selection_caret = "  ",
-      path_display = { "truncate" },
-      sorting_strategy = "ascending",
-      layout_config = { horizontal = { prompt_position = "top", preview_width = 0.55 }, width = 0.80, height = 0.85 },
-      mappings = { i = { ["<C-j>"] = actions.move_selection_next, ["<C-k>"] = actions.move_selection_previous } },
-    },
-    pickers = { find_files = { theme = "dropdown", previewer = false }, buffers = { theme = "dropdown" } },
-  })
+    -- Load extensions
+    pcall(telescope.load_extension, "fzf")
+    pcall(telescope.load_extension, "notify")
 
-  pcall(telescope.load_extension, "fzf")
-
-  local map = vim.keymap.set
-  map("n", "<leader>tf", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-  map("n", "<leader>tg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep" })
-  map("n", "<leader>tb", "<cmd>Telescope buffers<cr>", { desc = "Buffers" })
-  map("n", "<leader>th", "<cmd>Telescope help_tags<cr>", { desc = "Help tags" })
-  map("n", "<leader>tr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
-  map("n", "<leader>tc", "<cmd>Telescope commands<cr>", { desc = "Commands" })
-  map("n", "<leader>tk", "<cmd>Telescope keymaps<cr>", { desc = "Keymaps" })
-  map("n", "<leader>ts", "<cmd>Telescope grep_string<cr>", { desc = "Grep string" })
-  map("n", "<leader>tm", "<cmd>Telescope marks<cr>", { desc = "Marks" })
-  map("n", "<leader>tj", "<cmd>Telescope jumplist<cr>", { desc = "Jump list" })
-  map("n", "<leader>tq", "<cmd>Telescope quickfix<cr>", { desc = "Quickfix list" })
-  map("n", "<leader>tl", "<cmd>Telescope loclist<cr>", { desc = "Location list" })
-  map("n", "<leader>tgf", "<cmd>Telescope git_files<cr>", { desc = "Git files" })
-  map("n", "<leader>tgc", "<cmd>Telescope git_commits<cr>", { desc = "Git commits" })
-  map("n", "<leader>tgb", "<cmd>Telescope git_branches<cr>", { desc = "Git branches" })
-  map("n", "<leader>tgs", "<cmd>Telescope git_status<cr>", { desc = "Git status" })
-
-  return telescope
+    -- Set up keymaps
+    local builtin = require("telescope.builtin")
+    vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+    vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Live grep" })
+    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find buffers" })
+    vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Help tags" })
+    vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Recent files" })
+    vim.keymap.set("n", "<leader>fs", builtin.lsp_document_symbols, { desc = "Document symbols" })
+    vim.keymap.set("n", "<leader>fS", builtin.lsp_workspace_symbols, { desc = "Workspace symbols" })
+    vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
 end
 
 return M
