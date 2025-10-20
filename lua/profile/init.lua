@@ -17,6 +17,7 @@ safe_require('profile.core.keymaps')
 safe_require('profile.core.autocmds')
 safe_require('profile.core.mason')  -- Ensure Mason loads first
 safe_require('profile.core.utils')
+safe_require('profile.core.functions')  -- Custom functions
 
 -- UI modules - consolidated
 safe_require('profile.ui')

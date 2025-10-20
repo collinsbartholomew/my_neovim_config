@@ -24,3 +24,5 @@ end
 vim.api.nvim_create_user_command("JavaBoiler", "lua generate_java_class()", {})
 
 -- Other custom functions as needed
+
+return {}

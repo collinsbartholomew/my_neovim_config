@@ -21,7 +21,7 @@ function M.setup()
 
   require('lualine').setup({
     options = {
-      theme = 'rose-pine',
+      theme = 'tokyonight',
       component_separators = { left = '', right = '' },
       section_separators = { left = '', right = '' },
       globalstatus = true,
@@ -58,6 +58,10 @@ function M.setup()
           },
         },
         { 'filename', path = 1 },
+        {
+          navic_location,
+          cond = navic_available,
+        },
       },
       lualine_x = {
         { 

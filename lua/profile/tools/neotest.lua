@@ -1,4 +1,7 @@
-require("neotest").setup({
+-- Neotest configuration
+local neotest = require("neotest")
+
+neotest.setup({
   adapters = {
     -- require("neotest-python"),
     -- require("neotest-jest"),

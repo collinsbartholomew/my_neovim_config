@@ -30,6 +30,10 @@ local function on_attach(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
+  -- Attach nvim-navic
+  local navic = require("nvim-navic")
+  navic.attach(client, bufnr)
+
   -- Buffer local mappings
   local opts = { buffer = bufnr }
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
@@ -68,6 +72,8 @@ mason_lspconfig.setup({
     'clangd',
     'zls',
     'tsserver',
+    'pyright',
+    'jdtls',
   },
   automatic_installation = true,
 })
@@ -79,6 +85,9 @@ local servers = {
       Lua = {
         diagnostics = {
           globals = { 'vim' }
+        },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file("", true)
         }
       }
     }
@@ -95,6 +104,8 @@ local servers = {
     }
   },
   tsserver = {},
+  pyright = {},
+  jdtls = {},
 }
 
 -- Setup each language server using mason-lspconfig
@@ -104,7 +115,7 @@ mason_lspconfig.setup_handlers({
     config.on_attach = on_attach
     config.capabilities = capabilities
     require('lspconfig')[server_name].setup(config)
-  end
+  end,
 })
 
 -- Initialize cmp

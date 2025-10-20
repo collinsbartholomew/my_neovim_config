@@ -1,4 +1,7 @@
-require("lint").linters_by_ft = {
+-- Linting configuration
+local lint = require("lint")
+
+lint.linters_by_ft = {
   python = { "flake8" },
   java = { "checkstyle" },
   javascript = { "eslint_d" },

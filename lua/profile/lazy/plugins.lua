@@ -37,7 +37,7 @@ return {
     "L3MON4D3/LuaSnip",
     "rafamadriz/friendly-snippets",
   }, config = function()
-      local status_ok, module = pcall(require, "user.cmp")
+      local status_ok, module = pcall(require, "profile.completion.cmp")
       if status_ok then
         return module
       end
@@ -47,7 +47,7 @@ return {
   { "williamboman/mason.nvim", cmd = "Mason", config = true },
   { "williamboman/mason-lspconfig.nvim" },
   { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" }, config = function()
-      local status_ok, module = pcall(require, "user.lsp")
+      local status_ok, module = pcall(require, "profile.lsp.lspconfig")
       if status_ok then
         return module
       end
@@ -56,7 +56,7 @@ return {
 
   -- Debugging
   { "mfussenegger/nvim-dap", event = "VeryLazy", config = function()
-      local status_ok, module = pcall(require, "user.dap")
+      local status_ok, module = pcall(require, "profile.dap.init")
       if status_ok then
         return module
       end
@@ -72,34 +72,48 @@ return {
 
   -- Navigation
   { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" }, config = function()
-      local status_ok, module = pcall(require, "user.telescope")
-      if status_ok then
-        return module
-      end
+      require("telescope").setup({
+        defaults = {
+          mappings = {
+            i = {
+              ["<C-h>"] = "which_key",
+            },
+          },
+        },
+        extensions = {
+          -- Add if needed
+        },
+      })
+
+      require("telescope").load_extension("harpoon")
     end },
   { "nvim-neo-tree/neo-tree.nvim", branch = "v3.x", cmd = "Neotree", dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" }, config = true },
   { "ThePrimeagen/harpoon", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
 
   -- Code Folding
   { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" }, config = function()
-      local status_ok, module = pcall(require, "user.ufo")
-      if status_ok then
-        return module
-      end
+      require("ufo").setup({
+        provider_selector = function(bufnr, filetype, buftype)
+          return { "treesitter", "indent" }
+        end,
+      })
     end },
 
   -- Formatting/Linting
   { "stevearc/conform.nvim", event = "BufWritePre", config = function()
-      local status_ok, module = pcall(require, "user.conform")
+      local status_ok, module = pcall(require, "profile.tools.conform")
       if status_ok then
         return module
       end
     end },
   { "mfussenegger/nvim-lint", event = "BufReadPre", config = function()
-      local status_ok, module = pcall(require, "user.lint")
-      if status_ok then
-        return module
-      end
+      require("lint").linters_by_ft = {
+        python = { "flake8" },
+        java = { "checkstyle" },
+        javascript = { "eslint_d" },
+        typescript = { "eslint_d" },
+        -- Add more
+      }
     end },
 
   -- Tasks
@@ -110,9 +124,9 @@ return {
 
   -- UI
   { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" }, config = function()
-      local status_ok, module = pcall(require, "user.lualine")
+      local status_ok, module = pcall(require, "profile.ui.statusline")
       if status_ok then
-        return module
+        module.setup()
       end
     end },
   { "akinsho/bufferline.nvim", event = "VeryLazy", config = true },
@@ -120,10 +134,22 @@ return {
   { "folke/tokyonight.nvim", lazy = false, priority = 1000, config = function() vim.cmd.colorscheme("tokyonight") end },
   { "nvim-tree/nvim-web-devicons", lazy = true },
   { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" }, config = function()
-      local status_ok, module = pcall(require, "user.noice")
-      if status_ok then
-        return module
-      end
+      require("noice").setup({
+        lsp = {
+          override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
+          },
+        },
+        presets = {
+          bottom_search = true,
+          command_palette = true,
+          long_message_to_split = true,
+          inc_rename = false,
+          lsp_doc_border = false,
+        },
+      })
     end },
   { "stevearc/dressing.nvim", event = "VeryLazy", config = true },
   { "lukas-reineke/indent-blankline.nvim", event = "BufReadPre", main = "ibl", config = true },
@@ -135,7 +161,7 @@ return {
 
   -- Treesitter
   { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate", config = function()
-      local status_ok, module = pcall(require, "user.treesitter")
+      local status_ok, module = pcall(require, "profile.treesitter")
       if status_ok then
         return module
       end
@@ -154,10 +180,13 @@ return {
     "nvim-treesitter/nvim-treesitter",
     -- Adapters: add as needed, e.g. neotest-python, neotest-jest, etc.
   }, config = function()
-      local status_ok, module = pcall(require, "user.neotest")
-      if status_ok then
-        return module
-      end
+      require("neotest").setup({
+        adapters = {
+          -- require("neotest-python"),
+          -- require("neotest-jest"),
+          -- Add adapters as needed
+        },
+      })
     end },
 
   -- Other
@@ -165,10 +194,10 @@ return {
   { "kylechui/nvim-surround", event = "VeryLazy", config = true },
   { "mbbill/undotree", cmd = "UndotreeToggle" },
   { "zbirenbaum/copilot.lua", event = "InsertEnter", config = function()
-      local status_ok, module = pcall(require, "user.copilot")
-      if status_ok then
-        return module
-      end
+      require("copilot").setup({
+        suggestion = { enabled = true, auto_trigger = true },
+        panel = { enabled = true },
+      })
     end },
   { "folke/trouble.nvim", cmd = "TroubleToggle", dependencies = { "nvim-tree/nvim-web-devicons" }, config = true },
   { "tiagovla/scope.nvim", event = "VeryLazy", config = true }, -- Tab scopes
