@@ -21,6 +21,7 @@ require("mason-lspconfig").setup({
         "clangd",   -- C/C++
         "qmlls",    -- QML (if available in registry)
         "omnisharp", -- C# (if available in registry)
+        "jdtls",    -- Java (if available in registry)
     },
     automatic_installation = true,
 })

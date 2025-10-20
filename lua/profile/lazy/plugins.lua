@@ -119,6 +119,7 @@ return {
     },
     config = true
   },
+  { 'mfussenegger/nvim-jdtls' }, -- added-by-agent: java-setup
 
   -- Testing
   {
