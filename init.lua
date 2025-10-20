@@ -15,34 +15,13 @@ if not vim.loop.fs_stat(lazypath) then
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
-    lazypath,
+   lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Load and initialize lazy
-require("lazy").setup("profile.lazy.plugins", {
-  install = {
-    colorscheme = { "tokyonight" },
-  },
-  performance = {
-    rtp = {
-      disabled_plugins = {
-        "gzip",
-        "matchit",
-        "matchparen",
-        "netrwPlugin",
-        "tarPlugin",
-        change_detection = {
-          notify = false,
-        },
-      },
-    },
-  },
-})
-
--- Set a default colorscheme that we know exists
-vim.cmd([[colorscheme tokyonight]])
+-- Load and initialize lazy withthe new configuration
+require("profile.lazy.plugins")
 
 -- Neovim bootstrap: load modular profile config
 require('profile')
