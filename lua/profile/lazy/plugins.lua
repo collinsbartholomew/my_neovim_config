@@ -7,44 +7,86 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 return {
-  { 'folke/lazy.nvim', version = 'stable' },
-  { 'neovim/nvim-lspconfig', commit = 'b1e2e7e' },
-  { 'williamboman/mason.nvim', commit = 'c6f3e2a' },
-  { 'williamboman/mason-lspconfig.nvim', commit = 'e2b2e2b' },
-  { 'hrsh7th/nvim-cmp', commit = 'd2e2e2d' },
-  { 'hrsh7th/cmp-nvim-lsp', commit = 'e2d2d2e' },
-  { 'hrsh7th/cmp-buffer', commit = 'f2e2e2f' },
-  { 'hrsh7th/cmp-path', commit = 'a2e2e2a' },
-  { 'L3MON4D3/LuaSnip', commit = 'b3e3e3b' },
-  { 'nvim-treesitter/nvim-treesitter', commit = 'c3e3e3c' },
-  { 'nvim-telescope/telescope.nvim', commit = 'd3e3e3d' },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make', commit = 'e3d3d3e' },
-  { 'folke/which-key.nvim', commit = 'f3e3e3f' },
-  { 'nvim-lualine/lualine.nvim', commit = 'a3e3e3a' },
-  { 'akinsho/bufferline.nvim', commit = 'b4e4e4b' },
-  { 'nvim-neo-tree/neo-tree.nvim', commit = 'c4e4e4c' },
-  { 'lewis6991/gitsigns.nvim', commit = 'd4e4e4d' },
-  { 'mfussenegger/nvim-dap', commit = 'f4e4e4f' },
-  { 'mfussenegger/nvim-dap-ui', commit = 'a4e4e4a' },
-  { 'rose-pine/neovim', commit = 'b5e5e5b' },
-  { 'folke/tokyonight.nvim', commit = 'c5e5e5c' },
-  { 'iamcco/markdown-preview.nvim', build = 'cd app && yarn install', commit = 'd5e5e5d' },
-  { 'nvim-treesitter/playground', commit = 'e5d5d5e' },
-  { 'nvim-telescope/telescope-live-grep-args.nvim', commit = 'f5e5e5f' },
-  -- Language-specific plugins
-  { 'simrat39/rust-tools.nvim', ft = { 'rust' }, commit = 'a6e6e6a' },
-  { 'saecki/crates.nvim', ft = { 'rust' }, commit = 'b6e6e6b' },
-  { 'mfussenegger/nvim-dap-python', ft = { 'python' }, commit = 'c6e6e6c' },
-  { 'akinsho/flutter-tools.nvim', ft = { 'dart', 'flutter' }, commit = 'd6e6e6d' },
-  { 'm4xshen/smartcolumn.nvim', commit = 'e6d6d6e' },
-  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
-  { 'ray-x/go.nvim', ft = { 'go', 'gomod', 'gosum', 'gotmpl' } },
-  { 'leoluz/nvim-dap-go', ft = { 'go' } },
+  { 'folke/lazy.nvim', version = '*' },
+
+  -- UI
+  { 'nvim-tree/nvim-web-devicons' },
+  { 'MunifTanjim/nui.nvim' },  -- Required by neo-tree
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "MunifTanjim/nui.nvim",
+    }
+  },
+  { 'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
+
+  -- LSP & Completion
+  { 'neovim/nvim-lspconfig' },
+  { 'williamboman/mason.nvim' },
+  { 'williamboman/mason-lspconfig.nvim' },
+  {
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v3.x',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/nvim-cmp',
+      'L3MON4D3/LuaSnip',
+    }
+  },
+  { 'hrsh7th/nvim-cmp' },
+  { 'hrsh7th/cmp-nvim-lsp' },
+  { 'hrsh7th/cmp-buffer' },
+  { 'hrsh7th/cmp-path' },
+  { 'L3MON4D3/LuaSnip' },
+  { 'saadparwaiz1/cmp_luasnip' },
+
+  -- Treesitter
+  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+
+  -- Navigation & Search
+  { 'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+
+  -- Git
+  { 'lewis6991/gitsigns.nvim' },
+
+  -- Debug
+  { 'mfussenegger/nvim-dap' },
+  { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' } },
+
+  -- Theme
+  { 'folke/tokyonight.nvim' },
+
+  -- Language specific
+  { 'simrat39/rust-tools.nvim' },
+  { 'rust-lang/rust.vim' },
+  { 'ray-x/go.nvim' },
+  { 'leoluz/nvim-dap-go' },
+  { 'ziglang/zig.vim' },
   { 'jay-babu/mason-nvim-dap.nvim' },
   { 'stevearc/conform.nvim' },
-  { 'nvim-neotest/neotest' },
-  { 'nvim-neotest/neotest-go', ft = { 'go' } },
+  { 'theHamsta/nvim-dap-virtual-text' },
+  { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
+  { 'akinsho/toggleterm.nvim', version = '*', config = true },
+
+  -- Testing
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "antoinemadec/FixCursorHold.nvim"
+    }
+  },
+  { 'rouge8/neotest-rust' },  -- Fixed repository for neotest-rust
+  { 'nvim-neotest/neotest-go' },
+
+  -- Other
+  { 'folke/which-key.nvim' },
+  { 'windwp/nvim-autopairs' },
+  { 'numToStr/Comment.nvim' },
 }
--- Neovim IDE bootstrap
--- Requires main profile config
-pcall(require, 'profile')

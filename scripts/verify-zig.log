@@ -1,0 +1,53 @@
+=== Zig Setup Verification Mon Oct 20 12:10:17 PM UTC 2025 ===
+Testing Neovim startup...
+Error in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'
+startup_ok✓ Neovim startup successful
+Checking Mason packages...
+Error in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'
+Error in command line:
+E5108: Lua: [string ":lua"]:1: module 'mason-registry' not found:
+	no field package.preload['mason-registry']
+	no file './mason-registry.lua'
+	no file '/usr/share/luajit-2.1/mason-registry.lua'
+	no file '/usr/local/share/lua/5.1/mason-registry.lua'
+	no file '/usr/local/share/lua/5.1/mason-registry/init.lua'
+	no file '/usr/share/lua/5.1/mason-registry.lua'
+	no file '/usr/share/lua/5.1/mason-registry/init.lua'
+	no file './mason-registry.so'
+	no file '/usr/local/lib/lua/5.1/mason-registry.so'
+	no file '/usr/lib/lua/5.1/mason-registry.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+stack traceback:
+	[C]: in function 'require'
+	[string ":lua"]:1: in main chunkError in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'
+Error in command line:
+E5108: Lua: [string ":lua"]:1: module 'mason-registry' not found:
+	no field package.preload['mason-registry']
+	no file './mason-registry.lua'
+	no file '/usr/share/luajit-2.1/mason-registry.lua'
+	no file '/usr/local/share/lua/5.1/mason-registry.lua'
+	no file '/usr/local/share/lua/5.1/mason-registry/init.lua'
+	no file '/usr/share/lua/5.1/mason-registry.lua'
+	no file '/usr/share/lua/5.1/mason-registry/init.lua'
+	no file './mason-registry.so'
+	no file '/usr/local/lib/lua/5.1/mason-registry.so'
+	no file '/usr/lib/lua/5.1/mason-registry.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+stack traceback:
+	[C]: in function 'require'
+	[string ":lua"]:1: in main chunkTesting LSP attachment...
+Error in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'
+vim.lsp.get_active_clients() is deprecated. Run ":checkhealth vim.de
+{}Testing Zig formatting...
+Error in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'
+[LSP] Format request failed, no matching language servers."/tmp/test_fmt.zig" "/tmp/test_fmt.zig" 1L, 76B writtenconst std=@import("std");pub fn main()void{std.debug.print("Hello\n",.{});}
+Checking DAP configuration...
+× codelldb adapter not found - manual installation may be needed
+Checking Zig commands...
+Error in /home/collins/.config/nvim/init.lua:
+E5112: Lua chunk: /home/collins/.config/nvim/init.lua:9: unexpected symbol near '"--branch=stable"'=== Verification complete ===

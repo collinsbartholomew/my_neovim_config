@@ -21,7 +21,7 @@ function M.setup()
       name = 'Debug',
       db = { '<cmd>lua require("dap").toggle_breakpoint()<CR>', 'Toggle Breakpoint' },
       dc = { '<cmd>lua require("dap").continue()<CR>', 'Continue' },
-      doi = { '<cmd>lua require("dap").step_over()<CR>', 'Step Over' },
+      dv = { '<cmd>lua require("dap").step_over()<CR>', 'Step Over' },
       di = { '<cmd>lua require("dap").step_into()<CR>', 'Step Into' },
       du = { '<cmd>lua require("dapui").toggle()<CR>', 'Toggle DAP UI' },
     },

@@ -21,3 +21,22 @@ cmp.setup({
   }),
 })
 
+cmp.setup.filetype({
+  rust = {
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'crates' },
+      { name = 'buffer' },
+      { name = 'path' },
+      { name = 'luasnip' },
+    }),
+  },
+  ['toml'] = {
+    sources = cmp.config.sources({
+      { name = 'crates' },
+      { name = 'buffer' },
+      { name = 'path' },
+      { name = 'luasnip' },
+    }),
+  },
+})
