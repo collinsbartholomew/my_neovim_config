@@ -1,0 +1,8 @@
+# Ignore secrets and DB credentials
+secrets/
+dbs/credentials
+setup-errors.log
+setup-report-*.md
+*.swp
+*.bak
+
