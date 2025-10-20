@@ -41,7 +41,7 @@ opt.foldlevel = 99
 opt.foldmethod = "expr"
 opt.foldexpr = "v:lua.require'nvim-treesitter.foldexpr'()"
 opt.foldenable = true
-opt.fillchars = { foldopen = "", foldclose = "", fold = " ", foldsep = " ", diff = "", eob = " " }
+opt.fillchars = { foldopen = " ", foldclose = " ", fold = " ", foldsep = " ", eob = " " }
 opt.laststatus = 3
 opt.winbar = "%=%m %f"
 
