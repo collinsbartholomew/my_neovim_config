@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d1657208-7156-4a3f-ac3b-188a5416ba9a" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="33z4v8pOx87ZJpuhS5kqssXDZGo" />
+  <component name="ProjectViewState">
+    <option name="compactDirectories" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ChatTagsLlmMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ClientConfigCleanupMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyAccountHistoryMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyAccountsIdsRefresh&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyAssignOrphanedChatsToActiveAccount&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyConvertUrlToCodebaseName&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyHistoryLlmMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyMigrateChatHistory-v2&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.CodyProjectSettingsMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.DeprecatedChatLlmMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ToggleCodyToolWindowAfterMigration&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/collins/.config/nvim&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.github.copilot.settings.mcp.McpConfigurable&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.19979079&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/opt/.ide/.plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lua/langs/rust" />
+      <recent name="$PROJECT_DIR$/lua/langs/go" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d1657208-7156-4a3f-ac3b-188a5416ba9a" name="Changes" comment="" />
+      <created>1760306795762</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1760306795762</updated>
+      <workItem from="1760319789368" duration="1729000" />
+      <workItem from="1760413215604" duration="1630000" />
+      <workItem from="1760414887897" duration="694000" />
+      <workItem from="1760415599549" duration="16748000" />
+      <workItem from="1760434181254" duration="488000" />
+      <workItem from="1760436363963" duration="5890000" />
+      <workItem from="1760443809925" duration="397000" />
+      <workItem from="1760444252023" duration="575000" />
+      <workItem from="1760444852724" duration="109000" />
+      <workItem from="1760445056669" duration="735000" />
+      <workItem from="1760449194905" duration="4721000" />
+      <workItem from="1760485533122" duration="3879000" />
+      <workItem from="1760489542487" duration="1384000" />
+      <workItem from="1760493068633" duration="19089000" />
+      <workItem from="1760546909630" duration="11141000" />
+      <workItem from="1760561815342" duration="7532000" />
+      <workItem from="1760573336828" duration="3406000" />
+      <workItem from="1760576969258" duration="397000" />
+      <workItem from="1760580130857" duration="1252000" />
+      <workItem from="1760641008609" duration="43000" />
+      <workItem from="1760641350957" duration="1367000" />
+      <workItem from="1760643052875" duration="63000" />
+      <workItem from="1760643166614" duration="480000" />
+      <workItem from="1760647506042" duration="383000" />
+      <workItem from="1760647922136" duration="22903000" />
+      <workItem from="1760686111881" duration="682000" />
+      <workItem from="1760688593244" duration="4439000" />
+      <workItem from="1760693333182" duration="535000" />
+      <workItem from="1760694063098" duration="2952000" />
+      <workItem from="1760697267749" duration="3203000" />
+      <workItem from="1760700680788" duration="4443000" />
+      <workItem from="1760705638924" duration="3722000" />
+      <workItem from="1760717892751" duration="8212000" />
+      <workItem from="1760727489681" duration="2164000" />
+      <workItem from="1760729885485" duration="29965000" />
+      <workItem from="1760772012386" duration="54826000" />
+      <workItem from="1760880351264" duration="4187000" />
+      <workItem from="1760884785841" duration="1350000" />
+      <workItem from="1760886352142" duration="1842000" />
+      <workItem from="1760888475037" duration="29829000" />
+      <workItem from="1760918992618" duration="12391000" />
+      <workItem from="1760931740606" duration="11826000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.py" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

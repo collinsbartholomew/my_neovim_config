@@ -24,7 +24,6 @@ return {
   { 'akinsho/bufferline.nvim', commit = 'b4e4e4b' },
   { 'nvim-neo-tree/neo-tree.nvim', commit = 'c4e4e4c' },
   { 'lewis6991/gitsigns.nvim', commit = 'd4e4e4d' },
-  { 'jose-elias-alvarez/null-ls.nvim', commit = 'e4d4d4e' },
   { 'mfussenegger/nvim-dap', commit = 'f4e4e4f' },
   { 'mfussenegger/nvim-dap-ui', commit = 'a4e4e4a' },
   { 'rose-pine/neovim', commit = 'b5e5e5b' },
@@ -38,6 +37,13 @@ return {
   { 'mfussenegger/nvim-dap-python', ft = { 'python' }, commit = 'c6e6e6c' },
   { 'akinsho/flutter-tools.nvim', ft = { 'dart', 'flutter' }, commit = 'd6e6e6d' },
   { 'm4xshen/smartcolumn.nvim', commit = 'e6d6d6e' },
+  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
+  { 'ray-x/go.nvim', ft = { 'go', 'gomod', 'gosum', 'gotmpl' } },
+  { 'leoluz/nvim-dap-go', ft = { 'go' } },
+  { 'jay-babu/mason-nvim-dap.nvim' },
+  { 'stevearc/conform.nvim' },
+  { 'nvim-neotest/neotest' },
+  { 'nvim-neotest/neotest-go', ft = { 'go' } },
 }
 -- Neovim IDE bootstrap
 -- Requires main profile config

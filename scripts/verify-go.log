@@ -1,0 +1,6 @@
+ok2c2,3
+< func main( ) {println("hello")}
+---
+> 
+> func main() { println("hello") }
+FAIL: Formatting
