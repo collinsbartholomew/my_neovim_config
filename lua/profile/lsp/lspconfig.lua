@@ -1,7 +1,22 @@
 -- LSP and Mason setup
-local mason = require('mason')
-local mason_lspconfig = require('mason-lspconfig')
-local cmp_nvim_lsp = require('cmp_nvim_lsp')
+-- added-by-agent: zig-setup 20251020
+local status_ok, mason = pcall(require, 'mason')
+if not status_ok then
+  vim.notify('Mason is not available', vim.log.levels.WARN)
+  return
+end
+
+local status_ok, mason_lspconfig = pcall(require, 'mason-lspconfig')
+if not status_ok then
+  vim.notify('Mason-lspconfig is not available', vim.log.levels.WARN)
+  return
+end
+
+local status_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
+if not status_ok then
+  vim.notify('cmp_nvim_lsp is not available', vim.log.levels.WARN)
+  return
+end
 
 -- LSP capabilities with nvim-cmp
 local capabilities = vim.tbl_deep_extend(

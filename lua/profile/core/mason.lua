@@ -19,6 +19,7 @@ require("mason-lspconfig").setup({
         "gopls",    -- Go
         "rust_analyzer", -- Rust
         "clangd",   -- C/C++
+        "qmlls",    -- QML (if available in registry)
     },
     automatic_installation = true,
 })

@@ -1,76 +1,74 @@
--- Statusline setup
--- TODO: Configure lualine
+-- added-by-agent: ui-enhancement 20251020
+-- Configuration for lualine with Rose Pine theme integration
 
 local M = {}
 
 function M.setup()
-  -- Check if lualine is available
-  local status_ok, lualine = pcall(require, "lualine")
-  if not status_ok then
-    return
-  end
-
-  -- Set up lualine with a complete configuration
-  lualine.setup {
+  require('lualine').setup({
     options = {
-      icons_enabled = true,
-      theme = 'auto',
-      component_separators = { left = '', right = ''},
-      section_separators = { left = '', right = ''},
-      disabled_filetypes = {
-        statusline = {},
-        winbar = {},
-      },
-      ignore_focus = {},
-      always_divide_middle = true,
+      theme = 'rose-pine',
+      component_separators = { left = '', right = '' },
+      section_separators = { left = '', right = '' },
       globalstatus = true,
       refresh = {
-        statusline = 1000,
-        tabline = 1000,
-        winbar = 1000,
-      }
+        statusline = 100,
+        tabline = 100,
+        winbar = 100,
+      },
     },
     sections = {
-      lualine_a = {'mode'},
+      lualine_a = {
+        { 'mode', separator = { left = '' }, right_padding = 2 },
+      },
       lualine_b = {
-        'branch',
-        {
-          'diff',
-          colored = true,
-          symbols = {added = ' ', modified = ' ', removed = ' '}
+        { 'branch', separator = { left = '' } },
+        { 'diff',
+          symbols = {
+            added = ' ',
+            modified = ' ',
+            removed = ' ',
+          },
         },
-        'diagnostics'
       },
       lualine_c = {
-        {
-          'filename',
-          file_status = true,
-          path = 1,
+        { 'diagnostics',
+          sources = { 'nvim_diagnostic' },
           symbols = {
-            modified = '[+]',
-            readonly = '[-]',
-            unnamed = '[No Name]',
-            newfile = '[New]',
-          }
-        }
+            error = ' ',
+            warn = ' ',
+            info = ' ',
+            hint = ' ',
+          },
+        },
+        { 'filename', path = 1 },
       },
-      lualine_x = {'encoding', 'fileformat', 'filetype'},
-      lualine_y = {'progress'},
-      lualine_z = {'location'}
+      lualine_x = {
+        { 'encoding' },
+        { 'fileformat' },
+        { 'filetype', icon_only = true },
+      },
+      lualine_y = {
+        { 'progress', separator = { right = '' }, left_padding = 2 },
+      },
+      lualine_z = {
+        { 'location', separator = { right = '' }, left_padding = 2 },
+      },
     },
     inactive_sections = {
       lualine_a = {},
       lualine_b = {},
-      lualine_c = {'filename'},
-      lualine_x = {'location'},
+      lualine_c = { 'filename' },
+      lualine_x = { 'location' },
       lualine_y = {},
-      lualine_z = {}
+      lualine_z = {},
     },
-    tabline = {},
-    winbar = {},
-    inactive_winbar = {},
-    extensions = {'neo-tree', 'fugitive'}
-  }
+    extensions = {
+      'neo-tree',
+      'toggleterm',
+      'quickfix',
+      'symbols-outline',
+    },
+  })
 end
 
 return M

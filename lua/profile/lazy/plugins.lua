@@ -59,9 +59,20 @@ return {
   { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' } },
 
   -- Theme
+  { 'rose-pine/neovim', name = 'rose-pine' },  -- added-by-agent: ui-enhancement
   { 'folke/tokyonight.nvim' },
 
+  -- UI Enhancements
+  { 'nvim-focus/focus.nvim' },  -- added-by-agent: ui-enhancement
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl' },  -- added-by-agent: ui-enhancement
+  { 'folke/zen-mode.nvim' },  -- added-by-agent: ui-enhancement
+  { 'folke/twilight.nvim' },  -- added-by-agent: ui-enhancement
+  { 'j-hui/fidget.nvim', tag = 'legacy' },  -- added-by-agent: ui-enhancement
+  { 'rcarriga/nvim-notify' },  -- added-by-agent: ui-enhancement
+  { 'stevearc/dressing.nvim' },  -- added-by-agent: ui-enhancement
+
   -- Language specific
+  { 'p00f/clangd_extensions.nvim' },  -- added-by-agent: ccpp-setup
   { 'simrat39/rust-tools.nvim' },
   { 'rust-lang/rust.vim' },
   { 'ray-x/go.nvim' },
