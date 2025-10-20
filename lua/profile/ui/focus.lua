@@ -78,8 +78,8 @@ function M.setup()
     enable = true,
     autoresize = {
       enable = true,
-      width = 0.8,
-      height = 0.8,
+      width = 80,  -- Changed from 0.8 to 80 (integer)
+      height = 80, -- Changed from 0.8 to 80 (integer)
     },
     ui = {
       number = false,

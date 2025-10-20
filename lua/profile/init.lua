@@ -30,7 +30,7 @@ safe_require('profile.null_ls')
 
 -- Language modules
 local languages = {
-  'cpp', 'rust', 'go', 'web', 'flutter', 'java',
+  'ccpp', 'rust', 'go', 'web', 'flutter', 'java',
   'csharp', 'zig', 'asm', 'dbs'
 }
 
