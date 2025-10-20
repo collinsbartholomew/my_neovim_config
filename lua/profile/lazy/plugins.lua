@@ -6,140 +6,136 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-return {
-  { 'folke/lazy.nvim', version = '*' },
+local lazy = require("lazy")
 
-  -- UI
-  { 'nvim-tree/nvim-web-devicons' },
-  { 'MunifTanjim/nui.nvim' },  -- Required by neo-tree
-  {
-    'nvim-neo-tree/neo-tree.nvim',
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-    }
-  },
-  { 'nvim-lualine/lualine.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
-
-  -- LSP & Completion
-  { 'neovim/nvim-lspconfig' },
-  { 'williamboman/mason.nvim' },
-  { 'williamboman/mason-lspconfig.nvim' },
-  {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v3.x',
-    dependencies = {
-      'neovim/nvim-lspconfig',
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/nvim-cmp',
-      'L3MON4D3/LuaSnip',
-    }
-  },
-  { 'hrsh7th/nvim-cmp' },
-  { 'hrsh7th/cmp-nvim-lsp' },
-  { 'hrsh7th/cmp-buffer' },
-  { 'hrsh7th/cmp-path' },
-  { 'L3MON4D3/LuaSnip' },
-  { 'saadparwaiz1/cmp_luasnip' },
-
-  -- Treesitter
-  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
-
-  -- Navigation & Search
-  { 'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-
-  -- Git
-  { 'lewis6991/gitsigns.nvim' },
-
-  -- Debug
-  { 'mfussenegger/nvim-dap' },
-  { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' } },
-
-  -- Theme
-  { 'rose-pine/neovim', name = 'rose-pine' },
-  { 'folke/tokyonight.nvim' },
-
-  -- UI Enhancements
-  { 'nvim-focus/focus.nvim' },
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl' },
-  { 'folke/zen-mode.nvim' },
-  { 'folke/twilight.nvim' },
-  { 'j-hui/fidget.nvim', tag = 'legacy' },
-  { 'rcarriga/nvim-notify' },
-  { 'stevearc/dressing.nvim' },
-  
-  -- Additional UI enhancements
-  { 'mbbill/undotree' },  -- Visual undo tree
-  { 'nvim-telescope/telescope-ui-select.nvim' },  -- Better UI for selections
-  { 'SmiteshP/nvim-navic' },  -- Show code context in winbar
-  { 'Bekaboo/dropbar.nvim' },  -- IDE-like breadcrumbs
-  { 'utilyre/barbecue.nvim',  -- VS Code-like breadcrumbs
-    dependencies = {
-      "SmiteshP/nvim-navic",
-      "nvim-tree/nvim-web-devicons",
+lazy.setup({
+  checker = { enabled = true, notify = false },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "gzip",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
     },
-    opts = {}
   },
-  { 'akinsho/bufferline.nvim', -- Buffer tabs
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    opts = {
-      options = {
-        mode = "tabs",
-        separator_style = "slant",
-      }
-    }
-  },
-  { 'goolord/alpha-nvim', -- Startup screen
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function ()
-      require'alpha'.setup(require'alpha.themes.dashboard'.config)
-    end
-  },
+  spec = {
+    -- Core
+    { "folke/lazy.nvim" },
 
-  -- Language specific
-  { 'p00f/clangd_extensions.nvim' },
-  { 'simrat39/rust-tools.nvim' },
-  { 'rust-lang/rust.vim' },
-  { 'ray-x/go.nvim' },
-  { 'leoluz/nvim-dap-go' },
-  { 'ziglang/zig.vim' },
-  { 'jay-babu/mason-nvim-dap.nvim' },
-  { 'stevearc/conform.nvim' },
-  { 'theHamsta/nvim-dap-virtual-text' },
-  { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
-  { 'akinsho/toggleterm.nvim', version = '*', config = true },
-  { 'Hoffs/omnisharp-extended-lsp.nvim' }, -- added-by-agent: csharp-setup
-  { 'akinsho/flutter-tools.nvim', -- added-by-agent: flutter-setup
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'stevearc/conform.nvim',
-    },
-    config = true
-  },
-  { 'mfussenegger/nvim-jdtls' }, -- added-by-agent: java-setup
+    -- Which-key
+    { "folke/which-key.nvim", event = "VeryLazy" },
 
-  -- Testing
-  {
-    "nvim-neotest/neotest",
-    dependencies = {
+    -- Completion
+    { "hrsh7th/nvim-cmp", event = "InsertEnter", dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "saadparwaiz1/cmp_luasnip",
+      "L3MON4D3/LuaSnip",
+      "rafamadriz/friendly-snippets",
+    } },
+
+    -- LSP
+    { "williamboman/mason.nvim", cmd = "Mason", config = true },
+    { "williamboman/mason-lspconfig.nvim" },
+    { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" } },
+    { "folke/neodev.nvim", ft = "lua" },
+
+    -- Debugging
+    { "mfussenegger/nvim-dap", event = "VeryLazy" },
+    { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
+    { "jay-babu/mason-nvim-dap.nvim" },
+
+    -- Git
+    { "tpope/vim-fugitive", cmd = "Git" },
+    { "kdheepak/lazygit.nvim", cmd = "LazyGit" },
+    { "lewis6991/gitsigns.nvim", event = "BufReadPre", config = true },
+    { "pwntester/octo.nvim", cmd = "Octo", dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "nvim-tree/nvim-web-devicons" }, config = true },
+
+    -- Navigation
+    { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" } },
+    { "nvim-neo-tree/neo-tree.nvim", branch = "v3.x", cmd = "Neotree", dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" }, config = true },
+    { "ThePrimeagen/harpoon", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
+
+    -- Code Folding
+    { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" } },
+
+    -- Formatting/Linting
+    { "stevearc/conform.nvim", event = "BufWritePre" },
+    { "mfussenegger/nvim-lint", event = "BufReadPre" },
+
+    -- Tasks
+    { "stevearc/overseer.nvim", cmd = { "OverseerRun", "OverseerToggle" }, config = true },
+
+    -- Terminal
+    { "akinsho/toggleterm.nvim", cmd = "ToggleTerm", config = true },
+
+    -- UI
+    { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" } },
+    { "akinsho/bufferline.nvim", event = "VeryLazy", config = true },
+    { "rcarriga/nvim-notify", event = "VeryLazy", config = function() vim.notify = require("notify") end },
+    { "folke/tokyonight.nvim", lazy = false, priority = 1000, config = function() vim.cmd.colorscheme("tokyonight") end },
+    { "nvim-tree/nvim-web-devicons", lazy = true },
+    { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" } },
+    { "stevearc/dressing.nvim", event = "VeryLazy", config = true },
+    { "lukas-reineke/indent-blankline.nvim", event = "BufReadPre", main = "ibl", config = true },
+    { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+    { "windwp/nvim-ts-autotag", ft = { "html", "javascript", "typescript", "jsx", "tsx" } },
+    { "SmiteshP/nvim-navic", event = "LspAttach" },
+    { "SmiteshP/nvim-navbuddy", dependencies = { "MunifTanjim/nui.nvim", "SmiteshP/nvim-navic" }, event = "LspAttach", config = true },
+    { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true }, -- Minimap
+
+    -- Treesitter
+    { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate" },
+
+    -- Session
+    { "folke/persistence.nvim", event = "BufReadPre", config = true },
+
+    -- Search/Replace
+    { "nvim-pack/nvim-spectre", cmd = "Spectre", dependencies = { "nvim-lua/plenary.nvim" } },
+
+    -- Testing
+    { "nvim-neotest/neotest", event = "VeryLazy", dependencies = {
       "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "antoinemadec/FixCursorHold.nvim"
-    }
-  },
-  { 'rouge8/neotest-rust' },
-  { 'nvim-neotest/neotest-go' },
+      -- Adapters: add as needed, e.g. neotest-python, neotest-jest, etc.
+    } },
 
-  -- Other
-  { 'folke/which-key.nvim' },
-  { 'windwp/nvim-autopairs' },
-  { 'numToStr/Comment.nvim' },
-  
-  -- database-related plugins (for lazy.nvim) -- added-by-agent: db-setup 20251020-151229
-  { "kristijanhusak/vim-dadbod" },
-  { "kristijanhusak/vim-dadbod-ui" },
-  { "akinsho/toggleterm.nvim", version = "*" },
-}
+    -- Other
+    { "numToStr/Comment.nvim", event = "BufReadPre", config = true },
+    { "kylechui/nvim-surround", event = "VeryLazy", config = true },
+    { "mbbill/undotree", cmd = "UndotreeToggle" },
+    { "zbirenbaum/copilot.lua", event = "InsertEnter" },
+    { "folke/trouble.nvim", cmd = "TroubleToggle", dependencies = { "nvim-tree/nvim-web-devicons" }, config = true },
+    { "tiagovla/scope.nvim", event = "VeryLazy", config = true }, -- Tab scopes
+    { "folke/todo-comments.nvim", event = "BufReadPre", dependencies = { "nvim-lua/plenary.nvim" }, config = true },
+    
+    -- Language specific plugins from previous setup
+    { 'p00f/clangd_extensions.nvim' },
+    { 'simrat39/rust-tools.nvim' },
+    { 'rust-lang/rust.vim' },
+    { 'ray-x/go.nvim' },
+    { 'leoluz/nvim-dap-go' },
+    { 'ziglang/zig.vim' },
+    { 'Hoffs/omnisharp-extended-lsp.nvim' }, -- added-by-agent: csharp-setup
+    { 'akinsho/flutter-tools.nvim', -- added-by-agent: flutter-setup
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        'stevearc/conform.nvim',
+      },
+      config = true
+    },
+    { 'mfussenegger/nvim-jdtls' }, -- added-by-agent: java-setup
+    
+    -- database-related plugins (for lazy.nvim) -- added-by-agent: db-setup 20251020-151229
+    { "kristijanhusak/vim-dadbod" },
+    { "kristijanhusak/vim-dadbod-ui" },
+  },
+})
