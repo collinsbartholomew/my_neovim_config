@@ -22,6 +22,10 @@ require("mason-lspconfig").setup({
         "qmlls",    -- QML (if available in registry)
         "omnisharp", -- C# (if available in registry)
         "jdtls",    -- Java (if available in registry)
+        "html",     -- HTML
+        "cssls",    -- CSS
+        "jsonls",   -- JSON
+        "tailwindcss", -- Tailwind CSS
     },
     automatic_installation = true,
 })
@@ -31,6 +35,7 @@ require("mason-nvim-dap").setup({
         "codelldb",  -- For Zig debugging
         "netcoredbg", -- For C# debugging (if available in registry)
         "dart-debug-adapter", -- For Flutter/Dart debugging (if available in registry)
+        "js-debug-adapter", -- For JavaScript/TypeScript debugging (if available in registry)
     },
     automatic_installation = true,
 })
