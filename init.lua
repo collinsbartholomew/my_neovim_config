@@ -1,4 +1,4 @@
--- Profile startup time
+--Profile startup time
 local startup_time = vim.fn.reltime()
 
 -- Essential options that must be set before plugins load
@@ -13,7 +13,7 @@ vim.g.loaded_perl_provider = 0     -- Disable Perl provider if not needed
 _G.modules = {
     loaded = {},
     failed = {},
-    startup_errors = {},
+ startup_errors = {},
 }
 
 -- Create early utility functions
@@ -39,7 +39,7 @@ vim.opt.lazyredraw = true             -- Don't redraw screen during macros
 vim.opt.ruler = false                 -- Disable ruler during startup
 vim.opt.showcmd = false               -- Disable showcmd during startup
 
--- Bootstrap lazy.nvim with error handling
+-- Bootstrap lazy.nvim witherrorhandling
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.notify("Installing lazy.nvim...", vim.log.levels.INFO)
@@ -56,9 +56,8 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Configure and load plugins
 require("lazy").setup({
-    spec = {
+    spec= {
         { import = "plugins" },
-        { import = "langs" },
     },
     defaults = {
         lazy = true,
@@ -71,9 +70,9 @@ require("lazy").setup({
         enabled = true,
         notify = false,
     },
-    change_detection = {
+    change_detection ={
         notify = false,
-    },
+   },
     performance = {
         rtp = {
             disabled_plugins = {
@@ -91,10 +90,13 @@ require("lazy").setup({
     },
 })
 
--- Load core configuration
+--Load core configuration
 require("core").setup()
 
--- Restore startup options
+-- Load language configurations
+require("langs").setup()
+
+-- Restorestartup options
 vim.opt.shadafile = ""            -- Restore shada file
 vim.opt.lazyredraw = false        -- Restore normal redraw
 vim.opt.ruler = true              -- Restore ruler
@@ -102,9 +104,9 @@ vim.opt.showcmd = true           -- Restore showcmd
 
 -- Report startup time
 vim.schedule(function()
-    local elapsed = vim.fn.reltimefloat(vim.fn.reltime(startup_time))
+    local elapsed= vim.fn.reltimefloat(vim.fn.reltime(startup_time))
     vim.notify(string.format("Startup completed in %.2f seconds", elapsed), vim.log.levels.INFO)
 end)
 
--- Set colorscheme after everything is loaded
+-- Set colorscheme after everythingis loaded
 vim.cmd.colorscheme("rose-pine")

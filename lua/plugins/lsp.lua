@@ -70,36 +70,27 @@ return {
 
             -- Configure servers
             local lspconfig = require('lspconfig')
-            local get_servers = require('mason-registry').get_installed_packages
-
-            -- Get list of installed servers from Mason
-            local servers = {}
-            for _, pkg in ipairs(get_servers()) do
-                if pkg.spec.categories[1] == "LSP" then
-                    local server_name = pkg.spec.name:gsub("-language-server$", "")
-                    servers[server_name] = {}
-                end
-            end
-
+            
             -- Add specific server configurations
-            servers.lua_ls = {
-                settings = {
-                    Lua = {
-                        diagnostics = { globals = { 'vim' } },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                            checkThirdParty = false,
+            local servers = {
+                lua_ls = {
+                    settings = {
+                        Lua = {
+                            diagnostics = { globals = { 'vim' } },
+                            workspace = {
+                                library = vim.api.nvim_get_runtime_file("", true),
+                                checkThirdParty = false,
+                            },
+                            telemetry = { enable = false },
                         },
-                        telemetry = { enable = false },
                     },
                 },
-            }
-
-            servers.tsserver = {
-                settings = {
-                    typescript = { inlayHints = { includeInlayParameterNameHints = 'all' } },
-                    javascript = { inlayHints = { includeInlayParameterNameHints = 'all' } },
-                },
+                tsserver = {
+                    settings = {
+                        typescript = { inlayHints = { includeInlayParameterNameHints = 'all' } },
+                        javascript = { inlayHints = { includeInlayParameterNameHints = 'all' } },
+                    },
+                }
             }
 
             -- Set up each server
