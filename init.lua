@@ -1,6 +1,10 @@
--- Set leader key BEFORE loading any plugins
+--Set leader key BEFORE loading any plugins
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+
+-- Basic options that should be set before plugins
+vim.opt.termguicolors = true
+vim.opt.background = "dark"
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -17,7 +21,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Load and initialize lazy
-require("lazy").setup("plugins", {
+require("lazy").setup("profile.lazy.plugins", {
   install = {
     colorscheme = { "tokyonight" },
   },
@@ -29,40 +33,16 @@ require("lazy").setup("plugins", {
         "matchparen",
         "netrwPlugin",
         "tarPlugin",
-        "tohtml",
-        "tutor",
-        "zipPlugin",
+        change_detection = {
+          notify = false,
+        },
       },
     },
   },
 })
 
--- Basic options
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-vim.opt.wrap = false
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.incsearch = true
-vim.opt.termguicolors = true
-vim.opt.signcolumn = "yes"
-vim.opt.backup = false
-vim.opt.writebackup = false
-vim.opt.updatetime = 300
-vim.opt.timeoutlen = 500
+-- Set a default colorscheme that we know exists
+vim.cmd([[colorscheme tokyonight]])
 
--- Load core modules
-require("core.mason")
-require("core.treesitter")
-require("core.cmp")
-require("core.keys")
-
--- Load UI
-require("ui.ui")
-
--- Load MERN module
-require("mern").setup()
+-- Neovim bootstrap: load modular profile config
+require('profile')

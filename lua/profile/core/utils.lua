@@ -6,4 +6,3 @@ function M.is_file_exists(path)
   return false
 end
 return M
-
