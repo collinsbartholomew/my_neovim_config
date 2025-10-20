@@ -37,16 +37,31 @@ return {
       "saadparwaiz1/cmp_luasnip",
       "L3MON4D3/LuaSnip",
       "rafamadriz/friendly-snippets",
-    }, config = require("user.cmp") },
+    }, config = function()
+        local status_ok, module = pcall(require, "user.cmp")
+        if status_ok then
+          return module
+        end
+      end },
 
     -- LSP
     { "williamboman/mason.nvim", cmd = "Mason", config = true },
     { "williamboman/mason-lspconfig.nvim" },
-    { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" }, config = require("user.lsp") },
+    { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" }, config = function()
+        local status_ok, module = pcall(require, "user.lsp")
+        if status_ok then
+          return module
+        end
+      end },
     { "folke/neodev.nvim", ft = "lua" },
 
     -- Debugging
-    { "mfussenegger/nvim-dap", event = "VeryLazy", config = require("user.dap") },
+    { "mfussenegger/nvim-dap", event = "VeryLazy", config = function()
+        local status_ok, module = pcall(require, "user.dap")
+        if status_ok then
+          return module
+        end
+      end },
     { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
     { "jay-babu/mason-nvim-dap.nvim" },
 
@@ -57,16 +72,36 @@ return {
     { "pwntester/octo.nvim", cmd = "Octo", dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "nvim-tree/nvim-web-devicons" }, config = true },
 
     -- Navigation
-    { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" }, config = require("user.telescope") },
+    { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" }, config = function()
+        local status_ok, module = pcall(require, "user.telescope")
+        if status_ok then
+          return module
+        end
+      end },
     { "nvim-neo-tree/neo-tree.nvim", branch = "v3.x", cmd = "Neotree", dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" }, config = true },
     { "ThePrimeagen/harpoon", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
 
     -- Code Folding
-    { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" }, config = require("user.ufo") },
+    { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" }, config = function()
+        local status_ok, module = pcall(require, "user.ufo")
+        if status_ok then
+          return module
+        end
+      end },
 
     -- Formatting/Linting
-    { "stevearc/conform.nvim", event = "BufWritePre", config = require("user.conform") },
-    { "mfussenegger/nvim-lint", event = "BufReadPre", config = require("user.lint") },
+    { "stevearc/conform.nvim", event = "BufWritePre", config = function()
+        local status_ok, module = pcall(require, "user.conform")
+        if status_ok then
+          return module
+        end
+      end },
+    { "mfussenegger/nvim-lint", event = "BufReadPre", config = function()
+        local status_ok, module = pcall(require, "user.lint")
+        if status_ok then
+          return module
+        end
+      end },
 
     -- Tasks
     { "stevearc/overseer.nvim", cmd = { "OverseerRun", "OverseerToggle" }, config = true },
@@ -75,12 +110,22 @@ return {
     { "akinsho/toggleterm.nvim", cmd = "ToggleTerm", config = true },
 
     -- UI
-    { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" }, config = require("user.lualine") },
+    { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" }, config = function()
+        local status_ok, module = pcall(require, "user.lualine")
+        if status_ok then
+          return module
+        end
+      end },
     { "akinsho/bufferline.nvim", event = "VeryLazy", config = true },
     { "rcarriga/nvim-notify", event = "VeryLazy", config = function() vim.notify = require("notify") end },
     { "folke/tokyonight.nvim", lazy = false, priority = 1000, config = function() vim.cmd.colorscheme("tokyonight") end },
     { "nvim-tree/nvim-web-devicons", lazy = true },
-    { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" }, config = require("user.noice") },
+    { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" }, config = function()
+        local status_ok, module = pcall(require, "user.noice")
+        if status_ok then
+          return module
+        end
+      end },
     { "stevearc/dressing.nvim", event = "VeryLazy", config = true },
     { "lukas-reineke/indent-blankline.nvim", event = "BufReadPre", main = "ibl", config = true },
     { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
@@ -90,7 +135,12 @@ return {
     { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true }, -- Minimap
 
     -- Treesitter
-    { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate", config = require("user.treesitter") },
+    { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate", config = function()
+        local status_ok, module = pcall(require, "user.treesitter")
+        if status_ok then
+          return module
+        end
+      end },
 
     -- Session
     { "folke/persistence.nvim", event = "BufReadPre", config = true },
@@ -104,13 +154,23 @@ return {
       "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
       -- Adapters: add as needed, e.g. neotest-python, neotest-jest, etc.
-    }, config = require("user.neotest") },
+    }, config = function()
+        local status_ok, module = pcall(require, "user.neotest")
+        if status_ok then
+          return module
+        end
+      end },
 
     -- Other
     { "numToStr/Comment.nvim", event = "BufReadPre", config = true },
     { "kylechui/nvim-surround", event = "VeryLazy", config = true },
     { "mbbill/undotree", cmd = "UndotreeToggle" },
-    { "zbirenbaum/copilot.lua", event = "InsertEnter", config = require("user.copilot") },
+    { "zbirenbaum/copilot.lua", event = "InsertEnter", config = function()
+        local status_ok, module = pcall(require, "user.copilot")
+        if status_ok then
+          return module
+        end
+      end },
     { "folke/trouble.nvim", cmd = "TroubleToggle", dependencies = { "nvim-tree/nvim-web-devicons" }, config = true },
     { "tiagovla/scope.nvim", event = "VeryLazy", config = true }, -- Tab scopes
     { "folke/todo-comments.nvim", event = "BufReadPre", dependencies = { "nvim-lua/plenary.nvim" }, config = true },
