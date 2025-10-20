@@ -4,8 +4,14 @@ function M.setup()
     -- Load all web development related configurations
     require("langs.web.typescript").setup()
 
+    -- Set up LSP if available
+    local ok, lspconfig = pcall(require, "lspconfig")
+    if not ok then
+        return
+    end
+
     -- Set up emmet for HTML/CSS
-    require("lspconfig").emmet_ls.setup({
+    lspconfig.emmet_ls.setup({
         filetypes = {
             "html",
             "css",
@@ -20,7 +26,7 @@ function M.setup()
     })
 
     -- Set up CSS language server
-    require("lspconfig").cssls.setup({
+    lspconfig.cssls.setup({
         settings = {
             css = { validate = true },
             scss = { validate = true },
@@ -29,7 +35,7 @@ function M.setup()
     })
 
     -- Set up HTML language server
-    require("lspconfig").html.setup({
+    lspconfig.html.setup({
         filetypes = { "html", "htmldjango" },
         init_options = {
             configurationSection = { "html", "css", "javascript" },
