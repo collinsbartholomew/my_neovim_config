@@ -29,6 +29,7 @@ require("mason-nvim-dap").setup({
     ensure_installed = {
         "codelldb",  -- For Zig debugging
         "netcoredbg", -- For C# debugging (if available in registry)
+        "dart-debug-adapter", -- For Flutter/Dart debugging (if available in registry)
     },
     automatic_installation = true,
 })

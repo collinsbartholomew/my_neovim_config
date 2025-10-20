@@ -112,6 +112,13 @@ return {
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
   { 'akinsho/toggleterm.nvim', version = '*', config = true },
   { 'Hoffs/omnisharp-extended-lsp.nvim' }, -- added-by-agent: csharp-setup
+  { 'akinsho/flutter-tools.nvim', -- added-by-agent: flutter-setup
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'stevearc/conform.nvim',
+    },
+    config = true
+  },
 
   -- Testing
   {
