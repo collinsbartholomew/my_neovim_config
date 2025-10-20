@@ -26,6 +26,7 @@ require("mason-lspconfig").setup({
         "cssls",    -- CSS
         "jsonls",   -- JSON
         "tailwindcss", -- Tailwind CSS
+        "pyright",  -- Python
     },
     automatic_installation = true,
 })
@@ -36,6 +37,7 @@ require("mason-nvim-dap").setup({
         "netcoredbg", -- For C# debugging (if available in registry)
         "dart-debug-adapter", -- For Flutter/Dart debugging (if available in registry)
         "js-debug-adapter", -- For JavaScript/TypeScript debugging (if available in registry)
+        "debugpy",   -- Python debugger
     },
     automatic_installation = true,
 })
