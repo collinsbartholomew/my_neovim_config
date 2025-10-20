@@ -1,5 +1,5 @@
 -- Main profile aggregator
--- added-by-agent: zig-setup 20251020
+
 local diagnostics = {}
 
 local function safe_require(mod)
@@ -18,11 +18,8 @@ safe_require('profile.core.autocmds')
 safe_require('profile.core.mason')  -- Ensure Mason loads first
 safe_require('profile.core.utils')
 
--- UI modules
-safe_require('profile.ui.theme')
-safe_require('profile.ui.statusline')
-safe_require('profile.ui.transparency')
-safe_require('profile.ui.diagnostics')
+-- UI modules - consolidated
+safe_require('profile.ui')
 
 -- Plugin manager and core features
 safe_require('profile.lazy.plugins')

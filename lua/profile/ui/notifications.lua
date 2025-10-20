@@ -1,4 +1,3 @@
--- added-by-agent: ui-enhancement 20251020
 -- Configuration for notifications and UI feedback
 
 local M = {}
@@ -6,12 +5,13 @@ local M = {}
 function M.setup()
   -- Configure nvim-notify with transparency
   require("notify").setup({
-    background_colour = "#000000",
+    background_colour = "NONE",  -- Fully transparent
     fps = 60,
     render = "minimal",
     stages = "fade_in_slide_out",
     timeout = 3000,
-    transparency = 100,
+    transparency = 100,  -- Fully transparent
+    top_down = false,
   })
 
   -- Set as default notify handler

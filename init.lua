@@ -1,4 +1,4 @@
--- Set leader key BEFORE loading any plugins
+--Set leader key BEFORE loading any plugins
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -15,7 +15,7 @@ if not vim.loop.fs_stat(lazypath) then
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
-    lazypath,
+   lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
@@ -27,7 +27,7 @@ require("lazy").setup("profile.lazy.plugins", {
   },
   performance = {
     rtp = {
-      disabled_plugins = {
+      disabled_plugins= {
         "gzip",
         "matchit",
         "matchparen",
@@ -45,4 +45,4 @@ require("lazy").setup("profile.lazy.plugins", {
 vim.cmd([[colorscheme tokyonight]])
 
 -- Neovim bootstrap: load modular profile config
-pcall(require, 'profile')
+require('profile')

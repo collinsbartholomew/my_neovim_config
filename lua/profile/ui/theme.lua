@@ -1,10 +1,9 @@
--- added-by-agent: ui-enhancement 20251020
--- Configuration for Rose Pine theme and transparency
+-- Configuration for Rose Pine theme with 100% transparency
 
 local M = {}
 
 function M.setup()
-  -- Set up rose-pine with transparency
+  -- Set up rose-pine with full transparency
   require('rose-pine').setup({
     variant = 'moon',
     dark_variant = 'moon',
@@ -36,18 +35,21 @@ function M.setup()
     },
   })
 
-  -- Set colorscheme with transparency
+  -- Set colorscheme with full transparency
   vim.cmd('colorscheme rose-pine')
 
   -- Enable true color support
   vim.opt.termguicolors = true
 
-  -- Set transparent background
+  -- Set fully transparent background
   vim.api.nvim_set_hl(0, "Normal", { bg = "NONE", ctermbg = "NONE" })
   vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE", ctermbg = "NONE" })
   vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE", ctermbg = "NONE" })
   vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE", ctermbg = "NONE" })
   vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE", ctermbg = "NONE" })
+  vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "NONE", ctermbg = "NONE" })
+  vim.api.nvim_set_hl(0, "FoldColumn", { bg = "NONE", ctermbg = "NONE" })
+  vim.api.nvim_set_hl(0, "VertSplit", { bg = "NONE", ctermbg = "NONE" })
 end
 
 return M

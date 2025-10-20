@@ -59,20 +59,48 @@ return {
   { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' } },
 
   -- Theme
-  { 'rose-pine/neovim', name = 'rose-pine' },  -- added-by-agent: ui-enhancement
+  { 'rose-pine/neovim', name = 'rose-pine' },
   { 'folke/tokyonight.nvim' },
 
   -- UI Enhancements
-  { 'nvim-focus/focus.nvim' },  -- added-by-agent: ui-enhancement
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl' },  -- added-by-agent: ui-enhancement
-  { 'folke/zen-mode.nvim' },  -- added-by-agent: ui-enhancement
-  { 'folke/twilight.nvim' },  -- added-by-agent: ui-enhancement
-  { 'j-hui/fidget.nvim', tag = 'legacy' },  -- added-by-agent: ui-enhancement
-  { 'rcarriga/nvim-notify' },  -- added-by-agent: ui-enhancement
-  { 'stevearc/dressing.nvim' },  -- added-by-agent: ui-enhancement
+  { 'nvim-focus/focus.nvim' },
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl' },
+  { 'folke/zen-mode.nvim' },
+  { 'folke/twilight.nvim' },
+  { 'j-hui/fidget.nvim', tag = 'legacy' },
+  { 'rcarriga/nvim-notify' },
+  { 'stevearc/dressing.nvim' },
+  
+  -- Additional UI enhancements
+  { 'mbbill/undotree' },  -- Visual undo tree
+  { 'nvim-telescope/telescope-ui-select.nvim' },  -- Better UI for selections
+  { 'SmiteshP/nvim-navic' },  -- Show code context in winbar
+  { 'Bekaboo/dropbar.nvim' },  -- IDE-like breadcrumbs
+  { 'utilyre/barbecue.nvim',  -- VS Code-like breadcrumbs
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {}
+  },
+  { 'akinsho/bufferline.nvim', -- Buffer tabs
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      options = {
+        mode = "tabs",
+        separator_style = "slant",
+      }
+    }
+  },
+  { 'goolord/alpha-nvim', -- Startup screen
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function ()
+      require'alpha'.setup(require'alpha.themes.dashboard'.config)
+    end
+  },
 
   -- Language specific
-  { 'p00f/clangd_extensions.nvim' },  -- added-by-agent: ccpp-setup
+  { 'p00f/clangd_extensions.nvim' },
   { 'simrat39/rust-tools.nvim' },
   { 'rust-lang/rust.vim' },
   { 'ray-x/go.nvim' },
@@ -93,7 +121,7 @@ return {
       "antoinemadec/FixCursorHold.nvim"
     }
   },
-  { 'rouge8/neotest-rust' },  -- Fixed repository for neotest-rust
+  { 'rouge8/neotest-rust' },
   { 'nvim-neotest/neotest-go' },
 
   -- Other
