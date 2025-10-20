@@ -20,6 +20,7 @@ require("mason-lspconfig").setup({
         "rust_analyzer", -- Rust
         "clangd",   -- C/C++
         "qmlls",    -- QML (if available in registry)
+        "omnisharp", -- C# (if available in registry)
     },
     automatic_installation = true,
 })
@@ -27,6 +28,7 @@ require("mason-lspconfig").setup({
 require("mason-nvim-dap").setup({
     ensure_installed = {
         "codelldb",  -- For Zig debugging
+        "netcoredbg", -- For C# debugging (if available in registry)
     },
     automatic_installation = true,
 })

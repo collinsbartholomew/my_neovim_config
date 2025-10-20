@@ -111,6 +111,7 @@ return {
   { 'theHamsta/nvim-dap-virtual-text' },
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
   { 'akinsho/toggleterm.nvim', version = '*', config = true },
+  { 'Hoffs/omnisharp-extended-lsp.nvim' }, -- added-by-agent: csharp-setup
 
   -- Testing
   {
