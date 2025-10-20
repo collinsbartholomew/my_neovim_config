@@ -39,16 +39,16 @@ lazy.setup({
       "saadparwaiz1/cmp_luasnip",
       "L3MON4D3/LuaSnip",
       "rafamadriz/friendly-snippets",
-    } },
+    }, config = require("user.cmp") },
 
     -- LSP
     { "williamboman/mason.nvim", cmd = "Mason", config = true },
     { "williamboman/mason-lspconfig.nvim" },
-    { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" } },
+    { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" }, config = require("user.lsp") },
     { "folke/neodev.nvim", ft = "lua" },
 
     -- Debugging
-    { "mfussenegger/nvim-dap", event = "VeryLazy" },
+    { "mfussenegger/nvim-dap", event = "VeryLazy", config = require("user.dap") },
     { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
     { "jay-babu/mason-nvim-dap.nvim" },
 
@@ -59,16 +59,16 @@ lazy.setup({
     { "pwntester/octo.nvim", cmd = "Octo", dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "nvim-tree/nvim-web-devicons" }, config = true },
 
     -- Navigation
-    { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" } },
+    { "nvim-telescope/telescope.nvim", cmd = "Telescope", dependencies = { "nvim-lua/plenary.nvim" }, config = require("user.telescope") },
     { "nvim-neo-tree/neo-tree.nvim", branch = "v3.x", cmd = "Neotree", dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" }, config = true },
     { "ThePrimeagen/harpoon", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
 
     -- Code Folding
-    { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" } },
+    { "kevinhwang91/nvim-ufo", event = "BufRead", dependencies = { "kevinhwang91/promise-async" }, config = require("user.ufo") },
 
     -- Formatting/Linting
-    { "stevearc/conform.nvim", event = "BufWritePre" },
-    { "mfussenegger/nvim-lint", event = "BufReadPre" },
+    { "stevearc/conform.nvim", event = "BufWritePre", config = require("user.conform") },
+    { "mfussenegger/nvim-lint", event = "BufReadPre", config = require("user.lint") },
 
     -- Tasks
     { "stevearc/overseer.nvim", cmd = { "OverseerRun", "OverseerToggle" }, config = true },
@@ -77,12 +77,12 @@ lazy.setup({
     { "akinsho/toggleterm.nvim", cmd = "ToggleTerm", config = true },
 
     -- UI
-    { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" } },
+    { "nvim-lualine/lualine.nvim", event = "VeryLazy", dependencies = { "nvim-tree/nvim-web-devicons" }, config = require("user.lualine") },
     { "akinsho/bufferline.nvim", event = "VeryLazy", config = true },
     { "rcarriga/nvim-notify", event = "VeryLazy", config = function() vim.notify = require("notify") end },
     { "folke/tokyonight.nvim", lazy = false, priority = 1000, config = function() vim.cmd.colorscheme("tokyonight") end },
     { "nvim-tree/nvim-web-devicons", lazy = true },
-    { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" } },
+    { "folke/noice.nvim", event = "VeryLazy", dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" }, config = require("user.noice") },
     { "stevearc/dressing.nvim", event = "VeryLazy", config = true },
     { "lukas-reineke/indent-blankline.nvim", event = "BufReadPre", main = "ibl", config = true },
     { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
@@ -92,7 +92,7 @@ lazy.setup({
     { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true }, -- Minimap
 
     -- Treesitter
-    { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate" },
+    { "nvim-treesitter/nvim-treesitter", event = "BufReadPre", build = ":TSUpdate", config = require("user.treesitter") },
 
     -- Session
     { "folke/persistence.nvim", event = "BufReadPre", config = true },
@@ -106,13 +106,13 @@ lazy.setup({
       "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
       -- Adapters: add as needed, e.g. neotest-python, neotest-jest, etc.
-    } },
+    }, config = require("user.neotest") },
 
     -- Other
     { "numToStr/Comment.nvim", event = "BufReadPre", config = true },
     { "kylechui/nvim-surround", event = "VeryLazy", config = true },
     { "mbbill/undotree", cmd = "UndotreeToggle" },
-    { "zbirenbaum/copilot.lua", event = "InsertEnter" },
+    { "zbirenbaum/copilot.lua", event = "InsertEnter", config = require("user.copilot") },
     { "folke/trouble.nvim", cmd = "TroubleToggle", dependencies = { "nvim-tree/nvim-web-devicons" }, config = true },
     { "tiagovla/scope.nvim", event = "VeryLazy", config = true }, -- Tab scopes
     { "folke/todo-comments.nvim", event = "BufReadPre", dependencies = { "nvim-lua/plenary.nvim" }, config = true },
