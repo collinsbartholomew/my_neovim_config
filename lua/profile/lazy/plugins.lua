@@ -137,4 +137,9 @@ return {
   { 'folke/which-key.nvim' },
   { 'windwp/nvim-autopairs' },
   { 'numToStr/Comment.nvim' },
+  
+  -- database-related plugins (for lazy.nvim) -- added-by-agent: db-setup 20251020-151229
+  { "kristijanhusak/vim-dadbod" },
+  { "kristijanhusak/vim-dadbod-ui" },
+  { "akinsho/toggleterm.nvim", version = "*" },
 }
