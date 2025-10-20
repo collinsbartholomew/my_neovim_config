@@ -30,9 +30,6 @@ function M.setup()
   -- Setup dropbar (breadcrumbs)
   pcall(function()
     require('dropbar').setup({
-      general = {
-        enable = true,
-      },
       icons = {
         enable = true,
       },

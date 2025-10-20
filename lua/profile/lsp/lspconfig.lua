@@ -97,17 +97,18 @@ local servers = {
   tsserver = {},
 }
 
--- Setup each language server
-for server_name, config in pairs(servers) do
-  config.on_attach = on_attach
-  config.capabilities = capabilities
-  vim.lsp.start(vim.tbl_extend("force", {
-    name = server_name,
-    cmd = vim.lsp.get_config(server_name).cmd,
-  }, config))
-end
+-- Setup each language server using mason-lspconfig
+mason_lspconfig.setup_handlers({
+  function(server_name)
+    local config = servers[server_name] or {}
+    config.on_attach = on_attach
+    config.capabilities = capabilities
+    require('lspconfig')[server_name].setup(config)
+  end
+})
 
 -- Initialize cmp
+local lsp_zero = require('lsp-zero')
 local cmp = require('cmp')
 local cmp_format = lsp_zero.cmp_format()
 

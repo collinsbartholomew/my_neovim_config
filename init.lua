@@ -15,7 +15,7 @@ if not vim.loop.fs_stat(lazypath) then
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
-   lazypath,
+    lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
@@ -27,15 +27,15 @@ require("lazy").setup("profile.lazy.plugins", {
   },
   performance = {
     rtp = {
-      disabled_plugins= {
+      disabled_plugins = {
         "gzip",
         "matchit",
         "matchparen",
         "netrwPlugin",
         "tarPlugin",
-  change_detection = {
-    notify = false,
-  },
+        change_detection = {
+          notify = false,
+        },
       },
     },
   },

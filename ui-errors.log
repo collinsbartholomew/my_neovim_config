@@ -1,3 +1,0 @@
-Module: profile.ui.diagnostics
-Error: vim/loader.lua:0: /home/collins/.config/nvim/lua/profile/ui/diagnostics.lua:26: '<eof>' expected near 'local'
-
