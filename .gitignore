@@ -6,3 +6,7 @@ setup-report-*.md
 *.swp
 *.bak
 
+node_modules/
+.cache/
+*.log
+*.swp
