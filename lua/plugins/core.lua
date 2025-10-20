@@ -35,6 +35,10 @@ return {
 					})
 				end,
 			},
+			{
+				"VonHeikemen/lsp-zero.nvim",
+				branch = "v3.x",
+			},
 		},
 		config = function()
 			local ok, lsp = pcall(require, "core.lsp")
@@ -58,24 +62,6 @@ return {
 		end,
 	},
 
-	{
-		"hrsh7th/nvim-cmp",
-		event = { "InsertEnter", "CmdlineEnter" },
-		dependencies = {
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-cmdline",
-			"hrsh7th/cmp-nvim-lsp",
-			"L3MON4D3/LuaSnip",
-			"saadparwaiz1/cmp_luasnip",
-			"rafamadriz/friendly-snippets",
-			"onsails/lspkind.nvim", -- Add lspkind for VSCode-like pictograms
-		},
-		config = function()
-			require("tools.completion").setup()
-		end,
-	},
-
 	-- Formatting support
 	{
 		"stevearc/conform.nvim",
@@ -95,16 +81,16 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 				python = { "isort", "black" },
-				javascript = { { "prettierd", "prettier" } },
-				typescript = { { "prettierd", "prettier" } },
-				javascriptreact = { { "prettierd", "prettier" } },
-				typescriptreact = { { "prettierd", "prettier" } },
-				json = { { "prettierd", "prettier" } },
-				yaml = { { "prettierd", "prettier" } },
-				html = { { "prettierd", "prettier" } },
-				css = { { "prettierd", "prettier" } },
-				scss = { { "prettierd", "prettier" } },
-				markdown = { { "prettierd", "prettier" } },
+				javascript = { "prettierd", "prettier" },
+				typescript = { "prettierd", "prettier" },
+				javascriptreact = { "prettierd", "prettier" },
+				typescriptreact = { "prettierd", "prettier" },
+				json = { "prettierd", "prettier" },
+				yaml = { "prettierd", "prettier" },
+				html = { "prettierd", "prettier" },
+				css = { "prettierd", "prettier" },
+				scss = { "prettierd", "prettier" },
+				markdown = { "prettierd", "prettier" },
 				rust = { "rustfmt" },
 				go = { "gofmt", "goimports" },
 				c = { "clang_format" },

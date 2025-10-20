@@ -16,32 +16,32 @@ return {
 				},
 				ensure_installed = {
 					-- LSP
-					--					"lua-language-server",
-					--					"typescript-language-server",
-					--					"css-lsp",
-					--					"html-lsp",
-					--					"json-lsp",
-					--					"gopls",
-					--					"pyright",
-					--					"rust-analyzer",
-					--
-					--					-- Linters
-					--					"eslint_d",
-					--					"luacheck",
-					--					"shellcheck",
-					--					"pylint",
-					--
-					--					-- Formatters
-					--					"prettier",
-					--					"stylua",
-					--					"black",
-					--					"rustfmt",
-					--					"gofmt",
-					--
-					--					-- Debug Adapters
-					--					"js-debug-adapter",
-					--					"codelldb",
-					--					"debugpy",
+					"lua-language-server",
+					"typescript-language-server",
+					"css-lsp",
+					"html-lsp",
+					"json-lsp",
+					"gopls",
+					"pyright",
+					"rust-analyzer",
+
+					-- Linters
+					"eslint_d",
+					"luacheck",
+					"shellcheck",
+					"pylint",
+
+					-- Formatters
+					"prettier",
+					"stylua",
+					"black",
+					"rustfmt",
+					"gofmt",
+
+					-- Debug Adapters
+					"js-debug-adapter",
+					"codelldb",
+					"debugpy",
 				},
 				automatic_installation = true,
 				max_concurrent_installers = 4,

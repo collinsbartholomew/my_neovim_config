@@ -21,13 +21,18 @@ function M.setup()
     end)
 
     -- Configure LSP if available
-    if pcall(require, "lspconfig") then
-        require("lspconfig").hypr.setup({
-            capabilities = require("core.lsp").get_capabilities(),
-            on_attach = function(client, bufnr)
-                require("core.lsp").on_attach(client, bufnr)
-            end,
-        })
+    local lsp_ok, lspconfig = pcall(require, "lspconfig")
+    if lsp_ok then
+        -- Check if the hypr LSP is available before trying to set it up
+        local hypr_ok, _ = pcall(function() return lspconfig.hypr end)
+        if hypr_ok then
+            lspconfig.hypr.setup({
+                capabilities = require("core.lsp").get_capabilities(),
+                on_attach = function(client, bufnr)
+                    require("core.lsp").on_attach(client, bufnr)
+                end,
+            })
+        end
     end
 end
 
