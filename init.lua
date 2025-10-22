@@ -23,7 +23,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Load and initialize lazy with the profile plugins
 require("lazy").setup("profile.lazy.plugins", {
   install = {
-    colorscheme = { "tokyonight" },
+    colorscheme = { "rose-pine" },
   },
   performance = {
     rtp = {

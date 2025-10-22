@@ -1,0 +1,13 @@
+# RuboCop configuration
+Layout/IndentationStyle:
+  EnforcedStyle: tabs
+
+Layout/IndentationWidth:
+  Width: 4
+
+Layout/TabWidth:
+  Width: 4
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.0

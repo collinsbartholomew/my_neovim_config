@@ -5,12 +5,13 @@
 local M = {}
 
 function M.setup()
-  -- Load submodules
-  require("profile.languages.ccpp.lsp").setup()
-  require("profile.languages.ccpp.qmlls").setup()
-  require("profile.languages.ccpp.debug").setup()
-  require("profile.languages.ccpp.tools").setup()
-  require("profile.languages.ccpp.mappings").setup()
+    -- Load submodules
+    require("profile.languages.ccpp.lsp").setup()
+    require("profile.languages.ccpp.qmlls").setup()
+    require("profile.languages.ccpp.debug").setup()
+    require("profile.languages.ccpp.tools").setup()
+    require("profile.languages.ccpp.qt").setup()
+    require("profile.languages.ccpp.mappings").setup()
 end
 
 return M

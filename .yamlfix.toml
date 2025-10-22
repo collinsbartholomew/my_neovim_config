@@ -1,0 +1,4 @@
+line_length = 120
+indent_mapping = 4
+indent_sequence = 4
+preferred_quote = "double"

@@ -1,0 +1,4 @@
+[sqlfluff]
+dialect = ansi
+indent_unit = tab
+tab_space_size = 4

@@ -1,0 +1,6 @@
+[formatting]
+indent_tables = true
+indent_entries = false
+trailing_newline = true
+column_width = 120
+indent_string = "\t"

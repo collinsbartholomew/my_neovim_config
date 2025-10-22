@@ -5,19 +5,19 @@
 local M = {}
 
 function M.setup(config)
-  -- Idempotency check
-  if _G.flutter_setup_done then
-    return
-  end
-  
-  -- Load all Flutter modules
-  require('profile.languages.flutter.lsp').setup(config)
-  require('profile.languages.flutter.debug').setup(config)
-  require('profile.languages.flutter.tools').setup(config)
-  require('profile.languages.flutter.mappings').setup()
-  
-  -- Mark setup as done
-  _G.flutter_setup_done = true
+    -- Idempotency check
+    if _G.flutter_setup_done then
+        return
+    end
+
+    -- Load all Flutter modules
+    require('profile.languages.flutter.lsp').setup(config)
+    require('profile.languages.flutter.debug').setup(config)
+    require('profile.languages.flutter.tools').setup(config)
+    require('profile.languages.flutter.mappings').setup()
+
+    -- Mark setup as done
+    _G.flutter_setup_done = true
 end
 
 return M

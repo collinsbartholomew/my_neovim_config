@@ -5,16 +5,16 @@
 local M = {}
 
 function M.setup()
-  if _G.web_setup_done then
-    return
-  end
+    if _G.web_setup_done then
+        return
+    end
 
-  require("profile.languages.web.lsp").setup()
-  require("profile.languages.web.dap").setup()
-  require("profile.languages.web.tools").setup()
-  require("profile.languages.web.mappings").setup()
+    require("profile.languages.web.lsp").setup()
+    require("profile.languages.web.dap").setup()
+    require("profile.languages.web.tools").setup()
+    require("profile.languages.web.mappings").setup()
 
-  _G.web_setup_done = true
+    _G.web_setup_done = true
 end
 
 return M

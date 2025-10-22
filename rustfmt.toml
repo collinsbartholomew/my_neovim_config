@@ -1,0 +1,7 @@
+# Rustfmt configuration
+tab_spaces = 4
+edition = "2021"
+max_width = 100
+hard_tabs = true
+merge_derives = true
+use_field_init_shorthand = true

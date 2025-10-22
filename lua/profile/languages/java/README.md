@@ -1,6 +1,6 @@
 # Java Language Support
 
-This module provides comprehensive Java support for Neovim, including LSP (JDTLS), debugging, and various tools.
+This module provides comprehensive Java support for Neovim, including LSP (JDTLS), debugging, and various tools for enterprise development, Android development, and microservices.
 
 ## Prerequisites
 
@@ -83,42 +83,122 @@ If you've installed JDK in a custom location, set:
 export JDTLS_JAVA_HOME="/path/to/your/jdk"
 ```
 
-## Usage
+## Features
 
-### Key mappings
+### Language Server Protocol (LSP)
+- Uses `jdtls` for advanced Java language features
+- Inlay hints for types, variables, and method parameters
+- Code actions and refactoring (extract method/variable, organize imports)
+- Go to definition, references, implementation across jars
+- Hover documentation
+- Code lens for running/debugging tests and other actions
+- Support for Maven/Gradle projects, Spring Boot, Jakarta EE
 
-Leader key is space by default.
+### Debugging (DAP)
+- Uses `java-debug-adapter` for native JVM debugging
+- Support for debugging console apps, web apps, and unit tests
+- Remote debugging capabilities
+- Variable inspection and watches with hot swap
+- Breakpoint management with conditional breakpoints
+- Support for debugging lambdas and streams
 
-#### Java commands
-- `<leader>jb` - Build project (Maven/Gradle)
-- `<leader>jt` - Run tests (:RunTests)
-- `<leader>jr` - Run program (:JavaRun)
-- `<leader>jf` - Format code (:JavaFormat)
+### Formatting
+- Uses `google-java-format` for code formatting
+- Automatic formatting on save
+
+### Linting
+- Uses `checkstyle` for static analysis
+- PMD/SpotBugs for bug detection
+- OWASP Dependency-Check for security vulnerabilities
+
+### Testing
+- Integration with `neotest` for running tests
+- Support for JUnit 4/5 and TestNG
+- Test coverage reports with JaCoCo
+
+### Tools and Utilities
+- Memory profiling with jvisualvm or MAT
+- Security analysis with OWASP Dependency-Check
+- Package management with Maven/Gradle commands
+- Dependency analysis with jdeps
+- JFR (Java Flight Recorder) profiling
+
+## Keymaps
+
+### Java Commands (`<leader>j`)
+- `<leader>job` - Maven build
+- `<leader>jot` - Maven test
+- `<leader>jor` - Maven run
+- `<leader>joc` - Maven clean
+- `<leader>jgb` - Gradle build
+- `<leader>jgt` - Gradle test
+- `<leader>jgr` - Gradle run
+- `<leader>jgc` - Gradle clean
+- `<leader>jf` - Format code
 - `<leader>jo` - Organize imports
 - `<leader>jv` - Extract variable
 - `<leader>jc` - Extract constant
+- `<leader>jm` - Extract method
+- `<leader>jt` - Test class
+- `<leader>jT` - Test method
+- `<leader>ju` - Update project config
+- `<leader>jp` - Show memory layout
+- `<leader>js` - Security check
+- `<leader>jm` - Heap dump
 
-#### Debugging
-- `<leader>dd` - Continue debugging
+### Debugging (`<leader>d`)
 - `<leader>db` - Toggle breakpoint
-- `<leader>dr` - Restart debugging
-- `<leader>dt` - Debug test
+- `<leader>dc` - Continue
+- `<leader>do` - Step over
+- `<leader>di` - Step into
+- `<leader>dO` - Step out
+- `<leader>dr` - Open REPL
+- `<leader>du` - Toggle DAP UI
+- `<leader>dq` - Stop debugging
+- `<leader>dt` - Terminate session
+- `<leader>dp` - Pause execution
+- `<leader>dw` - Widget hover
 
-#### Tools
-- `<leader>vj` - Analyze dependencies (:JavaPackageAnalyze)
-- `<leader>vc` - Code coverage (:JavaCoverage)
+### Software Engineering (`<leader>se`)
+- `<leader>sec` - Coverage
+- `<leader>ser` - Reformat
+- `<leader>set` - Test
+- `<leader>sef` - Dependencies
+- `<leader>ses` - Security scan
+
+### LSP Features (`<leader>l`)
+- `<leader>lh` - Hover
+- `<leader>lr` - Rename
+- `<leader>la` - Code action
+- `<leader>ld` - Diagnostics
+- `<leader>lf` - Format
+- `<leader>lg` - Go to definition
+- `<leader>li` - Implementation
+- `<leader>ls` - Document symbols
+- `<leader>lw` - Workspace symbols
+- `<leader>lt` - Run CodeLens
+
+## Usage
 
 ### Commands
 
 - `:JavaFormat` - Format Java code
 - `:MavenBuild` - Build with Maven
+- `:MavenTest` - Run Maven tests
+- `:MavenRun` - Run with Maven
+- `:MavenClean` - Clean with Maven
 - `:GradleBuild` - Build with Gradle
+- `:GradleTest` - Run Gradle tests
+- `:GradleRun` - Run with Gradle
+- `:GradleClean` - Clean with Gradle
 - `:RunTests` - Run tests
 - `:JavaRun` - Run Java program
 - `:StartJFR`/:StopJFR - JFR profiling helpers
 - `:StartAsyncProfiler` - Async profiler helper
 - `:JavaPackageAnalyze` - Analyze package dependencies
 - `:JavaCoverage` - Coverage instructions
+- `:JavaSecurityCheck` - Security vulnerability scan
+- `:JavaHeapDump` - Heap dump instructions
 - `:JavaRestartServer` - Restart JDTLS
 
 ## Configuration

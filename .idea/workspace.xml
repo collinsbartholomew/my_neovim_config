@@ -44,7 +44,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.github.copilot.settings.mcp.McpConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.19979079&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/opt/.ide/.plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
@@ -57,10 +57,22 @@
       <recent name="$PROJECT_DIR$/lua/langs/go" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="nvim" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="nvim" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
         <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
       </set>
     </attachedChunks>
@@ -114,6 +126,12 @@
       <workItem from="1760888475037" duration="29829000" />
       <workItem from="1760918992618" duration="12391000" />
       <workItem from="1760931740606" duration="13709000" />
+      <workItem from="1760961706647" duration="22586000" />
+      <workItem from="1760985394053" duration="16948000" />
+      <workItem from="1761004985400" duration="2124000" />
+      <workItem from="1761044236496" duration="18582000" />
+      <workItem from="1761072878902" duration="13183000" />
+      <workItem from="1761087810083" duration="9228000" />
     </task>
     <servers />
   </component>
@@ -121,6 +139,7 @@
     <option name="version" value="3" />
   </component>
   <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="file-handler:ansi-highlighter" />
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.py" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">

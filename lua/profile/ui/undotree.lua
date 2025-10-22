@@ -1,5 +1,7 @@
 -- Undotree setup
-if not pcall(require, 'undotree') then return end
+if not pcall(require, 'undotree') then
+    return
+end
 vim.g.undotree_WindowLayout = 2
 vim.g.undotree_SetFocusWhenToggle = 1
 vim.g.undotree_SplitWidth = 40
