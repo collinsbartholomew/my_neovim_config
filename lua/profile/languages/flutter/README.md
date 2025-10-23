@@ -98,6 +98,9 @@ Leader key is space by default.
 - `:FlutterReload` - Hot reload the app
 - `:DartFormat` - Format Dart code
 - `:DevTools` - Open Flutter DevTools
+- `:MemoryProfile` - Profile memory usage
+- `:SecurityAudit` - Audit dependencies for security issues
+- `:SecurityScan` - Scan for vulnerabilities
 - `:FlutterDoctor` - Run Flutter doctor
 - `:FvmUse <version>` - Use specific Flutter version with FVM
 

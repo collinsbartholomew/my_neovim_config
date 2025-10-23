@@ -4,7 +4,7 @@ This module provides comprehensive web development support for Neovim, including
 
 ## Features
 
-- TypeScript/JavaScript Language Server (tsserver)
+- TypeScript/JavaScript Language Server (ts_ls)
 - HTML, CSS, JSON, and Tailwind CSS language servers
 - Debugging support with js-debug-adapter
 - Code formatting with prettier
@@ -40,7 +40,7 @@ pnpm add -D @fsouza/prettierd eslint_d prettier eslint typescript
 
 The following packages can be installed via Mason:
 
-- `tsserver` - TypeScript/JavaScript language server
+- `ts_ls` - TypeScript/JavaScript language server
 - `tailwindcss-language-server` - Tailwind CSS language server
 - `prettier` - Code formatter
 - `eslint` - Linter
@@ -48,7 +48,7 @@ The following packages can be installed via Mason:
 
 To install via Mason:
 ```vim
-:MasonInstall tsserver tailwindcss-language-server prettier eslint js-debug-adapter
+:MasonInstall ts_ls tailwindcss-language-server prettier eslint js-debug-adapter
 ```
 
 ## Usage

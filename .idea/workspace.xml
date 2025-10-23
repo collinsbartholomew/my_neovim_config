@@ -44,7 +44,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Code Search&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.19979079&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/opt/.ide/.plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
@@ -58,6 +58,17 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="nvim" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="nvim" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="nvim" />
       <method v="2">
@@ -132,6 +143,10 @@
       <workItem from="1761044236496" duration="18582000" />
       <workItem from="1761072878902" duration="13183000" />
       <workItem from="1761087810083" duration="9228000" />
+      <workItem from="1761122787677" duration="20482000" />
+      <workItem from="1761164089752" duration="39153000" />
+      <workItem from="1761230936979" duration="11205000" />
+      <workItem from="1761242874635" duration="6578000" />
     </task>
     <servers />
   </component>

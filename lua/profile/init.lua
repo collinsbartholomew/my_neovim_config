@@ -1,61 +1,106 @@
--- Main profile aggregator
+--Main profile configuration loader
+-- This file loads all the modular configurations in the profile directory
 
-local diagnostics = {}
+-- Load core configurations
+require("profile.core.options")   -- Basic editor options
+require("profile.core.autocmds")  -- Autocommands
+require("profile.core.keymaps")   -- Keymaps and which-keysetup
+require("profile.core.functions") -- Custom functions
+require("profile.core.utils")     -- Utility functions
+require("profile.core.mason")     -- Mason package manager
 
-local function safe_require(mod)
-    local ok, err = pcall(require, mod)
-    if not ok then
-        vim.notify(string.format("Error loading %s: %s", mod, err), vim.log.levels.WARN)
-        table.insert(diagnostics, { mod = mod, err = err })
-    end
-    return ok
-end
+-- Load completion engine
+require("profile.completion.cmp")
 
--- Essential modules loaded first
-safe_require('profile.core.options')
-safe_require('profile.core.keymaps')
-safe_require('profile.core.autocmds')
-safe_require('profile.core.mason')  -- Ensure Mason loads first
+--Load debugging support
+require("profile.dap.init")
 
--- Enable impatient for faster loading
-pcall(function()
-	require('impatient')
-end)
+-- Load LSP configurations
+require("profile.lsp.lspconfig")
 
--- UI modules - consolidated
-safe_require('profile.ui')
+-- Load null-ls configurations
+require("profile.null_ls.init")
 
--- Defer loading of non-essential modules until after startup
-local function load_deferred_modules()
-    -- Load these after startup for better performance
-    safe_require('profile.core.utils')
-    safe_require('profile.core.functions')  -- Custom functions
-    safe_require('profile.completion.cmp')
-    safe_require('profile.lsp.lspconfig')
-    safe_require('profile.dap')
-    safe_require('profile.null_ls')
-    
-    -- Language modules
-    local languages = {
-        'ccpp', 'rust', 'go', 'web', 'flutter', 'java',
-        'csharp', 'zig', 'asm', 'dbs', 'python', 'mojo', 'lua'
-    }
-    
-    for _, lang in ipairs(languages) do
-        safe_require('profile.languages.' .. lang)
-    end
-end
+-- Load tools configurations
+require("profile.tools.conform")
+require("profile.tools.lint")
+pcall(function() require("profile.tools.copilot").setup() end)
+require("profile.tools.neotest")
 
--- Load deferred modules after startup
-vim.defer_fn(load_deferred_modules, 100)
+-- Load UI configurations
+require("profile.ui.init")
 
--- Report any loading errors
-if #diagnostics > 0 then
-    local f = io.open(vim.fn.stdpath('config') .. '/setup-errors.log', 'w')
-    if f then
-        for _, d in ipairs(diagnostics) do
-            f:write(string.format('Module: %s\nError: %s\n\n', d.mod, d.err))
-        end
-        f:close()
-    end
-end
+-- Load language-specific configurations
+require("profile.languages.asm")
+require("profile.languages.ccpp")
+require("profile.languages.csharp")
+require("profile.languages.dbs")
+require("profile.languages.flutter")
+require("profile.languages.go")
+require("profile.languages.java")
+require("profile.languages.lua")
+require("profile.languages.mojo")
+require("profile.languages.python")
+require("profile.languages.rust")
+require("profile.languages.web")
+require("profile.languages.zig")
+require("profile.languages.php")  -- PHP languagesupport
+
+-- Load Treesitter configuration
+require("profile.treesitter")
+
+-- Initialize language modules
+pcall(function() require("profile.languages.asm").setup() end)
+pcall(function() require("profile.languages.ccpp").setup() end)
+pcall(function() require("profile.languages.csharp").setup() end)
+pcall(function() require("profile.languages.dbs").setup() end)
+pcall(function() require("profile.languages.flutter").setup() end)
+pcall(function() require("profile.languages.go").setup() end)
+pcall(function() require("profile.languages.java").setup() end)
+pcall(function() require("profile.languages.lua").setup() end)
+pcall(function() require("profile.languages.mojo").setup() end)
+pcall(function() require("profile.languages.python").setup() end)
+pcall(function() require("profile.languages.rust").setup() end)
+pcall(function() require("profile.languages.web").setup() end)
+pcall(function() require("profile.languages.zig").setup() end)
+pcall(function() require("profile.languages.php").setup() end)  -- Initialize PHP support
+
+-- Setup mason tool installer
+require("mason-tool-installer").setup({
+    ensure_installed = {
+        -- Formatters
+        "stylua",
+        "prettier",
+        "black",
+        "clang-format",
+        "rustfmt",
+        "shfmt",
+        "google-java-format",
+        "phpcbf",
+        
+        -- Linters
+        "luacheck",
+        "eslint_d",
+        "ruff",
+        -- "clang-tidy",
+        "phpstan",
+        
+        -- LSPs
+        "lua_ls",
+        "ts_ls",
+        "pyright",
+        "clangd",
+        "rust_analyzer",
+        "gopls",
+        "intelephense",
+        
+        -- DAPs
+        "php-debug-adapter",
+        
+        -- Others
+        "asm-lsp",
+        "asmfmt",
+    },
+    auto_update = true,
+    run_on_start = true,
+})

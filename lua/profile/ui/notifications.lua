@@ -5,7 +5,7 @@ local M = {}
 function M.setup()
     -- Configure nvim-notify with transparency
     require("notify").setup({
-        background_colour = "NONE", -- Fully transparent
+        background_colour = "#000000", -- Fully transparent black
         fps = 60,
         render = "minimal",
         stages = "fade_in_slide_out",
@@ -14,6 +14,19 @@ function M.setup()
         top_down = false,
         max_width = 80, -- Limit width
         max_height = 10, -- Limit height
+        on_open = function(win)
+            -- Make notifications not disappear when clicked
+            vim.api.nvim_create_autocmd("BufLeave", {
+                buffer = vim.api.nvim_win_get_buf(win),
+                once = true,
+                callback = function()
+                    -- Dismiss notification when focus is lost
+                    pcall(function()
+                        require("notify").dismiss({ id = win })
+                    end)
+                end,
+            })
+        end,
     })
 
     -- Set as default notify handler
@@ -30,9 +43,7 @@ function M.setup()
             maxWidth = 60, -- Limit width
             maxHeight = 5, -- Limit height
         },
-        sources = {
-            ["null-ls"] = { ignore = true },
-        },
+        sources = {},
     })
 
     -- Set up dressing.nvim for better UI

@@ -10,20 +10,20 @@ function M.toggle_diagnostics()
 	vim.g.diagnostics_enabled = not vim.g.diagnostics_enabled
 
 	if vim.g.diagnostics_enabled then
-		vim.diagnostic.enable()
+		vim.diagnostic.enable(0)  -- Enable for current buffer
 		print("Diagnostics enabled")
 	else
-		vim.diagnostic.disable()
+		vim.diagnostic.disable(0)  -- Disable for current buffer
 		print("Diagnostics disabled")
 	end
 end
 
--- Check if required tools for assembly development are installed
+--Check if required tools for assembly development are installed
 function M.check_asm_tools()
 	local tools = {
 		{ name = "asm-lsp", cmd = "asm-lsp" },
 		{ name = "nasm", cmd = "nasm" },
-		{ name = "as (GAS)", cmd = "as" },
+		{ name = "as (GAS)",cmd = "as" },
 		{ name = "ld", cmd = "ld" },
 		{ name = "gdb", cmd = "gdb" },
 		{ name = "objdump", cmd = "objdump" },
@@ -36,7 +36,7 @@ function M.check_asm_tools()
 	local missing_tools = {}
 	local installed_tools = {}
 
-	for _, tool in ipairs(tools) do
+for _, tool in ipairs(tools) do
 		local found = vim.fn.executable(tool.cmd) == 1
 		if found then
 			table.insert(installed_tools, tool.name)
@@ -65,13 +65,13 @@ end
 -- Quick compile and run for assembly
 function M.asm_run()
 	local bufname = vim.api.nvim_buf_get_name(0)
-	local basename = vim.fn.fnamemodify(bufname, ":r")
+	localbasename = vim.fn.fnamemodify(bufname, ":r")
 	local extension = vim.fn.fnamemodify(bufname, ":e")
 
 	if extension =="asm" then
 		-- NASM compilation
 		local cmd = string.format(
-			"nasm -f elf64 %s.asm -o %s.o && ld %s.o -o %s && ./%s",
+			"nasm -f elf64 %s.asm-o %s.o && ld %s.o -o %s && ./%s",
 			basename,
 			basename,
 			basename,
@@ -80,7 +80,7 @@ function M.asm_run()
 		)
 		vim.cmd("!" .. cmd)
 	elseif extension == "s" or extension == "S" then
-		-- GAS compilation
+-- GAS compilation
 		local cmd = string.format(
 			"as %s.%s -o %s.o && ld %s.o -o%s && ./%s",
 			basename,
@@ -91,8 +91,7 @@ function M.asm_run()
 			basename
 		)
 		vim.cmd("!" .. cmd)
-	else
-		print("Not an assembly file")
+	elseprint("Not an assembly file")
 	end
 end
 
@@ -108,7 +107,7 @@ function M.check_cpp_tools()
 		{ name = "codelldb", cmd = "codelldb" },
 { name = "cmake", cmd = "cmake" },
 		{ name = "bear", cmd = "bear" },
-		{ name = "valgrind", cmd = "valgrind" },
+		{ name = "valgrind", cmd = "valgrind"},
 		{ name = "qmlls", cmd = "qmlls"},
 		{ name = "qmllint", cmd = "qmllint" },
 		{ name = "qmlscene", cmd = "qmlscene" },
@@ -117,8 +116,7 @@ function M.check_cpp_tools()
 	local missing_tools = {}
 	local installed_tools = {}
 
-	for _, tool in ipairs(tools) do
-		local found = vim.fn.executable(tool.cmd) == 1
+	for _, tool in ipairs(tools) do local found = vim.fn.executable(tool.cmd) == 1
 		if found then
 			table.insert(installed_tools, tool.name)
 		else
@@ -135,7 +133,7 @@ function M.check_cpp_tools()
 	if #missing_tools > 0 then
 		print("\nMissing tools:")
 		for _, tool in ipairs(missing_tools) do
-			print(" ✗ " .. tool)
+			print("✗ " .. tool)
 		end
 		print("\nInstall missing tools for full C/C++ support")
 	else
@@ -156,7 +154,7 @@ function M.create_cpp_class()
 
 	-- Create header file content
 	local header_content = {
-		"#pragma once",
+		"#pragmaonce",
 		"",
 		"#include <iostream>",
 		"",
@@ -166,7 +164,7 @@ function M.create_cpp_class()
 		"    ~" .. class_name .. "();",
 		"",
 		"private:",
-		"    // Private members",
+	"    // Private members",
 		"};",
 		"",
 	}
@@ -206,7 +204,7 @@ function M.check_rust_tools()
 		{ name = "rust-analyzer", cmd = "rust-analyzer" },
 		{ name = "rustc", cmd = "rustc" },
 		{ name = "cargo", cmd = "cargo" },
-		{ name = "rustfmt", cmd = "rustfmt" },
+		{ name = "rustfmt",cmd = "rustfmt" },
 		{ name = "clippy",cmd = "clippy" },
 		{ name = "codelldb", cmd = "codelldb" },
 		{ name = "cargo-audit", cmd = "cargo-audit" },
@@ -228,7 +226,7 @@ function M.check_rust_tools()
 	end
 
 	print("=== RustDevelopment Tools ===")
-	print("Installed tools:")
+print("Installed tools:")
 	for _, tool in ipairs(installed_tools) do
 		print("  ✓ " .. tool)
 	end
@@ -237,7 +235,7 @@ function M.check_rust_tools()
 		print("\nMissing tools:")
 		for _, tool in ipairs(missing_tools) do
 			print("  ✗" .. tool)
-		end
+end
 		print("\nInstall missing tools for full Rustsupport")
 	else
 		print("\nAll tools installed! You're ready for Rust development.")
@@ -247,7 +245,7 @@ end
 -- Create a new Rust module
 function M.create_rust_module()
 	local module_name = vim.fn.input("Module name: ")
-	if module_name == "" then
+	if module_name== "" then
 		print("No module name provided")
 	return
 	end
@@ -259,7 +257,7 @@ function M.create_rust_module()
 		"//! " .. module_name .. " module",
 		"",
 		"/// A sample function",
-		"pub fn hello() {",
+		"pubfn hello() {",
 		'    println!("Hellofrom ' .. module_name .. '!");',
 		"}",
 		"",
@@ -305,7 +303,7 @@ function M.check_zig_tools()
 	if #missing_tools > 0 then
 		print("\nMissing tools:")
 		for _, tool in ipairs(missing_tools) do
-			print("  ✗" .. tool)
+			print("  ✗".. tool)
 		end
 		print("\nInstall missing tools for full Zigsupport")
 	else
@@ -318,7 +316,7 @@ function M.create_zig_module()
 	local module_name = vim.fn.input("Module name: ")
 	if module_name == "" then
 		print("No module name provided")
-	return
+return
 	end
 
 	local mod_file = module_name .. ".zig"
@@ -374,7 +372,7 @@ function M.run_npm_script()
 end
 
 function M.run_yarn_script()
-    local script = vim.fn.input("yarn: ")
+    local script= vim.fn.input("yarn: ")
     if script ~= "" then
         vim.cmd("belowright new | terminal yarn " .. script)
     end

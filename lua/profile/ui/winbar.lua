@@ -1,12 +1,15 @@
--- Winbar configuration with navic breadcrumbs
+--Winbar configuration with navic breadcrumbs
 local M = {}
 
 function M.setup()
-  -- Enable winbar
-  vim.opt.winbar = "%{%v:lua.require('profile.ui.winbar').eval()%}"
+  -- Disable winbar completely
+  vim.opt.winbar = ""
+  vim.opt.laststatus = 3 -- Use global statusline
 
-  -- Set up autocommands for winbar updates
-  vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "BufWinEnter", "BufFilePost" }, {
+  -- Setup autocommands for winbar updates
+  vim.api.nvim_create_augroup("WinbarUpdate", { clear = true })
+  vim.api.nvim_create_autocmd({"CursorMoved", "BufEnter"}, {
+    group = "WinbarUpdate",
     callback = function()
       vim.cmd("redrawstatus")
     end,
@@ -14,20 +17,12 @@ function M.setup()
 end
 
 function M.eval()
-  local navic_ok, navic = pcall(require, "nvim-navic")
-  if navic_ok and navic.is_available() then
-    local location = navic.get_location()
-    if location and location ~= "" then
-      return "%#WinBar#" .. location
-    end
+  local navic = require("nvim-navic")
+  if navic.is_available() then
+    return navic.get_location()
+  else
+    return ""
   end
-  
-  -- Fallback to filename if no navic info
-  local filename = vim.fn.expand("%:t")
-  if filename == "" then
-    filename = "[No Name]"
-  end
-  return "%#WinBar#" .. filename
 end
 
 return M

@@ -94,6 +94,9 @@ function M.setup()
 		{ "<leader>ut", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
 	})
 	
+	-- Set up <leader>e for NeoTree toggle
+	vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { noremap = true, silent = true })
+	
 	-- Set up the <C-n> keymap for Neo-tree
 	vim.keymap.set("n", "<C-n>", "<cmd>Neotree toggle<cr>", { noremap = true, silent = true })
 end

@@ -21,12 +21,12 @@ nvim --headless -u ~/.config/nvim/init.lua -c 'lua local node = vim.fn.exepath("
 
 # Test Mason packages
 echo "Testing Mason packages..." >> scripts/verify-web.log
-nvim --headless -u ~/.config/nvim/init.lua -c 'lua local mason_registry = require("mason-registry"); mason_registry.refresh(); local packages = {"tsserver", "tailwindcss", "html", "cssls", "jsonls", "js-debug-adapter"}; local found = {}; for _, pkg in ipairs(packages) do if mason_registry.is_installed(pkg) then table.insert(found, pkg) end end; print("Mason packages found:", table.concat(found, ", "))' -c 'qa!' >> scripts/verify-web.log 2>&1 || echo "Mason test failed" >> scripts/verify-web.log
+nvim --headless -u ~/.config/nvim/init.lua -c 'lua local mason_registry = require("mason-registry"); mason_registry.refresh(); local packages = {"ts_ls", "tailwindcss", "html", "cssls", "jsonls", "js-debug-adapter"}; local found = {}; for _, pkg in ipairs(packages) do if mason_registry.is_installed(pkg) then table.insert(found, pkg) end end; print("Mason packages found:", table.concat(found, ", "))' -c 'qa!' >> scripts/verify-web.log 2>&1 || echo "Mason test failed" >> scripts/verify-web.log
 
 # Test LSP configuration
 echo "Testing LSP configuration..." >> scripts/verify-web.log
 echo "console.log('test');" > /tmp/web_tmp_test.ts
-nvim --headless -u ~/.config/nvim/init.lua /tmp/web_tmp_test.ts -c 'sleep 2000ms' -c 'lua local clients = vim.lsp.get_active_clients(); local tsserver_found = false; for _, client in ipairs(clients) do if client.name == "tsserver" then tsserver_found = true; break; end end; print("TypeScript LSP:", tsserver_found and "found" or "not found")' -c 'bd!' -c 'qa!' >> scripts/verify-web.log 2>&1 || echo "LSP test failed" >> scripts/verify-web.log
+nvim --headless -u ~/.config/nvim/init.lua /tmp/web_tmp_test.ts -c 'sleep 2000ms' -c 'lua local clients = vim.lsp.get_active_clients(); local tsserver_found = false; for _, client in ipairs(clients) do if client.name == "ts_ls" then tsserver_found = true; break; end end; print("TypeScript LSP:", tsserver_found and "found" or "not found")' -c 'bd!' -c 'qa!' >> scripts/verify-web.log 2>&1 || echo "LSP test failed" >> scripts/verify-web.log
 rm -f /tmp/web_tmp_test.ts
 
 # Test DAP configuration

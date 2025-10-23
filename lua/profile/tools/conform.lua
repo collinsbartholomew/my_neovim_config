@@ -1,247 +1,348 @@
--- Conform.nvim setup (formatters)
+--Conform.nvim setup (formatters)
+--This file configures the formatting engine for Neovim using conform.nvim
 local conform_status, conform = pcall(require, "conform")
 if not conform_status then
+    -- If conform.nvim is not available, show a warning and exit
     vim.notify("Conform.nvim not available", vim.log.levels.WARN)
     return
 end
 
+-- Main conform.nvim setup
 conform.setup({
+    -- Map filetypes to their respective formatters
+    -- Each filetype can have multiple formatters that will be tried in order
     formatters_by_ft = {
-        lua = { "stylua" },
-        python = { "ruff", "black" },
-        java = { "google-java-format" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        go = { "goimports", "gofumpt" },
-        html = { "prettier" },
-        jsx = { "prettier" },
-        tsx = { "prettier" },
-        xml = { "xmllint" },
-        css = { "prettier" },
-        scss = { "prettier" },
-        sass = { "prettier" },
-        less = { "prettier" },
-        json = { "prettier" },
-        yaml = { "prettier" },
-        markdown = { "prettier" },
-        handlebars = { "prettier" },
-        hbs = { "prettier" },
-        php = { "php_cs_fixer", "phpcbf" },
-        vue = { "prettier" },
-        svelte = { "prettier" },
-        astro = { "prettier" },
-        mdx = { "prettier" },
-        c = { "clang-format" },
-        cpp = { "clang-format" },
-        rust = { "rustfmt" },
-        sh = { "shfmt" },
-        bash = { "shfmt" },
-        ruby = { "rubocop" },
-        dart = { "dart_format" },
-        zig = { "zigfmt" },
-        csharp = { "csharpier" },
-        sql = { "sqlfluff" },
-        graphql = { "prettier" },
-        yaml = { "yamlfix" },
-        toml = { "taplo" },
-        fish = { "fish_indent" },
-        elixir = { "mix_format" },
-        erlang = { "erlfmt" },
-        haskell = { "fourmolu" },
-        ocaml = { "ocamlformat" },
-        scala = { "scalafmt" },
-        asm = { "asmfmt" },
-        nasm = { "asmfmt" },
-        gas = { "asmfmt" },
-        qml = { "qmlformat" },
-        -- Add more
-    },
-    format_on_save = { timeout_ms = 500, lsp_fallback = true },
+        lua = { "stylua" }, --Lua files use stylua
+        python = { "ruff", "black" }, -- Python files use ruff then black
+        java = { "google-java-format" }, -- Java files use google-java-format
+        javascript = { "eslint_d", "prettier" }, -- JavaScript files useeslint_d then prettier
+        typescript = { "eslint_d", "prettier" }, -- TypeScript files use eslint_d then prettier
+        go = { "goimports", "gofumpt" }, -- Go files use goimports then gofumpt
+        html = { "prettier" }, -- HTML files use prettier
+        jsx = { "prettier" }, -- JSX files use prettier
+        tsx = { "prettier" }, -- TSX files use prettier
+        xml = { "prettier_xml" }, -- XML filesuse prettier with XML parser
+        css = { "prettier" }, -- CSS files use prettier
+        scss = { "prettier" }, -- SCSS files use prettier
+        sass = { "prettier" }, -- SASS filesuse prettier
+        less = { "prettier" }, -- LESS files use prettier
+        json = { "prettier" }, -- JSON files use prettier
+        yaml = { "prettier" }, -- YAML files use prettier
+        markdown = { "prettier" }, -- Markdown files use prettier
+        handlebars = { "prettier" }, -- Handlebars files use prettier
+        hbs = { "prettier" }, -- Handlebars files use prettier
+        php = { "phpcbf" }, -- PHP files use phpcbf
+        vue = { "prettier" }, -- Vuefiles use prettier
+        svelte = { "prettier" }, -- Svelte files use prettier
+        astro = { "prettier" }, -- Astrofiles use prettier
+        mdx = { "prettier" }, -- MDX files use prettier
+        c = { "clang-format" }, -- C files use clang-format
+        cpp = { "clang-format" }, -- C++ files use clang-format
+        rust = { "rustfmt" }, -- Rust filesuse rustfmt
+        sh = { "shfmt" }, -- Shell files use shfmt
+        bash = { "shfmt" }, -- Bash files use shfmt
+        ruby = { "rubocop" }, -- Ruby files use rubocop
+        dart = { "dart_format" }, -- Dart files use dart_format
+        zig = { "zigfmt" }, -- Zig files use zigfmt
+        csharp = { "csharpier" }, -- C# files use csharpier
+        sql = { "sqlfluff" }, --SQL files use sqlfluff
+        graphql = { "prettier" }, -- GraphQL files use prettier
+        yaml = { "yamlfix" }, -- YAML files use yamlfix
+        toml = { "taplo" }, -- TOML files use taplo
+        fish = { "fish_indent" }, -- Fishshell files use fish_indent
+        elixir = { "mix_format" }, -- Elixir files use mix_format
+        erlang = { "erlfmt" }, -- Erlang files use erlfmt
+        ocaml = { "ocamlformat" }, -- OCaml files use ocamlformat
+        scala = { "scalafmt" }, -- Scala files use scalafmt
+        asm = { "asmfmt" }, -- Assembly files use asmfmt
+        nasm = { "asmfmt" }, -- NASM files use asmfmt
+        gas = { "asmfmt" }, -- GAS files use asmfmt
+        qml = { "qmlformat" }, -- QML files use qmlformat
+        -- Add more filetypes and their formatters as needed},
 
-    -- Add formatter definitions with command validation
-    formatters = {
-        injected = { options = { ignore_errors = true } },
-        prettier = {
-            condition = function(_, ctx)
-                -- Check for package.json in the current directory or its parents
-                local found = vim.fs.find({ "package.json" }, { path = ctx.dirname, upward = true })[1]
-                -- If no package.json found, still allow prettier to run (fallback to global installation)
-                return found or vim.fn.executable("prettier") == 1
-            end,
-            -- Configure prettier with dynamic args based on file type
-            prepend_args = function(ctx)
-                local args = { "--tab-width", "2", "--use-tabs" }
-                -- For XML/HTML-like files, use 2-character indentation
-                local xml_html_files = {
-                    html = true, jsx = true, tsx = true, xml = true,
-                    css = true, scss = true, sass = true, less = true,
-                    handlebars = true, hbs = true, php = true,
-                    vue = true, svelte = true, astro = true, mdx = true
-                }
-                if xml_html_files[vim.bo[ctx.buf].ft] then
-                    args = { "--tab-width", "2", "--use-tabs" }
-                end
-                return args
-            end,
+        -- Configure format-on-save behavior
+        format_on_save = {
+            timeout_ms = 500, -- Timeout after 500ms
+            lsp_fallback = true    -- Fall back to LSP formatting if no conform formatter is available
         },
-        ["clang-format"] = {
-            -- Configure clang-format to use tabs and 4-character indentation
-            prepend_args = { "--style=file" },
-        },
-        rustfmt = {
-            -- Configure rustfmt to use tabs and 4-character indentation
-            prepend_args = { "--config-path", vim.fn.expand("~/.config/nvim/rustfmt.toml") },
-        },
-        xmllint = {
-            -- xmllint doesn't have specific indentation options, but we'll keep the default behavior
-        },
-        shfmt = {
-            -- Configure shfmt to use tabs and 4-character indentation
-            prepend_args = { "-i", "4", "-ci", "-sr" },
-        },
-        rubocop = {
-            -- Configure RuboCop to use tabs and 4-character indentation
-            prepend_args = { "-c", vim.fn.expand("~/.config/nvim/.rubocop.yml") },
-        },
-        dart_format = {
-            -- Dart formatter
-            command = "dart",
-            args = { "format" },
-        },
-        zigfmt = {
-            -- Zig formatter
-            command = "zig",
-            args = { "fmt", "--stdin" },
-        },
-        csharpier = {
-            -- C# formatter
-            command = "dotnet",
-            args = { "csharpier", "--config", vim.fn.expand("~/.config/nvim/.csharpierrc"), "-" },
-        },
-        sqlfluff = {
-            -- SQL formatter
-            command = "sqlfluff",
-            args = { "format", "--config", vim.fn.expand("~/.config/nvim/.sqlfluff"), "-" },
-        },
-        yamlfix = {
-            -- YAML formatter
-            command = "yamlfix",
-            args = { "--config-file", vim.fn.expand("~/.config/nvim/.yamlfix.toml"), "-" },
-        },
-        taplo = {
-            -- TOML formatter
-            command = "taplo",
-            args = { "format", "--config", vim.fn.expand("~/.config/nvim/.taplo.toml"), "-" },
-        },
-        fish_indent = {
-            -- Fish shell formatter
-            command = "fish_indent",
-            args = { "-" },
-        },
-        mix_format = {
-            -- Elixir formatter
-            command = "mix",
-            args = { "format", "-" },
-        },
-        erlfmt = {
-            -- Erlang formatter
-            command = "erlfmt",
-            args = { "--config-file", vim.fn.expand("~/.config/nvim/.erlfmt"), "-" },
-        },
-        fourmolu = {
-            -- Haskell formatter
-            command = "fourmolu",
-            args = { "--config-file", vim.fn.expand("~/.config/nvim/fourmolu.yaml"), "-" },
-        },
-        ocamlformat = {
-            -- OCaml formatter
-            command = "ocamlformat",
-            args = { "--enable-outside-detected-project", "--name", "stdin", "--impl", "--config-file", vim.fn.expand("~/.config/nvim/.ocamlformat") },
-        },
-        scalafmt = {
-            -- Scala formatter
-            command = "scalafmt",
-            args = { "--config-str", "{indentSize=4, style=defaultWithAlign}", "--stdin" },
-        },
-        asmfmt = {
-            -- Assembly formatter
-            command = "asmfmt",
-            args = { "-" },
-        },
-        qmlformat = {
-            -- QML formatter
-            command = "qmlformat",
-            args = { "-" },
-        },
-        gofumpt = {
-            -- Go formatter
-            command = "gofumpt",
-            args = { "-" },
-        },
-        goimports = {
-            -- Go imports formatter
-            command = "goimports",
-            args = { "-" },
-        },
-        ["google-java-format"] = {
-            -- Java formatter
-            command = "google-java-format",
-            args = { "-" },
-        },
-        black = {
-            -- Python formatter
-            command = "black",
-            args = { "-" },
-        },
-        ruff = {
-            -- Python formatter/linter
-            command = "ruff",
-            args = { "check", "--fix", "-" },
-        },
-    },
+
+        -- Add formatter definitions with commandvalidation-- Customize how specific formatters behave
+        formatters = {
+            injected = { options = { ignore_errors = true }  -- Ignore errors in injected code
+            },
+
+            prettier = {
+                -- Condition to check if prettier should run
+                condition = function(_, ctx)
+                    -- Check for package.jsonin the current directory or its parents
+                    local found = false
+                    if ctx and ctx.dirname then
+                        found = vim.fs.find({ "package.json" }, { path = ctx.dirname, upward = true })[1]
+                    end
+                    -- If no package.json found, still allow prettier to run(fallback to global installation)
+                    return found or vim.fn.executable("prettier") == 1
+                end,
+
+                -- Configure prettier with dynamic args based on file type
+                prepend_args = function(ctx)
+                    local args = { "--tab-width", "4", "--use-tabs" }
+                    --ForXML/HTML-like files, use 3-space indentation as per user preference
+                    local xml_html_files = {
+                        html = true, jsx = true, tsx = true, xml = true,
+                        css = true, scss = true, sass = true, less = true,
+                        handlebars = true, hbs = true, php = true,
+                        vue = true, svelte = true, astro = true, mdx = true
+                    }
+                    if ctx and ctx.ft and xml_html_files[ctx.ft] then
+                        -- Use 4-space indentation with tabs for XML/HTML-like files
+                        args = { "--tab-width", "4", "--use-tabs" }
+                    end
+                    return args
+                end,
+            },
+
+            ["clang-format"] = {
+                -- Configure clang-format to use tabs and 4-character indentation
+                prepend_args = { "--style=file" }, -- Use .clang-format configuration file
+            },
+
+            rustfmt = {
+                -- Configure rustfmt to use tabs and 4-character indentation
+                prepend_args = { "--config-path", vim.fn.expand("~/.config/nvim/rustfmt.toml") }, -- Use custom config
+            },
+
+            xmllint = {
+                -- xmllint doesn't have specific indentation options, but we'll keep the default behavior
+            },
+
+            prettier_xml = {
+                command = "prettier",
+                args = { "--tab-width", "3", "--no-use-tabs", "--parser", "xml" },
+                condition = function()
+                    return vim.fn.executable("prettier") == 1
+                end,
+            },
+
+            shfmt = {
+                -- Configure shfmt to use tabs and 4-character indentation
+                prepend_args = { "-i", "4", "-ci", "-sr" }, -- 4-space indent, switch case indent, redirect spaces
+            },
+
+            rubocop = {
+                -- Configure RuboCop to use tabs and 4-character indentation
+                prepend_args = { "-c", vim.fn.expand("~/.config/nvim/.rubocop.yml") }, -- Use custom config
+            },
+
+            dart_format = {
+                -- Dart formatter
+                command = "dart", -- Use dart command
+                args = { "format" }, -- Format subcommand
+            },
+
+            zigfmt = {
+                -- Zigformatter
+                command = "zig", -- Use zig command
+                args = { "fmt", "--stdin" }, -- Format from stdin
+            },
+
+            csharpier = {
+                -- C# formatter
+                command = "dotnet", -- Use dotnet command
+                args = { "csharpier", "--config", vim.fn.expand("~/.config/nvim/.csharpierrc"), "-" }, -- Use custom config
+            },
+
+            sqlfluff = {
+                -- SQL formatter
+                command = "sqlfluff", -- Use sqlfluff command
+                args = { "format", "--config", vim.fn.expand("~/.config/nvim/.sqlfluff"), "-" }, -- Use custom config
+                condition = function()
+                    -- Check if sqlfluff is available
+                    return vim.fn.executable("sqlfluff") == 1
+                end,
+            },
+
+            yamlfix = {
+                -- YAML formatter
+                command = "yamlfix", -- Use yamlfix command
+                args = { "--config-file", vim.fn.expand("~/.config/nvim/.yamlfix.toml"), "-" }, -- Use custom config
+            },
+
+            taplo = {
+                -- TOML formatter
+                command = "taplo", -- Use taplocommand
+                args = { "format", "--config", vim.fn.expand("~/.config/nvim/.taplo.toml"), "-" }, -- Use custom config
+            },
+
+            fish_indent = {
+                -- Fishshell formatter
+                command = "fish_indent", -- Use fish_indent command
+                args = { "-" }, -- Format from stdin
+            },
+
+            mix_format = {
+                -- Elixir formatter
+                command = "mix", -- Use mix command
+                args = { "format", "-" }, -- Format from stdin
+            },
+
+            erlfmt = {
+                -- Erlang formatter
+                command = "erlfmt", -- Use erlfmt command
+                args = { "--config-file", vim.fn.expand("~/.config/nvim/.erlfmt"), "-" }, -- Use custom config
+            },
+            fourmolu = {
+                -- Haskell formatter
+                command = "fourmolu", -- Use fourmolu command
+                args = { "--config-file", vim.fn.expand("~/.config/nvim/fourmolu.yaml"), "-" }, -- Use custom config
+            },
+
+            ocamlformat = {
+                -- OCaml formatter
+                command = "ocamlformat", -- Use ocamlformat command
+                args = { "--enable-outside-detected-project", "--name", "stdin", "--impl", "--config-file", vim.fn.expand("~/.config/nvim/.ocamlformat") }, -- Use custom config
+            },
+
+            scalafmt = {
+                -- Scala formatter
+                command = "scalafmt", -- Use scalafmt command
+                args = { "--config-str", "{indentSize=4, style=defaultWithAlign}", "--stdin" }, -- Use inline config
+            },
+
+            asmfmt = {
+                -- Assembly formatter
+                command = "asmfmt", -- Use asmfmt command
+                args = { "-" }, -- Format from stdin},
+            },
+            qmlformat = {
+                -- QML formatter
+                command = "qmlformat", -- Use qmlformat command
+                args = { "-" }, -- Format from stdin
+            },
+
+            gofumpt = {
+                -- Go formatter
+                command = "gofumpt", -- Use gofumpt command
+                args = { "-" }, -- Format from stdin
+            },
+
+            goimports = {
+                -- Go imports formatter
+                command = "goimports", -- Use goimports command
+                args = { "-" }, -- Format from stdin
+            },
+
+            ["google-java-format"] = {
+                -- Java formatter
+                command = "google-java-format", -- Use google-java-format command
+                args = { "-" }, -- Format from stdin
+            },
+
+            black = {
+                -- Python formatter
+                command = "black", -- Use black command
+                args = { "-" }, -- Format from stdin
+            },
+
+            ruff = {
+                --Python formatter/linter
+                command = "ruff", -- Use ruff command
+                args = { "check", "--fix", "-" }, -- Check and fix from stdin
+            },
+
+            eslint_d = {
+                -- JavaScript/TypeScript linter
+                command = "eslint_d", -- Use eslint_d command(daemon version)
+                args = function(ctx)
+                    -- Check if we have a valid ESLint config in the project
+                    local has_config = false
+                    if ctx and ctx.dirname then
+                        has_config = vim.fn.filereadable(ctx.dirname .. "/.eslintrc.js") == 1 or
+                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.json") == 1 or
+                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.yaml") == 1 or
+                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.yml") == 1 or
+                                vim.fn.filereadable(ctx.dirname .. "/package.json") == 1
+                    end
+
+                    if has_config then
+                        return { "--fix-to-stdout", "--stdin", "--stdin-filename", "$FILENAME" }
+                    else
+                        -- Use fallback configuration
+                        return { "--fix-to-stdout", "--stdin", "--stdin-filename", "$FILENAME", "--config", vim.fn.expand("~/.config/nvim/eslint-config/base.json") }
+                    end
+                end,
+                condition = function(_, ctx)
+                    -- Check if eslint_d is available
+                    local found = vim.fn.executable("eslint_d") == 1
+                    if not found then
+                        return false
+                    end
+
+                    -- Try to start eslint_d if not running
+                    vim.fn.system("eslint_d start")
+
+                    return true
+                end,
+            },
+
+            phpcbf = {
+                -- PHP formatter (PHP_CodeSniffer)
+                command = "phpcbf",
+                args = { "--standard=PSR12", "-" },
+            },
+        }
+    }
+
 })
 
 -- Add a function to check if formatters are available
+-- This function validates that required formatters are installed
 local function validate_formatters()
+    -- List of formatters and theircorresponding commands to check
     local formatters = {
-        stylua = "stylua",
-        black = "black",
-        ["google-java-format"] = "google-java-format",
-        prettier = "prettier",
-        ["clang-format"] = "clang-format",
-        xmllint = "xmllint",
-        rustfmt = "rustfmt",
-        shfmt = "shfmt",
-        rubocop = "rubocop",
-        dart_format = "dart",
-        zigfmt = "zig",
-        csharpier = "dotnet",
-        sqlfluff = "sqlfluff",
-        yamlfix = "yamlfix",
-        taplo = "taplo",
-        fish_indent = "fish_indent",
-        mix_format = "mix",
-        erlfmt = "erlfmt",
-        fourmolu = "fourmolu",
-        ocamlformat = "ocamlformat",
-        scalafmt = "scalafmt",
-        asmfmt = "asmfmt",
-        qmlformat = "qmlformat",
-        gofumpt = "gofumpt",
-        goimports = "goimports",
-        htmlhint = "htmlhint",
-        stylelint = "stylelint",
+        stylua = "stylua", -- Lua formatter
+        black = "black", -- Python formatter
+        ["google-java-format"] = "google-java-format", -- Java formatter
+        prettier = "prettier", -- JavaScript/TypeScript/HTML/CSS formatter
+        ["clang-format"] = "clang-format", -- C/C++ formatter
+        xmllint = "xmllint", -- XML linter
+        rustfmt = "rustfmt", -- Rust formatter
+        shfmt = "shfmt", -- Shell formatter
+        rubocop = "rubocop", -- Ruby formatter
+        dart_format = "dart", -- Dart formatter
+        zigfmt = "zig", -- Zig formatter
+        csharpier = "dotnet", -- C# formatter
+        sqlfluff = "sqlfluff", -- SQL formatter
+        yamlfix = "yamlfix", --YAML formatter
+        taplo = "taplo", -- TOML formatter
+        fish_indent = "fish_indent", -- Fish shell formatter
+        mix_format = "mix", -- Elixir formatter
+        erlfmt = "erlfmt", -- Erlang formatter
+        fourmolu = "fourmolu", -- Haskell formatter
+        ocamlformat = "ocamlformat", -- OCaml formatter
+        scalafmt = "scalafmt", -- Scala formatter
+        asmfmt = "asmfmt", -- Assembly formatter
+        qmlformat = "qmlformat", -- QML formatter
+        gofumpt = "gofumpt", --Go formatter
+        goimports = "goimports", -- Go imports formatter
+        htmlhint = "htmlhint", -- HTML linter
+        stylelint = "stylelint", -- CSS/SCSS linter
+        eslint_d = "eslint_d", -- JavaScript/TypeScript linter
     }
 
+    -- Check each formatter and notify if not found
     for name, cmd in pairs(formatters) do
         local found = vim.fn.executable(cmd) == 1
         if not found then
+            -- Notify user that a formatter is not installed
             vim.notify("Formatter '" .. cmd .. "' not found. Install it to enable formatting for this language.", vim.log.levels.WARN)
         end
     end
 end
 
 -- Run validation after a short delay to not block startup
+-- This prevents the validation from slowing down Neovim startup
 vim.defer_fn(validate_formatters, 1000)
 
+
+-- Return empty table to satisfy module requirements
 return {}

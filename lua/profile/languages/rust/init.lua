@@ -15,6 +15,12 @@ function M.setup()
     
     -- Setup keymaps
     require('profile.languages.rust.mappings').setup()
+    
+    -- Load UI enhancements
+    local ui_status_ok, ui = pcall(require, "profile.ui.rust-ui")
+    if ui_status_ok then
+        ui.setup()
+    end
 end
 
 return M

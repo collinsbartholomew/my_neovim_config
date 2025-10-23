@@ -1,49 +1,46 @@
 -- added-by-agent: web-setup 20251020-173000
--- mason: tsserver, tailwindcss-language-server, prettier, eslint
+-- mason: ts_ls, tailwindcss-language-server, prettier, eslint
 -- manual: node.js installation required
 
 local M = {}
 
 function M.setup()
-    local lspconfig_status, lspconfig = pcall(require, "lspconfig")
-    if not lspconfig_status then
-        vim.notify("lspconfig not available for web setup", vim.log.levels.WARN)
+    -- Ensure web-related LSPs are installed
+    local mlsp_status_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+    if mlsp_status_ok then
+        mason_lspconfig.ensure_installed({ 
+            "ts_ls", 
+            "html", 
+            "cssls", 
+            "jsonls", 
+            "tailwindcss",
+            "emmet_ls",
+            "eslint"
+        })
+    end
+
+    -- Configure web LSPs through lsp-zero
+    local lsp_zero_status_ok, lsp_zero = pcall(require, "lsp-zero")
+    if not lsp_zero_status_ok then
         return
     end
 
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    local cmp_nvim_lsp_status, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-    if cmp_nvim_lsp_status then
-        capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+    -- Load which-key
+    local which_key_status_ok, which_key = pcall(require, "which-key")
+    if not which_key_status_ok then
+        return
     end
 
-    -- Enhanced on_attach function for all web LSPs
-    local function on_attach(client, bufnr)
-        local opts = { noremap = true, silent = true }
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-
-        -- Enable inlay hints if available
-        pcall(function()
-            if client.supports_method("textDocument/inlayHint") then
-                vim.lsp.inlay_hint(bufnr, true)
-            end
-        end)
-        
-        -- Enable document formatting if supported
-        if client.server_capabilities.documentFormattingProvider then
-            vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.format({ async = true })<CR>", opts)
-        end
-    end
-
-    -- TypeScript/JavaScript LSP with enhanced configuration
-    lspconfig.tsserver.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    -- Configure TypeScript/JavaScript LSP with enhanced configuration
+    lsp_zero.configure("ts_ls", {
         init_options = {
+            plugins = {
+                {
+                    name = "@vue/typescript-plugin", -- Vue TypeScript
+                    location = "local",
+                    languages = { "vue" }, -- Apply toVue files
+                },
+            },
             preferences = {
                 disableSuggestions = false,
                 quotePreference = "auto",
@@ -78,13 +75,39 @@ function M.setup()
                     includeInlayEnumMemberValueHints = true,
                 }
             }
-        }
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                },
+            }, wk_opts)
+            
+            -- Enable inlay hints if available
+            pcall(function()
+                if client.supports_method("textDocument/inlayHint") then
+                    vim.lsp.inlay_hint(bufnr, true)
+                end
+            end)
+        end
     })
 
     -- HTML LSP with enhanced configuration
-    lspconfig.html.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    lsp_zero.configure("html", {
         settings = {
             html = {
                 suggest = {
@@ -99,13 +122,32 @@ function M.setup()
         },
         filetypes = {
             "html", "handlebars", "hbs", "eruby", "erb", "ejs"
-        }
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                },
+            }, wk_opts)
+        end
     })
 
     -- CSS LSP with enhanced configuration
-    lspconfig.cssls.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    lsp_zero.configure("cssls", {
         settings = {
             css = {
                 validate = true,
@@ -128,13 +170,32 @@ function M.setup()
         },
         filetypes = {
             "css", "scss", "less"
-        }
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                },
+            }, wk_opts)
+        end
     })
 
     -- JSON LSP with enhanced configuration
-    lspconfig.jsonls.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    lsp_zero.configure("jsonls", {
         settings = {
             json = {
                 validate = { enable = true },
@@ -157,13 +218,32 @@ function M.setup()
                     }
                 }
             }
-        }
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                },
+            }, wk_opts)
+        end
     })
 
     -- Tailwind CSS with enhanced configuration
-    lspconfig.tailwindcss.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    lsp_zero.configure("tailwindcss", {
         filetypes = {
             "html", "css", "scss", "sass", "less", "javascript", "javascriptreact", 
             "typescript", "typescriptreact", "vue", "svelte", "astro", "mdx"
@@ -174,7 +254,7 @@ function M.setup()
                 eruby = "erb"
             }
         },
-        root_dir = lspconfig.util.root_pattern(
+        root_dir = require("lspconfig").util.root_pattern(
                 "tailwind.config.js",
                 "tailwind.config.cjs",
                 "tailwind.config.mjs",
@@ -191,80 +271,67 @@ function M.setup()
                 lint = {
                     cssConflict = "warning",
                     invalidApply = "error",
-                    invalidScreen = "error",
-                    invalidVariant = "error",
-                    invalidConfigPath = "error",
-                    invalidTailwindDirective = "error",
-                    recommendedVariantOrder = "warning"
-                },
-                validate = true,
-                experimental = {
-                    classRegex = {
-                        "tw`([^`]*)",
-                        'tw\\["([^"]*)',
-                        "tw\\.\\w+`([^`]*)",
-                        "tw\\(.*?\\)`([^`]*)",
-                        "\\bcx\\s*\\(?`([^`]*)",
-                        "\\bcx\\s*\\(\\w+\\s*,\\s*`([^`]*)",
-                        "\\bclass\\s*:\\s*`([^`]*)",
-                        "\\bclass\\s*:\\s*\\w+\\s*,\\s*`([^`]*)"
-                    }
                 }
             }
-        }
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                },
+            }, wk_opts)
+        end
     })
 
-    -- Emmet Language Server
-    lspconfig.emmet_ls.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
+    -- Emmet LSP
+    lsp_zero.configure("emmet_ls", {
         filetypes = {
             "html", "css", "scss", "sass", "less", "javascript", "javascriptreact",
-            "typescript", "typescriptreact", "vue", "svelte", "astro"
-        }
+            "typescript", "typescriptreact", "vue", "svelte"
+        },
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+        end
     })
 
-    -- ESLint Language Server
-    lspconfig.eslint.setup({
-        capabilities = capabilities,
+    -- ESLint LSP
+    lsp_zero.configure("eslint", {
         on_attach = function(client, bufnr)
-            on_attach(client, bufnr)
-            -- ESLint-specific keymaps
-            vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>ef", "<cmd>lua vim.lsp.buf.code_action({ apply = true })<CR>", 
-                { noremap = true, silent = true, desc = "ESLint Fix" })
-        end,
-        settings = {
-            eslint = {
-                packageManager = "npm",
-                useESLintClass = true,
-                experimental = {
-                    useFlatConfig = false
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    d = { vim.lsp.buf.definition, "Go to definition" },
                 },
-                codeAction = {
-                    disableRuleComment = {
-                        enable = true,
-                        location = "separateLine"
-                    },
-                    showDocumentation = {
-                        enable = true
-                    }
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<leader>"] = {
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
                 },
-                codeActionOnSave = {
-                    enable = true,
-                    mode = "all"
-                },
-                format = true,
-                quiet = false,
-                onIgnoredFiles = "off",
-                options = {
-                    configFile = ""
-                },
-                run = "onType",
-                problems = {
-                    shortenToSingleLine = false
-                }
-            }
-        }
+            }, wk_opts)
+        end
     })
 end
 

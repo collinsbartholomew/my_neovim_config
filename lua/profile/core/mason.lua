@@ -29,6 +29,8 @@ require("mason-lspconfig").setup({
         "emmet_ls", -- Emmet
         "eslint", -- ESLint
         "pyright", -- Python
+        "asm_lsp", -- Assembly language server
+        "intelephense", -- PHP language server
     },
     automatic_installation = true,
 })
@@ -41,17 +43,47 @@ require("mason-nvim-dap").setup({
         "js-debug-adapter", -- For JavaScript/TypeScript debugging (if available in registry)
         "debugpy", -- Python debugger
         "local-lua-debugger-vscode", -- Lua debugger
+        "php-debug-adapter", -- PHP debugger
     },
     automatic_installation = true,
 })
 
 require("mason-tool-installer").setup({
     ensure_installed = {
-        "stylua", -- Lua formatter
-        "luacheck", -- Lua linter
-        "prettier", -- JavaScript/TypeScript/HTML/CSS formatter
-        "eslint", -- JavaScript/TypeScript linter
-        "stylelint", -- CSS linter
+        -- Formatters
+        "stylua",
+        "prettier",
+        "black",
+        "clang-format",
+        "rustfmt",
+        "shfmt",
+        "google-java-format",
+        "phpcbf",
+        "asmfmt",
+        
+        -- Linters
+        "luacheck",
+        "eslint_d",
+        "ruff",
+        "phpstan",
+        "clang-tidy",
+        
+        -- LSPs
+        "lua_ls",
+        "ts_ls",
+        "pyright",
+        "clangd",
+        "rust_analyzer",
+        "gopls",
+        "intelephense",
+        "asm-lsp",
+        
+        -- DAPs
+        "php-debug-adapter",
+        
+        -- Others
+        "asmfmt",
     },
-    automatic_installation = true,
+    auto_update = true,
+    run_on_start = true,
 })

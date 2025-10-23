@@ -19,9 +19,7 @@ function M.setup(config)
     -- Prefer Mason registry
     local mason_registry_status, mason_registry = pcall(require, "mason-registry")
     if mason_registry_status and mason_registry.is_installed("dart-debug-adapter") then
-        local pkg = mason_registry.get_package("dart-debug-adapter")
-        local install_path = pkg:get_install_path()
-        adapter_cmd = install_path .. "/dart-debug-adapter"
+        adapter_cmd = "dart-debug-adapter"
     end
 
     -- Else check exepath
@@ -53,7 +51,7 @@ function M.setup(config)
     dap.adapters.dart = {
         type = "executable",
         command = adapter_cmd,
-        args = { "--debugger_port=12345" }
+        args = { "--debugger_port=0" }  -- Use port 0 to automatically assign a free port
     }
 
     -- Set configurations
@@ -64,16 +62,61 @@ function M.setup(config)
             name = "Launch Flutter",
             program = "${workspaceFolder}/lib/main.dart",
             cwd = "${workspaceFolder}",
+            args = { "--flavor", "development" },
+        },
+        {
+            type = "dart",
+            request = "launch",
+            name = "Launch Flutter (Profile)",
+            program = "${workspaceFolder}/lib/main.dart",
+            cwd = "${workspaceFolder}",
+            args = { "--profile" },
+        },
+        {
+            type = "dart",
+            request = "launch",
+            name = "Launch Flutter (Release)",
+            program = "${workspaceFolder}/lib/main.dart",
+            cwd = "${workspaceFolder}",
+            args = { "--release" },
         },
         {
             type = "dart",
             request = "attach",
             name = "Attach to Flutter",
             cwd = "${workspaceFolder}",
+        },
+        {
+            type = "dart",
+            request = "launch",
+            name = "Launch Dart CLI",
+            program = "${file}",
+            cwd = "${workspaceFolder}",
         }
     }
 
     dap.configurations.flutter = dap.configurations.dart
+    
+    -- Add keymaps for debugging
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "dart", "flutter" },
+        callback = function()
+            local opts = { noremap = true, silent = true }
+            vim.keymap.set("n", "<F5>", function() require("dap").continue() end, opts)
+            vim.keymap.set("n", "<F10>", function() require("dap").step_over() end, opts)
+            vim.keymap.set("n", "<F11>", function() require("dap").step_into() end, opts)
+            vim.keymap.set("n", "<F12>", function() require("dap").step_out() end, opts)
+            vim.keymap.set("n", "<leader>db", function() require("dap").toggle_breakpoint() end, opts)
+            vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint() end, opts)
+            vim.keymap.set("n", "<leader>dc", function() require("dap").continue() end, opts)
+            vim.keymap.set("n", "<leader>di", function() require("dap").step_into() end, opts)
+            vim.keymap.set("n", "<leader>do", function() require("dap").step_over() end, opts)
+            vim.keymap.set("n", "<leader>dO", function() require("dap").step_out() end, opts)
+            vim.keymap.set("n", "<leader>dr", function() require("dap").repl.toggle() end, opts)
+            vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end, opts)
+            vim.keymap.set("n", "<leader>dt", function() require("dapui").toggle() end, opts)
+        end,
+    })
 end
 
 return M

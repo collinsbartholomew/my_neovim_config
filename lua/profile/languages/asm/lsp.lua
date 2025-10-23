@@ -6,70 +6,23 @@ function M.setup()
     -- Add asm-lsp to the list of ensured installed servers
     local mlsp_status_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
     if mlsp_status_ok then
-        -- This will be handled in the main lspconfig.lua file
+        mason_lspconfig.ensure_installed({ "asm_lsp" })
     end
 
-    -- Configure asm-lsp specific settings
-    local lspconfig_status_ok, lspconfig = pcall(require, "lspconfig")
-    if not lspconfig_status_ok then
+    -- Configure asm-lsp through lsp-zero
+    local lsp_zero_status_ok, lsp_zero = pcall(require, "lsp-zero")
+    if not lsp_zero_status_ok then
         return
     end
 
-    -- Set up custom on_attach for assembly
-    local function on_attach(client, bufnr)
-        -- Enable completion triggered by <c-x><c-o>
-        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-        -- Buffer local mappings
-        local opts = { noremap=true, silent=true, buffer=bufnr }
-        
-        -- Standard LSP mappings
-        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-        vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-        vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-        vim.keymap.set('n', '<space>wl', function()
-            print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-        end, opts)
-        vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-        vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-        vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-        vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, opts)
-        
-        -- Diagnostics
-        vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-        vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-        vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-        vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
-        
-        -- Format on save
-        if client.server_capabilities.documentFormattingProvider then
-            vim.api.nvim_create_autocmd("BufWritePre", {
-                buffer = bufnr,
-                callback = function()
-                    vim.lsp.buf.format({ bufnr = bufnr })
-                end,
-            })
-        end
+    -- Load which-key
+    local which_key_status_ok, which_key = pcall(require, "which-key")
+    if not which_key_status_ok then
+        return
     end
 
-    -- Get capabilities with cmp support
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    local cmp_ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
-    if cmp_ok then
-        capabilities = cmp_lsp.default_capabilities(capabilities)
-    end
-
-    -- Configure asm-lsp
-    lspconfig.asm_lsp.setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
+    lsp_zero.configure("asm_lsp", {
         filetypes = { "asm", "s", "S", "nasm", "gas" },
-        root_dir = lspconfig.util.root_pattern(".git", "Makefile"),
         settings = {
             asm = {
                 includePaths = {
@@ -80,7 +33,63 @@ function M.setup()
                 },
             },
         },
-    }
+        on_attach = function(client, bufnr)
+            -- Use lsp-zero's recommended preset for keybindings
+            lsp_zero.buffer_autoapi()
+            
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+            -- Buffer local mappings with which-key
+            local opts = { noremap = true, silent = true, buffer = bufnr }
+            local wk_opts = { buffer = bufnr }
+
+            -- Define LSP key mappings with which-key (maintaining existing functionality)
+            which_key.register({
+                g = {
+                    D = { vim.lsp.buf.declaration, "Go to declaration" },
+                    d = { vim.lsp.buf.definition, "Go to definition" },
+                    i = { vim.lsp.buf.implementation, "Go to implementation" },
+                },
+                K = { vim.lsp.buf.hover, "Show hover information" },
+                ["<C-k>"] = { vim.lsp.buf.signature_help, "Show signature help" },
+                ["<space>"] = {
+                    name = "LSP",
+                    D = { vim.lsp.buf.type_definition, "Go to type definition" },
+                    rn = { vim.lsp.buf.rename, "Rename symbol" },
+                    ca = { vim.lsp.buf.code_action, "Code actions" },
+                    f = { function() vim.lsp.buf.format { async = true } end, "Format buffer" },
+                    e = { vim.diagnostic.open_float, "Show diagnostics" },
+                    q = { vim.diagnostic.setloclist, "Diagnostics to location list" },
+                    w = {
+                        name = "Workspace",
+                        a = { vim.lsp.buf.add_workspace_folder, "Add workspace folder" },
+                        r = { vim.lsp.buf.remove_workspace_folder, "Remove workspace folder" },
+                        l = {
+                            function()
+                                print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+                            end,
+                            "List workspace folders",
+                        },
+                    },
+                },
+            }, wk_opts)
+            
+            -- Diagnostics navigation
+            vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+            vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+            
+            -- Format on save
+            if client.server_capabilities.documentFormattingProvider then
+                vim.api.nvim_create_autocmd("BufWritePre", {
+                    buffer = bufnr,
+                    callback = function()
+                        vim.lsp.buf.format({ bufnr = bufnr })
+                    end,
+                })
+            end
+        end
+    })
 end
 
 return M

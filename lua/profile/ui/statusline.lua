@@ -3,7 +3,7 @@ local M = {}
 
 function M.setup()
     -- Enable the statusline
-    vim.opt.laststatus = 2
+    vim.opt.laststatus = 3  -- Global statusline
     
     -- Configure lualine
     local status_ok, lualine = pcall(require, "lualine")
@@ -13,7 +13,7 @@ function M.setup()
     
     local function trailing_whitespace()
         local space = vim.fn.search([[\s\+$]], 'nwc')
-        return space ~= 0 and 'TW' or ''
+        return space ~= 0 and '󰧟' or ''
     end
 
     local function mixed_indent()
@@ -23,7 +23,7 @@ function M.setup()
         local tab_indent = vim.fn.search(tab_pat, 'nwc')
         local mixed = (space_indent > 0 and tab_indent > 0)
         local mixed_same_line = vim.fn.search([[\v^(\t+ | +\t)]], 'nwc')
-        return mixed_same_line ~= 0 or mixed and 'MI' or ''
+        return mixed_same_line ~= 0 or mixed and '󰉞' or ''
     end
 
     -- Function to get navic breadcrumbs
@@ -43,7 +43,7 @@ function M.setup()
             section_separators = { left = '', right = ''},
             disabled_filetypes = {},
             always_divide_middle = true,
-            globalstatus = false,
+            globalstatus = true,
         },
         sections = {
             lualine_a = {'mode'},

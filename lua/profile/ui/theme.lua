@@ -1,4 +1,4 @@
--- Configuration for themes with 100% transparency
+--Configuration for themes with 100% transparency
 
 local M = {}
 
@@ -101,7 +101,7 @@ function M.setup()
                 LineNr = { bg = "NONE" },
                 FoldColumn = { bg = "NONE" },
                 EndOfBuffer = { bg = "NONE" },
-                VertSplit = { bg = "NONE" },
+                VertSplit = { bg = "NONE", fg = "NONE" }, -- Make vertical splits invisible
                 StatusLine = { bg = "NONE" },
                 StatusLineNC = { bg = "NONE" },
                 Pmenu = { bg = "NONE" },
@@ -152,17 +152,17 @@ function M.setup()
         vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { bg = "NONE", ctermbg = "NONE" })
 
         -- Additional UI elements that might need transparency
-        vim.api.nvim_set_hl(0, "WinSeparator", { bg = "NONE", ctermbg = "NONE" })
+        vim.api.nvim_set_hl(0, "WinSeparator", { bg = "NONE", fg = "NONE" })  -- Make window separators invisible
         vim.api.nvim_set_hl(0, "TabLine", { bg = "NONE", ctermbg = "NONE" })
         vim.api.nvim_set_hl(0, "TabLineFill", { bg = "NONE", ctermbg = "NONE" })
         vim.api.nvim_set_hl(0, "TabLineSel", { bg = "NONE", ctermbg = "NONE" })
-        
+
         -- Noice command line highlights
         vim.api.nvim_set_hl(0, "NoiceCmdlinePopup", { bg = "NONE", fg = "NONE" })
         vim.api.nvim_set_hl(0, "NoiceCmdlinePopupBorder", { bg = "NONE", fg = "#808080" })
         vim.api.nvim_set_hl(0, "NoiceCmdlineIcon", { bg = "NONE", fg = "#7aa2f7" })
         vim.api.nvim_set_hl(0, "NoiceCmdline", { bg = "NONE", fg = "#a9b1d6" })
-        
+
         -- Customize line number colors to distinguish current line
         -- Line numbers for relative lines
         vim.api.nvim_set_hl(0, "LineNr", { fg = "#7e8294", bg = "NONE" })
@@ -170,7 +170,7 @@ function M.setup()
         vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#a6adce", bg = "NONE", bold = true })
     end
 
-    -- Apply transparent background immediately and on ColorScheme changes
+    -- Apply transparent background immediately andon ColorScheme changes
     set_transparent_background()
     vim.api.nvim_create_autocmd("ColorScheme", {
         callback = set_transparent_background,

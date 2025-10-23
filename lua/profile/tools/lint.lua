@@ -13,13 +13,14 @@ lint.linters_by_ft = {
     asm = { "nasm" },
     nasm = { "nasm" },
     gas = { "gas" },
-    cpp = { "clangtidy", "cppcheck" },
-    c = { "clangtidy", "cppcheck" },
+    cpp = { "clang-tidy", "cppcheck" },
+    c = { "clang-tidy", "cppcheck" },
     qml = { "qmllint" },
     rust = { "clippy" },
     zig = { "zls" },
     go = { "golangcilint" },
     cs = { "dotnet_build" },
+    php = { "phpstan" }, -- PHP files use phpstan
     -- Add more
 }
 
@@ -78,7 +79,7 @@ lint.linters.gas = {
 }
 
 -- Define Clang-Tidy linter
-lint.linters.clangtidy = {
+lint.linters["clang-tidy"] = {
     cmd = "clang-tidy",
     args = { "--quiet", "-" },
     stdin = true,
@@ -474,6 +475,38 @@ lint.linters.stylelint = {
                         })
                     end
                 end
+            end
+        end
+        return diagnostics
+    end,
+}
+
+-- Define PHPStan linter for PHP
+lint.linters.phpstan = {
+    cmd = "phpstan",
+    args = { "analyze", "--error-format=checkstyle", "--no-progress", "-" },
+    stdin = true,
+    stream = "stdout",
+    parser = function(output, bufnr)
+        local diagnostics = {}
+        -- Parse checkstyle XML output from phpstan
+        for line in vim.gsplit(output, "\n") do
+            -- Pattern for checkstyle errors
+            local file, ln, col, severity, msg = string.match(line, '<error line="(%d+)" column="(%d+)" severity="(%a+)" message="([^"]+)"')
+            if ln and col and severity and msg then
+                local severity_level = vim.diagnostic.severity.WARN
+                if severity == "error" then
+                    severity_level = vim.diagnostic.severity.ERROR
+                end
+                
+                table.insert(diagnostics, {
+                    bufnr = bufnr,
+                    lnum = tonumber(ln) - 1,
+                    col = tonumber(col) - 1,
+                    severity = severity_level,
+                    message = msg,
+                    source = "phpstan",
+                })
             end
         end
         return diagnostics

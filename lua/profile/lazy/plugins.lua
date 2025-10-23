@@ -1,7 +1,9 @@
 --lazy.nvim plugin specs
+-- This file defines all the plugins used in the Neovim configuration
 -- Bootstrap lazy.nvim if not installed
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
+    --Iflazy.nvim is not installed, clone it from GitHub
     vim.fn.system({
         "git",
         "clone",
@@ -11,135 +13,145 @@ if not vim.loop.fs_stat(lazypath) then
         lazypath,
     })
 end
+--Addlazy.nvim to the runtime path
 vim.opt.rtp:prepend(lazypath)
 
 return {
+    -- Lazy.nvim plugin manager
     { "folke/lazy.nvim", version = "*" },
+    -- Improve Neovim startup time
     { "lewis6991/impatient.nvim" },
 
-    checker = { enabled = true, notify = false },
+    -- Plugin checker and performance settings
+    checker = {
+        enabled = true, -- Enable plugin update checking
+        notify = false    -- Don't notify about updates
+    },
     performance = {
         cache = {
-            enabled = true,
+            enabled = true, -- Enable plugin caching
         },
         reset_packpath = true,
         rtp = {
             reset = true,
             paths = {},
             disabled_plugins = {
-                "gzip",
-                "matchit",
-                "matchparen",
-                "netrwPlugin",
-                "tarPlugin",
-                "tohtml",
-                "tutor",
-                "zipPlugin",
+                "gzip", -- Disable gzip plugin
+                "matchit", -- Disable matchit plugin
+                "matchparen", -- Disable matchparen plugin
+                "netrwPlugin", --Disablenetrw plugin (using neo-tree instead)
+                "tarPlugin", -- Disable tar plugin
+                "tohtml", -- Disable tohtml plugin
+                "tutor", -- Disable tutor plugin
+                "zipPlugin", -- Disable zip plugin
             },
         },
     },
 
-    --Which-key
+    --Which-key plugin- shows keybindings in a popup
     { "folke/which-key.nvim", event = "VeryLazy" },
 
-    -- Completion
+    -- Completion engine
     {
         "hrsh7th/nvim-cmp",
-        event = { "InsertEnter", "CmdlineEnter" },
+        event = { "InsertEnter", "CmdlineEnter" }, -- Loadoninsert or commandentry
         dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-path",
-            "hrsh7th/cmp-cmdline",
-            "saadparwaiz1/cmp_luasnip",
-            "L3MON4D3/LuaSnip",
-            "rafamadriz/friendly-snippets",
+            "hrsh7th/cmp-nvim-lsp", -- LSP completion source
+            "hrsh7th/cmp-buffer", -- Buffer completion source
+            "hrsh7th/cmp-path", -- Path completion source
+            "hrsh7th/cmp-cmdline", -- Command line completion source
+            "saadparwaiz1/cmp_luasnip", -- Luasnip completion source
+            "L3MON4D3/LuaSnip", -- Snippet engine
+            "rafamadriz/friendly-snippets", -- Collection of snippets
         },
         config = function()
-            localstatus_ok, module = pcall(require, "profile.completion.cmp")
+            -- Load custom cmp configuration
+            local status_ok, module = pcall(require, "profile.completion.cmp")
             if status_ok then
                 return module
             end
         end,
     },
 
-    -- LSP
-    { "williamboman/mason.nvim", cmd = "Mason", config = true },
-    { "williamboman/mason-lspconfig.nvim" },
-    { "WhoIsSethDaniel/mason-tool-installer.nvim" },
+    -- LSP (LanguageServerProtocol) relatedplugins
+    { "williamboman/mason.nvim", cmd = "Mason", config = true }, -- Package manager for LSP servers
+    { "williamboman/mason-lspconfig.nvim" }, -- Bridge between Mason and lspconfig
+    { "WhoIsSethDaniel/mason-tool-installer.nvim" }, -- Tool installer for Mason
     {
         "neovim/nvim-lspconfig",
-        event = { "BufReadPre", "BufNewFile" },
+        event = { "BufReadPre", "BufNewFile" }, -- Load when opening or creating files
         config = function()
+            --Loadcustom LSPconfiguration
             local status_ok, module = pcall(require, "profile.lsp.lspconfig")
-           if status_ok then
+            if status_ok then
                 return module
             end
         end,
     },
-    { "folke/neodev.nvim", ft = "lua" },
-   -- { "tjdevries/scriptease.vim", ft= "lua" },  -- Commented out as repository not found
+    { "folke/neodev.nvim", ft = "lua" }, -- Lua development support-- {"tjdevries/scriptease.vim", ft= "lua" },  -- Commented out as repository not found
 
-  --Debugging
+    -- Debugging plugins
     {
         "mfussenegger/nvim-dap",
-        event = "VeryLazy",
+        event = "VeryLazy", -- Load when idle
         config = function()
+            --Load custom DAP configuration
             local status_ok, module = pcall(require, "profile.dap.init")
             if status_ok then
                 return module
             end
         end,
     },
-   { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
-    { "jay-babu/mason-nvim-dap.nvim" },
+    { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } }, -- DAP UI
+    { "jay-babu/mason-nvim-dap.nvim" }, -- Bridge between Mason and DAP
 
-    -- Git
- {"tpope/vim-fugitive", cmd = "Git" },
-    {"kdheepak/lazygit.nvim", cmd = "LazyGit" },
+    -- Git plugins
+    { "tpope/vim-fugitive", cmd = "Git" }, -- Git wrapper
+    { "kdheepak/lazygit.nvim", cmd = "LazyGit" }, -- LazyGit integration
     {
         "sindrets/diffview.nvim",
-        cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
-        config = true,
+        cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" }, --Loadon diff commands
+        config = true, -- Use default configuration
     },
-{
+    {
         "lewis6991/gitsigns.nvim",
-        event = { "BufReadPre", "BufNewFile" },
+        event = { "BufReadPre", "BufNewFile" }, -- Load when opening or creating files
         config = function()
+            --ConfigureGit signs (show changes in gutter)
             require("gitsigns").setup({
-                signs={
-                    add = { text = "▎" },
-                    change = {text= "▎" },
-                    delete = { text = "" },
-                    topdelete = { text = "" },
-                    changedelete = { text = "▎" },
-                    untracked = { text="▎" },
+                signs = {
+                    add = { text = "▎" }, -- Sign for added lines
+                    change = { text = "▎" }, -- Sign for changed lines
+                    delete = { text = "" }, -- Sign for deleted lines
+                    topdelete = { text = "" }, -- Sign for top deleted lines
+                    changedelete = { text = "▎" }, -- Sign for changed and deleted lines
+                    untracked = { text = "▎" }, -- Signfor untracked lines
                 },
-                signcolumn = true, --Toggle with`:Gitsigns toggle_signs`
-                numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-                linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-                word_diff= false, -- Toggle with `:Gitsignstoggle_word_diff`
+                signcolumn = true, -- Show signs in sign column
+                numhl = false, -- Don't highlight line numbers
+                linehl = false, -- Don't highlight lines
+                word_diff = false, -- Don't show word diff
                 watch_gitdir = {
-                    interval = 1000,
-                    follow_files = true,
+                    interval = 1000, -- Watch interval in ms
+                    follow_files = true, -- Follow file movements
                 },
                 attach_to_untracked = true,
-                current_line_blame = false, -- Toggle with `:Gitsignstoggle_current_line_blame`
+                current_line_blame = false, -- Don't show blame for current line
                 current_line_blame_opts = {
-                   virt_text = true,
-                    virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-                    delay = 1000,
+                    virt_text = true,
+                    virt_text_pos = "eol", -- Show blame at end of line
+                    delay = 1000, -- Delay before showing blame
                     ignore_whitespace = false,
                 },
-                current_line_blame_formatter= "<author>,<author_time:%Y-%m-%d>-<summary>",
+                current_line_blame_formatter = "<author>,<author_time:%Y-%m-%d>-<summary>",
                 sign_priority = 6,
                 update_debounce = 100,
-                status_formatter = nil, -- Usedefault
+                status_formatter = nil, -- Use default formatter
                 max_file_length = 40000,
                 preview_config = {
-                    --Optionspassed tonvim_open_winborder = "single",
-                    style ="minimal",
-                    relative = "cursor",
+                    border = "single", -- Border style
+                    style = "minimal", -- Minimal style
+                    relative = "cursor", -- Relative to cursor
                     row = 0,
                     col = 1,
                 },
@@ -148,68 +160,85 @@ return {
     },
     {
         "pwntester/octo.nvim",
-        cmd = "Octo",
-        dependencies ={"nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "nvim-tree/nvim-web-devicons" },
-        config = true,
+        cmd = "Octo", -- Load on Octocommand
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope.nvim",
+            "nvim-tree/nvim-web-devicons"
+        },
+        config = true, -- Use default configuration
     },
 
-    -- Navigation
+    -- Navigation plugins
     {
         "nvim-telescope/telescope.nvim",
-        cmd = "Telescope",
-dependencies={ "nvim-lua/plenary.nvim"},
+        cmd = "Telescope", -- Load on Telescope command
+        dependencies = { "nvim-lua/plenary.nvim" }, -- Required dependency
         config = function()
+            -- Configure Telescope fuzzy finder
             require("telescope").setup({
                 defaults = {
                     mappings = {
                         i = {
-                            ["<C-h>"] = "which_key",
+                            ["<C-h>"] = "which_key", -- Show which-key in insert mode
                         },
                     },
                     file_ignore_patterns = {
                         "node_modules/",
-                      ".git/",
+                        ".git/",
                         "target/",
                         "build/",
-"%.class"
+                        "%.class"
                     }
                 },
                 extensions = {
-                    -- Add ifneeded
+                    -- Add extensions if needed
                 },
             })
 
+            -- Load Telescope extensions
             require("telescope").load_extension("harpoon")
             require("telescope").load_extension("undo")
             require("telescope").load_extension("colorscheme")
         end,
     },
     {
-      "nvim-neo-tree/neo-tree.nvim",
-        branch = "v3.x",
-        cmd = { "Neotree", "NeoTreeFocus", "NeoTreeReveal" },
-        dependencies = { "nvim-lua/plenary.nvim","nvim-tree/nvim-web-devicons","MunifTanjim/nui.nvim" },
-        config = true,
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x", -- Use v3.x branch
+        cmd = { "Neotree", "NeoTreeFocus", "NeoTreeReveal" }, -- Load on tree commands
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "MunifTanjim/nui.nvim"
+        },
+        config = true, -- Use default configuration
     },
-    { "ThePrimeagen/harpoon", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" },
-
+    {
+        "ThePrimeagen/harpoon",
+        event = "VeryLazy", -- Load when idle
+        dependencies = { "nvim-lua/plenary.nvim" },
     },
 
-   -- CodeFolding
+    -- Emmet support for HTML/CSS
+    { "mattn/emmet-vim", event = "BufReadPre" },
+
+    -- Code folding plugin
     {
         "kevinhwang91/nvim-ufo",
-        event = "BufReadPost",
+        event = "BufReadPost", -- Load after reading a file
         dependencies = { "kevinhwang91/promise-async" },
         config = function()
+            -- Configure code folding with UFO (Unified Fold)
             require("ufo").setup({
-                provider_selector = function(bufnr,filetype,buftype)
-                    return { "treesitter","indent" }
+                provider_selector = function(bufnr, filetype, buftype)
+                    return { "treesitter", "indent" }  -- Usetreesitter then indent for folding
                 end,
-               fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+                fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+                    -- Handle virtual text for folded regions
                     local newVirtText = {}
                     local suffix = (' 󰁂 %d '):format(endLnum - lnum)
                     local sufWidth = vim.fn.strdisplaywidth(suffix)
-                   local targetWidth = width - sufWidth
+                    local targetWidth = width - sufWidth
                     local curWidth = 0
                     for _, chunk in ipairs(virtText) do
                         local chunkText = chunk[1]
@@ -219,249 +248,329 @@ dependencies={ "nvim-lua/plenary.nvim"},
                         else
                             chunkText = truncate(chunkText, targetWidth - curWidth)
                             local hlGroup = chunk[2]
-                            table.insert(newVirtText, {chunkText, hlGroup})
+                            table.insert(newVirtText, { chunkText, hlGroup })
                             chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                            if curWidth+ chunkWidth < targetWidth then
+                            if curWidth + chunkWidth < targetWidth then
                                 suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
                             end
                             break
                         end
                         curWidth = curWidth + chunkWidth
                     end
-                    table.insert(newVirtText, {suffix, 'MoreMsg'})
+                    table.insert(newVirtText, { suffix, 'MoreMsg' })
                     return newVirtText
                 end,
                 enable_get_fold_virt_text = true,
-                close_fold_kinds = {"imports", "comment" }, -- Close only imports and comments by default
+                close_fold_kinds_for_ft = {
+                    default = { "imports", "comment" },
+                },
                 preview = {
                     win_config = {
-                        border = {'', '─', '', '', '', '─', '', ''},
+                        border = { '', '─', '', '', '', '─', '', '' },
                         winhighlight = 'Normal:Folded',
-                        winblend =0
+                        winblend = 0
                     },
                     mappings = {
-                       scrollU = '<C-u>',
-                        scrollD = '<C-d>',
-                        jumpTop = '[',
-                        jumpBot = ']'
+                        scrollU = '<C-u>', -- Scroll up in preview
+                        scrollD = '<C-d>', -- Scroll down in preview
+                        jumpTop = '[', -- Jump to top in preview
+                        jumpBot = ']'       -- Jump to bottom in preview
                     }
                 },
-open_fold_hl_timeout = 0, -- Disable fold highlight
+                open_fold_hl_timeout = 0, -- Disable fold highlight
             })
-            
-            -- Disable automatic folding by setting fold level to 99 (show all)
+
+            -- Disable automatic folding bysetting foldlevel to 99 (show all)
             vim.api.nvim_create_autocmd("BufEnter", {
                 callback = function()
                     vim.opt.foldlevel = 99
-               end,
+                end,
             })
         end
     },
 
--- Formatting/Linting
+    -- Formatting andlinting plugins
     {
         "stevearc/conform.nvim",
-        event = { "BufWritePre", "BufNewFile" },
+        event = { "BufWritePre", "BufNewFile" }, -- Load when writing or creating files
         config = function()
-           local status_ok, module = pcall(require, "profile.tools.conform")
-            if status_ok then
-                return module
-end
-        end,
-    },
-    -- Aerial - code structure overview
-    { "stevearc/aerial.nvim", event = "BufReadPost", config = true },
--- Multi-cursor support
-    { "mg979/vim-visual-multi", event = "BufReadPost"},
-    -- Refactoring support
-    {
-        "ThePrimeagen/refactoring.nvim",
-        event = "BufReadPost",
-        dependencies = { "nvim-lua/plenary.nvim","nvim-treesitter/nvim-treesitter" },
-        config = true,
-    },
-    -- Flash -enhanced search navigation
-    { "folke/flash.nvim", event = "VeryLazy", config = true },
-    {
-        "mfussenegger/nvim-lint",
-event = {"BufReadPre", "BufNewFile" },
-        config = function()
-            require("lint").linters_by_ft={
-                python = { "flake8" },
-                java = { "checkstyle" },
-                javascript = { "eslint_d" },
-                typescript = { "eslint_d" },
-               -- Add more
-            }
-        end,
-},
-
-    -- Tasks
-    { "stevearc/overseer.nvim", cmd = { "OverseerRun", "OverseerToggle" }, config = true },
-
-    --Terminal
-    { "akinsho/toggleterm.nvim", cmd ={ "ToggleTerm", "TermExec"}, config = true },
-
-    --UI
-    {
-        "nvim-lualine/lualine.nvim",
-        event = "VeryLazy",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        config = function()
-            require("profile.ui.statusline").setup()
-        end,
-},
--- { "akinsho/bufferline.nvim", event= "VeryLazy",config= true },
-    {
-        "rcarriga/nvim-notify",
-        event = "VeryLazy",
-        config = function()
-            vim.notify = require("notify")
-        end,
-},
-    {
-       "folke/tokyonight.nvim",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            require("tokyonight").setup({
-                style = "moon",
-                transparent = true,
-                terminal_colors = true,
-           })
-            -- Don't set colorschemehere sincewe'rehandling it in our thememodule
-        end,
-    },
-    { "rose-pine/neovim", name = "rose-pine", lazy = false, priority = 1000 },
-    { "EdenEast/nightfox.nvim", lazy =false, priority = 1000 },
-    { "nvim-tree/nvim-web-devicons", lazy = true },
-   {
-"echasnovski/mini.icons",
-        version = false,
-        config = function()
-            require("mini.icons").setup()
-        end,
-    },
-{
-        "folke/noice.nvim",
-event = "VeryLazy",
-        dependencies = { "MunifTanjim/nui.nvim","rcarriga/nvim-notify" },
-        config = function()
-            local status_ok, noice = pcall(require, "profile.ui.noice")
-            if not status_ok then
-return
-end
-            noice.setup()
-        end,
-    },
-    { "stevearc/dressing.nvim",event = "VeryLazy", config = true },
-    { "lukas-reineke/indent-blankline.nvim", event = { "BufReadPost", "BufNewFile" },main = "ibl", config = true },
-    { "windwp/nvim-ts-autotag", ft={ "html", "javascript", "typescript", "jsx", "tsx" }},
-    { "windwp/nvim-autopairs", event = "InsertEnter", config = true},
-   { "SmiteshP/nvim-navic", event = "LspAttach" },
-    {
-        "SmiteshP/nvim-navbuddy",
-        dependencies = { "MunifTanjim/nui.nvim", "SmiteshP/nvim-navic" },
-        event ="LspAttach",
-config= true,
-    },
-    { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true }, -- Minimap
-
-    -- Treesitter
-    {
-        "nvim-treesitter/nvim-treesitter",
-        event = {"BufReadPost", "BufNewFile" },
-        build = ":TSUpdate",
-        config = function()
-            local status_ok, module =pcall(require, "profile.treesitter")
+            -- Load custom conform configuration
+            local status_ok, module = pcall(require, "profile.tools.conform")
             if status_ok then
                 return module
             end
         end,
     },
 
-    -- Session
-    { "folke/persistence.nvim", event= "BufReadPre", config = true },
-    -- Dashboard
+    -- Aerial - code structure overview (symbols outline)
+    { "stevearc/aerial.nvim", event = "BufReadPost", config = true },
+
+    -- Multi-cursor support
+    { "mg979/vim-visual-multi", event = "BufReadPost" },
+
+    -- Refactoring support
+    {
+        "ThePrimeagen/refactoring.nvim",
+        event = "BufReadPost", -- Load after reading a file
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter"
+        },
+        config = true, -- Use default configuration
+    },
+
+    -- Flash - enhanced search navigation
+    { "folke/flash.nvim", event = "VeryLazy", config = true },
+    -- Linting plugin
+    {
+        "mfussenegger/nvim-lint",
+        event = { "BufReadPre", "BufNewFile" }, -- Load when reading or creating files
+        config = function()
+            require("lint").linters_by_ft = {
+                python = { "flake8" }, -- Python files use flake8
+                java = { "checkstyle" }, -- Java files use checkstyle
+                javascript = { "eslint_d" }, -- JavaScript files use eslint_d
+                typescript = { "eslint_d" }, -- TypeScript files use eslint_d
+                php = { "phpstan" }, -- PHP files use phpstan
+                -- Add more filetypes and linters as needed
+            }
+        end,
+    },
+
+    -- Tasks plugin
+    { "stevearc/overseer.nvim", cmd = { "OverseerRun", "OverseerToggle" }, config = true },
+
+    -- Terminalplugin
+    { "akinsho/toggleterm.nvim", cmd = { "ToggleTerm", "TermExec" }, config = true },
+
+    -- UI plugins
+    {
+        "nvim-lualine/lualine.nvim",
+        event = "VeryLazy", -- Load when idle
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            -- Load custom status line configuration
+            require("profile.ui.statusline").setup()
+        end,
+    },
+
+    -- Notification plugin
+    {
+        "rcarriga/nvim-notify",
+        event = "VeryLazy", -- Load when idle
+        config = function()
+            -- Replace default vim.notify with nvim-notify
+            vim.notify = require("notify")
+        end,
+    },
+
+    -- Color themes
+    {
+        "folke/tokyonight.nvim",
+        lazy = false, -- Load immediately
+        priority = 1000, -- High priority
+        config = function()
+            -- Configure TokyoNight theme
+            require("tokyonight").setup({
+                style = "moon", -- Moon style
+                transparent = true, -- Enable transparency
+                terminal_colors = true, -- Enableterminal colors
+            })
+            -- Don't set colorscheme here since we'rehandling it in our theme module
+        end,
+    },
+    { "rose-pine/neovim", name = "rose-pine", lazy = false, priority = 1000 },
+    { "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
+    { "nvim-tree/nvim-web-devicons", lazy = true }, -- Load on demand
+
+    {
+        "echasnovski/mini.icons",
+        version = false,
+        config = function()
+            -- Configure mini.icons
+            require("mini.icons").setup()
+        end,
+    },
+
+    -- Bufferline plugin (DISABLED)
+    -- {
+    --     "akinsho/bufferline.nvim",
+    --     event = "VeryLazy",
+    --     dependencies = { "nvim-tree/nvim-web-devicons" },
+    --     config = function()
+    --         require("bufferline").setup({
+    --             options = {
+    --                 mode = "buffers",
+    --                 separator_style = "thin",
+    --                 always_show_bufferline = false,
+    --                 show_buffer_close_icons = false,
+    --                 show_close_icon = false,
+    --             }
+    --         })
+    --     end
+    -- },
+
+    -- Noice - enhance UI notifications and command line
+    {
+        "folke/noice.nvim",
+        event = "VeryLazy", -- Load when idle
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+            "rcarriga/nvim-notify"
+        },
+        config = function()
+            -- Load custom noice configuration
+            local status_ok, noice = pcall(require, "profile.ui.noice")
+            if not status_ok then
+                return
+            end
+            noice.setup()
+        end,
+    },
+
+    -- Dressing - improve default UI elements
+    { "stevearc/dressing.nvim", event = "VeryLazy", config = true },
+
+    -- Indentation guides
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        event = { "BufReadPost", "BufNewFile" }, -- Load when reading or creating files
+        main = "ibl",
+        config = true
+    },
+
+    -- Auto tag closing for HTML/JSX/XML
+    { "windwp/nvim-ts-autotag", ft = { "html", "javascript", "typescript", "jsx", "tsx" } },
+
+    -- Auto pairs for brackets, quotes, etc.
+    { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+
+    -- Context information in winbar
+    { "SmiteshP/nvim-navic", event = "LspAttach" },
+
+    -- Enhanced navigation UI
+    {
+        "SmiteshP/nvim-navbuddy",
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+            "SmiteshP/nvim-navic"
+        },
+        event = "LspAttach", -- Load whenLSP attaches
+        config = true,
+    },
+
+    -- Minimap
+    { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true },
+
+    -- Treesitter - enhanced syntax highlighting and code analysis
+    {
+        "nvim-treesitter/nvim-treesitter",
+        event = { "BufReadPost", "BufNewFile" }, -- Load when reading or creating files
+        build = ":TSUpdate", -- Run TSUpdate after installing
+        config = function()
+            -- Load custom treesitter configuration
+            local status_ok, module = pcall(require, "profile.treesitter")
+            if status_ok then
+                return module
+            end
+        end,
+    },
+
+    -- Session management
+    { "folke/persistence.nvim", event = "BufReadPre", config = true },
+
+    -- Dashboard/start screen
     {
         "goolord/alpha-nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = true,
-        event = "VimEnter",
+        event = "VimEnter", -- Load when entering Vim
     },
 
-   --Search/Replace
-   { "nvim-pack/nvim-spectre", cmd = "Spectre", dependencies = { "nvim-lua/plenary.nvim" } },
+    -- Search and replace
+    { "nvim-pack/nvim-spectre", cmd = "Spectre", dependencies = { "nvim-lua/plenary.nvim" } },
 
-    -- Testing
+    -- Testing framework
     {
         "nvim-neotest/neotest",
-        event = "VeryLazy",
-        dependencies= {
-           "nvim-lua/plenary.nvim",
+        event = "VeryLazy", -- Load when idle
+        dependencies = {
+            "nvim-lua/plenary.nvim",
             "antoinemadec/FixCursorHold.nvim",
             "nvim-treesitter/nvim-treesitter",
-            --Adapters:addas needed, e.g. neotest-python, neotest-jest, etc.
-       },
-        config= function()
-require("neotest").setup({
+            -- Adapters: add as needed, e.g. neotest-python, neotest-jest, etc.
+        },
+        config = function()
+            require("neotest").setup({
                 adapters = {
                     -- require("neotest-python"),
-                    --require("neotest-jest"),
-                    --Add adaptersas needed
+                    -- require("neotest-jest"),
+                    -- Add adapters as needed
                 },
             })
         end,
     },
 
-    -- Other{ "numToStr/Comment.nvim",event = "BufReadPre",config= true },
-    { "kylechui/nvim-surround", event = "VeryLazy", config=true },
-    { "mbbill/undotree", cmd = "UndotreeToggle" },
-    {
-        "zbirenbaum/copilot.lua",
-       event = "InsertEnter",
-config = function()
-            require("copilot").setup({
-                suggestion = { enabled = true, auto_trigger = true },
-panel= { enabled = true },
-            })
-        end,
-    },
-    { "folke/trouble.nvim", cmd = "TroubleToggle", dependencies= { "nvim-tree/nvim-web-devicons" }, config = true },
-    { "tiagovla/scope.nvim", event = "VeryLazy", config = true }, -- Tab scopes
-    { "folke/todo-comments.nvim", event = { "BufReadPost", "BufNewFile" }, dependencies = {"nvim-lua/plenary.nvim" }, config = true },
-
-    -- Language specific pluginsfrom previoussetup{ 'p00f/clangd_extensions.nvim' },
+    -- Languagespecific pluginsfrom previoussetup{ 'p00f/clangd_extensions.nvim' },
     { "simrat39/rust-tools.nvim", event = "BufReadPre" },
-    {"rust-lang/rust.vim" },
-    {"ray-x/go.nvim", event = "BufReadPre" },
-    { "leoluz/nvim-dap-go" },
-    { "ziglang/zig.vim" },
-    { "Hoffs/omnisharp-extended-lsp.nvim", event = "BufReadPre" }, --added-by-agent: csharp-setup
+    { "rust-lang/rust.vim" },
+    { "ray-x/go.nvim", event = "BufReadPre", config = function()
+        _GO_NVIM_CFG = {
+            lsp_cfg = true,
+        }
+        require("go").setup()
+    end },
+    { "leoluz/nvim-dap-go" }, -- Go debugging support
+
+    -- Zig language plugin
+    { "ziglang/zig.vim" }, -- Zig syntax support
+
+    -- C# language plugins
+    { "Hoffs/omnisharp-extended-lsp.nvim", event = "BufReadPre" }, -- Extended C# LSP support
+
+    -- Flutter/Dart plugin
     {
-        "akinsho/flutter-tools.nvim", -- added-by-agent:flutter-setup
-dependencies = {
+        "akinsho/flutter-tools.nvim", -- Flutter development tools
+        dependencies = {
             "nvim-lua/plenary.nvim",
             "stevearc/conform.nvim",
         },
-       event = "BufReadPre",
+        event = "BufReadPre", -- Load when reading files
         config = true,
     },
-    { "mfussenegger/nvim-jdtls", event = "BufReadPre"}, --added-by-agent: java-setup
-    { "Issafalcon/neotest-dotnet", event = "BufReadPre" }, --added-by-agent: csharp-setup
-   {"rcasia/neotest-java", event = "BufReadPre" }, --added-by-agent: java-setup
 
-    --Web development plugins
-{ "windwp/nvim-ts-autotag", ft = { "html", "javascript", "typescript", "jsx", "tsx", "vue", "svelte", "astro" } },
-    { "norcalli/nvim-colorizer.lua", ft = { "css", "scss", "sass", "less", "javascript", "typescript" } },
-    
-    -- Mojo
+    -- Java language plugins
+    { "mfussenegger/nvim-jdtls", event = "BufReadPre" }, -- Java LSP support
+    { "rcasia/neotest-java", event = "BufReadPre" }, -- Java testing support
+
+    -- C# testing plugin
+    { "Issafalcon/neotest-dotnet", event = "BufReadPre" }, -- .NET testing support
+
+    -- Web development plugins
+    { "windwp/nvim-ts-autotag", ft = { "html", "javascript", "typescript", "jsx", "tsx", "vue", "svelte", "astro" } }, -- Auto close tags
+    { "norcalli/nvim-colorizer.lua", ft = { "css", "scss", "sass", "less", "javascript", "typescript" } }, -- Color visualization
+
+    -- Mojo language plugin
     { "czheo/mojo.vim", event = "BufReadPre" }, -- Syntax highlighting for Mojo
 
-   -- database-relatedplugins (for lazy.nvim)--added-by-agent: db-setup 20251020-151229i
+    -- Database plugins
     {
-        "kristijanhusak/vim-dadbod",
-        cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer"}
+        "kristijanhusak/vim-dadbod", --Database interface
+        cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" }
     },
-    { "kristijanhusak/vim-dadbod-ui", cmd = { "DBUI", "DBUIToggle" } }
+    { "kristijanhusak/vim-dadbod-ui", cmd = { "DBUI", "DBUIToggle" } },  -- Database UI
+
+    -- PHP language support plugins
+    { "phpactor/phpactor", build = "composer install --ignore-platform-req=ext-iconv", ft = "php" }, -- PHP language server and refactoring tool
+    { "ray-x/guihua.lua", ft = "php" }, -- Required for phpactor.nvim
+    
+    -- Laravel support
+    { "adalessa/laravel.nvim", ft = { "php", "blade" }, dependencies = {
+        "nvim-lua/plenary.nvim",
+        "mfussenegger/nvim-dap",
+        "rcarriga/nvim-notify",
+    }, config = true },
+    
+    -- Blade template support
+    { "jwalton512/vim-blade", ft = "blade" }, -- Blade syntax highlighting
 }

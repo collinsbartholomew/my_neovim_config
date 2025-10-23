@@ -82,6 +82,17 @@ function M.setup()
                 timeout = 3000,
                 render = "minimal",
                 stages = "fade_in_slide_out",
+                on_open = function(win)
+                    -- Make notifications not disappear when clicked
+                    vim.api.nvim_create_autocmd("BufLeave", {
+                        buffer = vim.api.nvim_win_get_buf(win),
+                        once = true,
+                        callback = function()
+                            -- Dismiss notification when focus is lost
+                            pcall(function() require("noice").dismiss({ win = win }) end)
+                        end,
+                    })
+                end,
                 size = {
                     width = "auto",
                     height = "auto",

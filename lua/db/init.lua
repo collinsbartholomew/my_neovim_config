@@ -39,8 +39,8 @@ if dev_conn then
 end
 
 -- keymaps for Dadbod
-vim.api.nvim_set_keymap("n", "<leader>ds", ":DBUI<CR>", { noremap = true, silent = true }) -- open DB UI
-vim.api.nvim_set_keymap("n", "<leader>dq", ":DBUIToggle<CR>", { noremap = true, silent = true }) -- toggle
+vim.api.nvim_set_keymap("n", "<leader>dbu", ":DBUI<CR>", { noremap = true, silent = true }) -- open DB UI
+vim.api.nvim_set_keymap("n", "<leader>dbt", ":DBUIToggle<CR>", { noremap = true, silent = true }) -- toggle
 
 -- Run the current visual selection (or current line) as SQL on a named connection
 local function db_execute_on_conn(conn_name, sql)
@@ -77,10 +77,10 @@ function M.run_sql_on_dev()
 	db_execute_on_conn("dev", sql)
 end
 
-vim.api.nvim_set_keymap("n", "<leader>dr", ":lua require('db').run_sql_on_dev()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>dbr", ":lua require('db').run_sql_on_dev()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap(
 	"v",
-	"<leader>dr",
+	"<leader>dbr",
 	":<C-U>lua require('db').run_sql_on_visual()<CR>",
 	{ noremap = true, silent = true }
 )
@@ -102,7 +102,7 @@ if ok_term then
 		mongo_term:toggle()
 	end
 
-	vim.api.nvim_set_keymap("n", "<leader>dm", "<cmd>lua _G._TOGGLE_MONGOSH()<CR>", { noremap = true, silent = true })
+	vim.api.nvim_set_keymap("n", "<leader>dbm", "<cmd>lua _G._TOGGLE_MONGOSH()<CR>", { noremap = true, silent = true })
 
 	-- send selection or line to mongosh
 	function _G.SendToMongo()
@@ -126,8 +126,8 @@ if ok_term then
 		mongo_term:send("\n")
 	end
 
-	vim.api.nvim_set_keymap("n", "<leader>sm", ":lua SendToMongo()<CR>", { noremap = true, silent = true })
-	vim.api.nvim_set_keymap("v", "<leader>sm", ":<C-U>lua SendToMongo()<CR>", { noremap = true, silent = true })
+	vim.api.nvim_set_keymap("n", "<leader>ms", ":lua SendToMongo()<CR>", { noremap = true, silent = true })
+	vim.api.nvim_set_keymap("v", "<leader>ms", ":<C-U>lua SendToMongo()<CR>", { noremap = true, silent = true })
 end
 
 return M

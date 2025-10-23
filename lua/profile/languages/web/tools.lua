@@ -50,28 +50,15 @@ function M.setup()
         vim.lsp.buf.format()
     end, {})
 
-    -- Null-ls setup for formatting and linting
-    local null_ls_status, null_ls = pcall(require, "null-ls")
-    if null_ls_status then
-        null_ls.setup({
-            sources = {
-                null_ls.builtins.formatting.prettierd.with({
-                    extra_filetypes = { "astro", "mdx" }
-                }),
-                null_ls.builtins.formatting.prettier.with({
-                    extra_filetypes = { "astro", "mdx" }
-                }),
-                null_ls.builtins.diagnostics.eslint_d,
-                null_ls.builtins.code_actions.eslint_d,
-                null_ls.builtins.diagnostics.stylelint,
-            },
-        })
-    end
+    -- We're removing null-ls configuration as it's deprecated
+    -- Formatting is now handled by conform.nvim which is already configured
+    -- Diagnostics are handled by LSP servers and nvim-lint
 
     -- Emmet setup
     vim.g.user_emmet_mode = "n"
     vim.g.user_emmet_install_global = 0
-    vim.cmd([[autocmd FileType html,css,scss,sass,less,javascript,typescript,jsx,tsx,vue,svelte,astro,mdx EmmetInstall]])
+    vim.cmd([[autocmd FileType html,css,scss,sass,less,javascript,typescript,jsx,tsx,vue,svelte,astro,mdx
+    emmet#install())]])
     
     -- Add custom functions for web development
     _G.web_utils = {

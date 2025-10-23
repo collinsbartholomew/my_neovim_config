@@ -19,19 +19,22 @@ local ui_modules = {
     "profile.ui.notifications",
     "profile.ui.focus",
     "profile.ui.transparency",
-    "profile.ui.diagnostics",
     "profile.ui.undotree",
     "profile.ui.enhancements",
     "profile.ui.noice",
     "profile.ui.aerial",
     "profile.ui.winbar",
-    "profile.ui.alpha",
     "profile.ui.line_numbers",
     "profile.ui.csharp-ui",
     "profile.ui.java-ui",
     "profile.ui.python-ui",
     "profile.ui.mojo-ui",
     "profile.ui.flutter-ui",
+    "profile.ui.dbs-ui",
+    "profile.ui.go-ui",
+    "profile.ui.rust-ui",
+    "profile.ui.asm-ui",
+    "profile.ui.web-ui",
 }
 
 for _, mod in ipairs(ui_modules) do
@@ -57,9 +60,7 @@ end)
 pcall(function()
     require("profile.ui.transparency").setup()
 end)
-pcall(function()
-    require("profile.ui.diagnostics").setup()
-end)
+
 pcall(function()
     require("profile.ui.enhancements").setup()
 end)
@@ -73,10 +74,6 @@ end)
 
 pcall(function()
     require("profile.ui.winbar").setup()
-end)
-
-pcall(function()
-    require("profile.ui.alpha").setup()
 end)
 
 pcall(function()

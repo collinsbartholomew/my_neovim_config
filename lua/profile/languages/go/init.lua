@@ -20,6 +20,12 @@ function M.setup()
     if tsinstall_status_ok then
         tsinstall.ensure_installed({ "go", "gomod", "gosum", "gowork", "gotmpl" })
     end
+    
+    -- Load UI enhancements
+    local ui_status_ok, ui = pcall(require, "profile.ui.go-ui")
+    if ui_status_ok then
+        ui.setup()
+    end
 end
 
 return M
