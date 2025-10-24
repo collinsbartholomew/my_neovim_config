@@ -52,16 +52,6 @@ function M.setup()
         hide_inactive_statusline = false,
         dim_inactive = false,
         lualine_bold = false,
-        on_colors = function(colors)
-            colors.bg = "NONE"
-            colors.bg_dark = "NONE"
-            colors.bg_float = "NONE"
-            colors.bg_popup = "NONE"
-            colors.bg_search = "NONE"
-            colors.bg_sidebar = "NONE"
-            colors.bg_statusline = "NONE"
-            colors.bg_visual = "NONE"
-        end,
         on_highlights = function(hl, c)
             local transparent = { bg = "NONE", ctermbg = "NONE" }
             hl.Normal = transparent
@@ -181,9 +171,9 @@ end
 function M.toggle()
     local current_scheme = vim.g.colors_name
     if current_scheme == "rose-pine" then
-        vim.cmd('colorscheme tokyonight')
-    elseif current_scheme == "tokyonight" then
         vim.cmd('colorscheme nightfox')
+    elseif current_scheme == "nightfox" then
+        vim.cmd('colorscheme rose-pine')
     else
         vim.cmd('colorscheme rose-pine')
     end

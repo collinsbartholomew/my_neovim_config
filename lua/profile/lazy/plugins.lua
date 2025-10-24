@@ -39,7 +39,7 @@ return {
                 "gzip", -- Disable gzip plugin
                 "matchit", -- Disable matchit plugin
                 "matchparen", -- Disable matchparen plugin
-                "netrwPlugin", --Disablenetrw plugin (using neo-tree instead)
+                "netrwPlugin", --Disablenetrw plugin(using neo-tree instead)
                 "tarPlugin", -- Disable tar plugin
                 "tohtml", -- Disable tohtml plugin
                 "tutor", -- Disable tutor plugin
@@ -65,12 +65,26 @@ return {
             "rafamadriz/friendly-snippets", -- Collection of snippets
         },
         config = function()
-            -- Load custom cmp configuration
+            --Load custom cmp configuration
             local status_ok, module = pcall(require, "profile.completion.cmp")
             if status_ok then
                 return module
             end
         end,
+    },
+
+    -- LSP Zero- LSP configuration helper
+    {
+        "VonHeikemen/lsp-zero.nvim",
+        branch = "v3.x",
+        dependencies = {
+            -- LSP Support
+            { "neovim/nvim-lspconfig" },
+            -- Autocompletion
+            { "hrsh7th/nvim-cmp" },
+            { "hrsh7th/cmp-nvim-lsp" },
+            { "L3MON4D3/LuaSnip" },
+        }
     },
 
     -- LSP (LanguageServerProtocol) relatedplugins
@@ -88,7 +102,7 @@ return {
             end
         end,
     },
-    { "folke/neodev.nvim", ft = "lua" }, -- Lua development support-- {"tjdevries/scriptease.vim", ft= "lua" },  -- Commented out as repository not found
+    { "folke/neodev.nvim", ft = "lua" }, -- Lua development support-- {"tjdevries/scriptease.vim", ft= "lua" },  -- Commented out as repositorynot found
 
     -- Debugging plugins
     {
@@ -222,13 +236,13 @@ return {
     -- Emmet support for HTML/CSS
     { "mattn/emmet-vim", event = "BufReadPre" },
 
-    -- Code folding plugin
+    --Code folding plugin
     {
         "kevinhwang91/nvim-ufo",
         event = "BufReadPost", -- Load after reading a file
         dependencies = { "kevinhwang91/promise-async" },
         config = function()
-            -- Configure code folding with UFO (Unified Fold)
+            -- Configure code folding with UFO (UnifiedFold)
             require("ufo").setup({
                 provider_selector = function(bufnr, filetype, buftype)
                     return { "treesitter", "indent" }  -- Usetreesitter then indent for folding
@@ -250,7 +264,8 @@ return {
                             local hlGroup = chunk[2]
                             table.insert(newVirtText, { chunkText, hlGroup })
                             chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                            if curWidth + chunkWidth < targetWidth then
+                            if curWidth + chunkWidth < targetWidth
+                            then
                                 suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
                             end
                             break
@@ -274,7 +289,7 @@ return {
                         scrollU = '<C-u>', -- Scroll up in preview
                         scrollD = '<C-d>', -- Scroll down in preview
                         jumpTop = '[', -- Jump to top in preview
-                        jumpBot = ']'       -- Jump to bottom in preview
+                        jumpBot = ']'-- Jump to bottom in preview
                     }
                 },
                 open_fold_hl_timeout = 0, -- Disable fold highlight
@@ -392,28 +407,28 @@ return {
         end,
     },
 
-    -- Bufferline plugin (DISABLED)
-    -- {
-    --     "akinsho/bufferline.nvim",
-    --     event = "VeryLazy",
-    --     dependencies = { "nvim-tree/nvim-web-devicons" },
-    --     config = function()
-    --         require("bufferline").setup({
-    --             options = {
-    --                 mode = "buffers",
-    --                 separator_style = "thin",
-    --                 always_show_bufferline = false,
-    --                 show_buffer_close_icons = false,
-    --                 show_close_icon = false,
-    --             }
-    --         })
-    --     end
-    -- },
+     --Bufferline plugin (DISABLED)
+     --{
+     --    "akinsho/bufferline.nvim",
+     --    event = "VeryLazy",
+     --    dependencies ={ "nvim-tree/nvim-web-devicons" },
+     --    config = function()
+     --        require("bufferline").setup({
+     --            options = {
+     --                mode = "buffers",
+     --                separator_style = "thin",
+     --                always_show_bufferline = true,
+     --               show_buffer_close_icons = true,
+     --                show_close_icon = true,
+     --            }
+     --        })
+     --    end
+     --},
 
     -- Noice - enhance UI notifications and command line
     {
         "folke/noice.nvim",
-        event = "VeryLazy", -- Load when idle
+        event = "VeryLazy", -- Load whenidle
         dependencies = {
             "MunifTanjim/nui.nvim",
             "rcarriga/nvim-notify"
@@ -462,13 +477,13 @@ return {
     -- Minimap
     { "gorbit99/codewindow.nvim", event = "BufReadPre", config = true },
 
-    -- Treesitter - enhanced syntax highlighting and code analysis
+    -- Treesitter - enhancedsyntax highlighting and code analysis
     {
         "nvim-treesitter/nvim-treesitter",
         event = { "BufReadPost", "BufNewFile" }, -- Load when reading or creating files
         build = ":TSUpdate", -- Run TSUpdate after installing
         config = function()
-            -- Load custom treesitter configuration
+            --Load custom treesitter configuration
             local status_ok, module = pcall(require, "profile.treesitter")
             if status_ok then
                 return module
@@ -511,7 +526,8 @@ return {
         end,
     },
 
-    -- Languagespecific pluginsfrom previoussetup{ 'p00f/clangd_extensions.nvim' },
+    -- Languagespecific pluginsfrom previoussetup
+    { 'p00f/clangd_extensions.nvim' },
     { "simrat39/rust-tools.nvim", event = "BufReadPre" },
     { "rust-lang/rust.vim" },
     { "ray-x/go.nvim", event = "BufReadPre", config = function()
@@ -525,7 +541,7 @@ return {
     -- Zig language plugin
     { "ziglang/zig.vim" }, -- Zig syntax support
 
-    -- C# language plugins
+    -- C# languageplugins
     { "Hoffs/omnisharp-extended-lsp.nvim", event = "BufReadPre" }, -- Extended C# LSP support
 
     -- Flutter/Dart plugin
@@ -558,19 +574,19 @@ return {
         "kristijanhusak/vim-dadbod", --Database interface
         cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" }
     },
-    { "kristijanhusak/vim-dadbod-ui", cmd = { "DBUI", "DBUIToggle" } },  -- Database UI
+    { "kristijanhusak/vim-dadbod-ui", cmd = { "DBUI", "DBUIToggle" } }, -- Database UI
 
     -- PHP language support plugins
     { "phpactor/phpactor", build = "composer install --ignore-platform-req=ext-iconv", ft = "php" }, -- PHP language server and refactoring tool
     { "ray-x/guihua.lua", ft = "php" }, -- Required for phpactor.nvim
-    
+
     -- Laravel support
     { "adalessa/laravel.nvim", ft = { "php", "blade" }, dependencies = {
         "nvim-lua/plenary.nvim",
         "mfussenegger/nvim-dap",
         "rcarriga/nvim-notify",
     }, config = true },
-    
+
     -- Blade template support
     { "jwalton512/vim-blade", ft = "blade" }, -- Blade syntax highlighting
 }

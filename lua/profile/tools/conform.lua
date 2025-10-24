@@ -15,8 +15,8 @@ conform.setup({
         lua = { "stylua" }, --Lua files use stylua
         python = { "ruff", "black" }, -- Python files use ruff then black
         java = { "google-java-format" }, -- Java files use google-java-format
-        javascript = { "eslint_d", "prettier" }, -- JavaScript files useeslint_d then prettier
-        typescript = { "eslint_d", "prettier" }, -- TypeScript files use eslint_d then prettier
+        javascript = { "prettier", "eslint_d" }, -- JavaScript files use prettier then eslint_d
+        typescript = { "prettier", "eslint_d" }, -- TypeScript files use prettier then eslint_d
         go = { "goimports", "gofumpt" }, -- Go files use goimports then gofumpt
         html = { "prettier" }, -- HTML files use prettier
         jsx = { "prettier" }, -- JSX files use prettier
@@ -252,24 +252,7 @@ conform.setup({
             eslint_d = {
                 -- JavaScript/TypeScript linter
                 command = "eslint_d", -- Use eslint_d command(daemon version)
-                args = function(ctx)
-                    -- Check if we have a valid ESLint config in the project
-                    local has_config = false
-                    if ctx and ctx.dirname then
-                        has_config = vim.fn.filereadable(ctx.dirname .. "/.eslintrc.js") == 1 or
-                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.json") == 1 or
-                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.yaml") == 1 or
-                                vim.fn.filereadable(ctx.dirname .. "/.eslintrc.yml") == 1 or
-                                vim.fn.filereadable(ctx.dirname .. "/package.json") == 1
-                    end
-
-                    if has_config then
-                        return { "--fix-to-stdout", "--stdin", "--stdin-filename", "$FILENAME" }
-                    else
-                        -- Use fallback configuration
-                        return { "--fix-to-stdout", "--stdin", "--stdin-filename", "$FILENAME", "--config", vim.fn.expand("~/.config/nvim/eslint-config/base.json") }
-                    end
-                end,
+                args = { "--fix-to-stdout", "--stdin", "--stdin-filename", "$FILENAME" },
                 condition = function(_, ctx)
                     -- Check if eslint_d is available
                     local found = vim.fn.executable("eslint_d") == 1
@@ -282,6 +265,8 @@ conform.setup({
 
                     return true
                 end,
+                -- Increase timeout for eslint_d
+                timeout_ms = 10000,
             },
 
             phpcbf = {

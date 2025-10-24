@@ -178,6 +178,30 @@ cmp.setup({
             return commit_characters
         end,
     },
+    -- Make text completions have the lowest priority
+    sorting = {
+        priority_weight = 2,
+        comparators = {
+            -- Prioritize LSP completions
+            cmp.config.compare.locality,
+            cmp.config.compare.recently_used,
+            cmp.config.compare.score,
+            -- Deprioritize Text completions
+            function(entry1, entry2)
+                local kind1 = entry1:get_kind()
+                local kind2 = entry2:get_kind()
+                local is_text1 = kind1 == 1 -- Text kind
+                local is_text2 = kind2 == 1 -- Text kind
+                if is_text1 and not is_text2 then
+                    return false
+                elseif is_text2 and not is_text1 then
+                    return true
+                end
+            end,
+            cmp.config.compare.offset,
+            cmp.config.compare.order,
+        },
+    },
     experimental = {}
 })
 

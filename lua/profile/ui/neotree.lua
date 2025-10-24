@@ -12,7 +12,7 @@ function M.setup()
 		close_if_last_window = true,
 		popup_border_style = "rounded",
 		enable_git_status = true,
-		enable_diagnostics = true,
+		enable_diagnostics = false, -- Disable diagnostics to avoid the extmark error
 		window = {
 			position = "left",
 			width = 30,
